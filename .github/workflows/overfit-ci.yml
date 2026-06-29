@@ -1,0 +1,50 @@
+name: overfit-ci
+
+# Variant C — Overfit. SKELETON: the multi-language (pnpm + cargo) steps are added in the
+# Variant C pass. The job below validates the shared foundation the variant depends on.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'apps/overfit-web/**'
+      - 'apps/overfit-api/**'
+      - 'packages/**'
+      - 'docker/overfit/**'
+      - '.github/workflows/overfit-ci.yml'
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  overfit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate fixtures
+        run: pnpm fixtures:generate
+
+      # TODO(variant-c): setup Rust toolchain (cargo) for overfit-api
+      # TODO(variant-c): typecheck/lint/test overfit-web (Next.js) + cargo test overfit-api
+      # TODO(variant-c): generate the API client from OpenAPI / JSON Schema
+      # TODO(variant-c): build (web + rust) and measure build time
+      # TODO(variant-c): docker build (multi-stage, multi-language) and measure docker build time
+      # TODO(variant-c): run the @signalops/test-scenarios suite for this variant
+      # TODO(variant-c): collect per-variant metrics and upload as artifact
+      - name: Placeholder
+        run: pnpm ci:overfit

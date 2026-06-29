@@ -1,0 +1,1881 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+  input{font-family:inherit}
+  ::selection{background:#ffd9ad}
+  @keyframes so-spin{to{transform:rotate(360deg)}}
+  @keyframes so-pulse{0%,100%{opacity:.45}50%{opacity:1}}
+  @keyframes so-shimmer{0%{background-position:-460px 0}100%{background-position:460px 0}}
+  .so-scroll::-webkit-scrollbar{width:10px;height:10px}
+  .so-scroll::-webkit-scrollbar-thumb{background:#d4d8dd;border-radius:8px;border:2px solid #f6f7f8}
+  .so-scroll::-webkit-scrollbar-track{background:transparent}
+  .so-focus:focus-visible{outline:2px solid #ef7e00;outline-offset:2px}
+</style>
+</helmet>
+<div style="display:flex;width:1440px;height:1024px;font-family:'Geist',system-ui,sans-serif;color:#14171a;background:#f6f7f8;overflow:hidden;-webkit-font-smoothing:antialiased;letter-spacing:-0.01em">
+
+  <!-- ============ SIDEBAR ============ -->
+  <aside style="width:248px;flex:0 0 248px;background:#ffffff;border-right:1px solid #e8eaed;display:flex;flex-direction:column;height:100%">
+    <div style="padding:20px 18px 16px 18px;display:flex;align-items:center;gap:11px">
+      <div style="position:relative;width:32px;height:32px;border-radius:9px;background:#ef7e00;display:flex;align-items:center;justify-content:center;flex:0 0 32px;box-shadow:0 2px 6px rgba(239,126,0,0.35)">
+        <div style="width:8px;height:8px;border-radius:50%;background:#fff"></div>
+        <div style="position:absolute;width:16px;height:16px;border-radius:50%;border:2px solid rgba(255,255,255,0.55)"></div>
+      </div>
+      <div style="display:flex;flex-direction:column;line-height:1.05">
+        <span style="font-size:15px;font-weight:700;letter-spacing:-0.02em">SignalOps</span>
+        <span style="font-size:11px;color:#8a929e;font-weight:500">Operational signals</span>
+      </div>
+    </div>
+
+    <div style="padding:0 14px 14px 14px">
+      <div style="display:flex;align-items:center;gap:8px;padding:7px 10px;background:#fff4e8;border:1px solid #ffd9ad;border-radius:8px">
+        <span style="width:7px;height:7px;border-radius:50%;background:#ef7e00;flex:0 0 7px"></span>
+        <span style="font-size:12px;font-weight:600;color:#c2630a">{{ variant }}</span>
+      </div>
+    </div>
+
+    <nav class="so-scroll" style="flex:1;overflow-y:auto;padding:4px 12px 12px 12px">
+      <div style="font-size:10.5px;font-weight:600;letter-spacing:0.07em;color:#a3aab4;padding:8px 10px 6px 10px;text-transform:uppercase">Product</div>
+      <sc-for list="{{ navProduct }}" as="item" hint-placeholder-count="6">
+        <button onClick="{{ item.go }}" class="so-focus" style="{{ item.style }}">
+          <span style="display:flex;align-items:center;justify-content:center;width:18px;height:18px;flex:0 0 18px">{{ item.icon }}</span>
+          <span style="flex:1;text-align:left">{{ item.label }}</span>
+          <sc-if value="{{ item.count }}" hint-placeholder-val="">
+            <span style="{{ item.countStyle }}">{{ item.count }}</span>
+          </sc-if>
+        </button>
+      </sc-for>
+
+      <div style="font-size:10.5px;font-weight:600;letter-spacing:0.07em;color:#a3aab4;padding:16px 10px 6px 10px;text-transform:uppercase">Design docs</div>
+      <sc-for list="{{ navDocs }}" as="item" hint-placeholder-count="4">
+        <button onClick="{{ item.go }}" class="so-focus" style="{{ item.style }}">
+          <span style="display:flex;align-items:center;justify-content:center;width:18px;height:18px;flex:0 0 18px">{{ item.icon }}</span>
+          <span style="flex:1;text-align:left">{{ item.label }}</span>
+        </button>
+      </sc-for>
+    </nav>
+
+    <div style="border-top:1px solid #eceef0;padding:12px 14px;display:flex;align-items:center;gap:10px">
+      <div style="width:30px;height:30px;border-radius:50%;background:#14171a;color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex:0 0 30px">AM</div>
+      <div style="flex:1;line-height:1.2;min-width:0">
+        <div style="font-size:12.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Alex Mercier</div>
+        <div style="font-size:11px;color:#8a929e">Lead analyst</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ============ MAIN ============ -->
+  <div style="flex:1;display:flex;flex-direction:column;min-width:0;height:100%">
+
+    <!-- header -->
+    <header style="height:60px;flex:0 0 60px;background:#fff;border-bottom:1px solid #e8eaed;display:flex;align-items:center;gap:18px;padding:0 24px">
+      <nav style="display:flex;align-items:center;gap:7px;font-size:13px;min-width:0">
+        <sc-for list="{{ crumbs }}" as="c" hint-placeholder-count="2">
+          <sc-if value="{{ c.sep }}" hint-placeholder-val="">
+            <span style="color:#c2c8cf">/</span>
+          </sc-if>
+          <span style="{{ c.style }}">{{ c.label }}</span>
+        </sc-for>
+      </nav>
+      <div style="flex:1"></div>
+      <label style="display:flex;align-items:center;gap:9px;width:320px;height:36px;padding:0 12px;background:#f3f4f6;border:1px solid #e8eaed;border-radius:9px">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#8a929e" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.2-3.2"></path></svg>
+        <input value="{{ search }}" onInput="{{ onSearch }}" placeholder="Search signals, incidents, sources…" class="so-focus" style="flex:1;border:none;background:transparent;outline:none;font-size:13px;color:#14171a" aria-label="Global search" />
+        <span style="font-size:11px;color:#a3aab4;font-weight:500;border:1px solid #dde0e4;border-radius:5px;padding:1px 5px">/</span>
+      </label>
+      <button class="so-focus" aria-label="Notifications" style="position:relative;width:36px;height:36px;border-radius:9px;border:1px solid #e8eaed;background:#fff;display:flex;align-items:center;justify-content:center">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#5c6470" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg>
+        <span style="position:absolute;top:7px;right:8px;width:7px;height:7px;border-radius:50%;background:#d92d20;border:1.5px solid #fff"></span>
+      </button>
+      <button class="so-focus" style="height:36px;padding:0 14px;border-radius:9px;background:#ef7e00;color:#fff;font-size:13px;font-weight:600;display:flex;align-items:center;gap:7px;box-shadow:0 1px 2px rgba(239,126,0,0.4)">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>
+        New signal
+      </button>
+    </header>
+
+    <!-- content -->
+    <main class="so-scroll" style="flex:1;overflow-y:auto;background:#f6f7f8">
+      <div style="padding:24px 24px 8px 24px;max-width:1140px;margin:0 auto">
+
+        <!-- ===================== OVERVIEW ===================== -->
+        <sc-if value="{{ isOverview }}" hint-placeholder-val="{{ true }}">
+          <div>
+            <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:20px">
+              <div>
+                <h1 style="margin:0;font-size:22px;font-weight:700;letter-spacing:-0.025em">Overview</h1>
+                <p style="margin:5px 0 0 0;font-size:13.5px;color:#5c6470">Prioritize what matters first.</p>
+              </div>
+              <div style="display:flex;gap:10px">
+                <div style="display:flex;align-items:center;gap:7px;height:36px;padding:0 13px;background:#fff;border:1px solid #e8eaed;border-radius:9px;font-size:13px;font-weight:500;color:#5c6470">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#8a929e" stroke-width="1.9"><rect x="3" y="4" width="18" height="18" rx="2"></rect><path d="M3 10h18M8 2v4M16 2v4"></path></svg>
+                  Last 7 days
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#8a929e" stroke-width="2.2" stroke-linecap="round"><path d="m6 9 6 6 6-6"></path></svg>
+                </div>
+                <button class="so-focus" style="height:36px;padding:0 14px;border-radius:9px;background:#fff;border:1px solid #dde0e4;font-size:13px;font-weight:600;color:#14171a;display:flex;align-items:center;gap:7px">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#5c6470" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"></path></svg>
+                  Export
+                </button>
+              </div>
+            </div>
+
+            <!-- KPI grid -->
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:16px">
+              <sc-for list="{{ kpis }}" as="k" hint-placeholder-count="4">
+                <div style="background:#fff;border:1px solid #e8eaed;border-radius:12px;padding:18px;box-shadow:0 1px 2px rgba(16,24,40,0.04)">
+                  <div style="display:flex;align-items:center;justify-content:space-between">
+                    <span style="font-size:12.5px;font-weight:500;color:#5c6470">{{ k.label }}</span>
+                    <span style="display:flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;background:{{ k.iconBg }}">{{ k.icon }}</span>
+                  </div>
+                  <div style="font-size:30px;font-weight:700;letter-spacing:-0.03em;margin-top:12px;line-height:1">{{ k.value }}</div>
+                  <div style="display:flex;align-items:center;gap:6px;margin-top:9px">
+                    <span style="{{ k.trendStyle }}">{{ k.trend }}</span>
+                    <span style="font-size:11.5px;color:#8a929e">{{ k.trendNote }}</span>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+
+            <!-- charts row -->
+            <div style="display:grid;grid-template-columns:0.95fr 1.55fr;gap:16px;margin-bottom:16px">
+              <div style="background:#fff;border:1px solid #e8eaed;border-radius:12px;padding:18px 20px;box-shadow:0 1px 2px rgba(16,24,40,0.04)">
+                <div style="font-size:14px;font-weight:600;margin-bottom:2px">Signals by severity</div>
+                <div style="font-size:12px;color:#8a929e;margin-bottom:18px">Distribution across open signals</div>
+                <div style="display:flex;flex-direction:column;gap:15px">
+                  <sc-for list="{{ severityBars }}" as="b" hint-placeholder-count="4">
+                    <div>
+                      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+                        <span style="display:flex;align-items:center;gap:7px;font-size:12.5px;font-weight:500;color:#3a414a">
+                          <span style="width:9px;height:9px;border-radius:3px;background:{{ b.color }}"></span>{{ b.label }}
+                        </span>
+                        <span style="font-size:12.5px;font-weight:600;color:#14171a">{{ b.count }}</span>
+                      </div>
+                      <div style="height:8px;background:#f0f1f3;border-radius:6px;overflow:hidden">
+                        <div style="{{ b.barStyle }}"></div>
+                      </div>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+              <div style="background:#fff;border:1px solid #e8eaed;border-radius:12px;padding:18px 20px;box-shadow:0 1px 2px rgba(16,24,40,0.04)">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2px">
+                  <div style="font-size:14px;font-weight:600">Signals over time</div>
+                  <div style="display:flex;gap:14px">
+                    <span style="display:flex;align-items:center;gap:6px;font-size:11.5px;color:#5c6470"><span style="width:10px;height:3px;border-radius:2px;background:#ef7e00"></span>All signals</span>
+                    <span style="display:flex;align-items:center;gap:6px;font-size:11.5px;color:#5c6470"><span style="width:10px;height:3px;border-radius:2px;background:#d92d20"></span>Critical</span>
+                  </div>
+                </div>
+                <div style="font-size:12px;color:#8a929e;margin-bottom:10px">Volume per day · last 14 days</div>
+                <div>{{ overTimeChart }}</div>
+              </div>
+            </div>
+
+            <!-- lower grid -->
+            <div style="display:grid;grid-template-columns:1.55fr 0.95fr;gap:16px;margin-bottom:16px">
+              <!-- critical signals -->
+              <div style="background:#fff;border:1px solid #e8eaed;border-radius:12px;box-shadow:0 1px 2px rgba(16,24,40,0.04);overflow:hidden">
+                <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid #eceef0">
+                  <div style="font-size:14px;font-weight:600">Most critical signals</div>
+                  <button onClick="{{ goSignals }}" class="so-focus" style="font-size:12.5px;font-weight:600;color:#c2630a;display:flex;align-items:center;gap:4px">View all<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#c2630a" stroke-width="2.2" stroke-linecap="round"><path d="m9 18 6-6-6-6"></path></svg></button>
+                </div>
+                <div>
+                  <sc-for list="{{ topCritical }}" as="s" hint-placeholder-count="8">
+                    <button onClick="{{ s.open }}" class="so-focus" style="width:100%;display:flex;align-items:center;gap:12px;padding:11px 20px;border-bottom:1px solid #f2f3f5;text-align:left;background:#fff">
+                      <span style="width:8px;height:8px;border-radius:50%;background:{{ s.sevDot }};flex:0 0 8px"></span>
+                      <span style="flex:1;min-width:0">
+                        <span style="display:block;font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ s.title }}</span>
+                        <span style="display:block;font-size:11.5px;color:#8a929e;margin-top:1px">{{ s.id }} · {{ s.source }} · {{ s.created }}</span>
+                      </span>
+                      <span style="{{ s.sevBadge }}">{{ s.severity }}</span>
+                      <span style="text-align:right;flex:0 0 52px">
+                        <span style="display:block;font-size:13px;font-weight:700;font-family:'Geist Mono',monospace">{{ s.risk }}</span>
+                        <span style="display:block;font-size:10px;color:#a3aab4;text-transform:uppercase;letter-spacing:0.04em">risk</span>
+                      </span>
+                    </button>
+                  </sc-for>
+                </div>
+              </div>
+
+              <!-- right column -->
+              <div style="display:flex;flex-direction:column;gap:16px">
+                <div style="background:#fff;border:1px solid #e8eaed;border-radius:12px;padding:18px 20px;box-shadow:0 1px 2px rgba(16,24,40,0.04)">
+                  <div style="font-size:14px;font-weight:600;margin-bottom:14px">System status</div>
+                  <div style="display:flex;flex-direction:column;gap:12px">
+                    <sc-for list="{{ systemStatus }}" as="svc" hint-placeholder-count="4">
+                      <div style="display:flex;align-items:center;gap:10px">
+                        <span style="width:8px;height:8px;border-radius:50%;background:{{ svc.dot }};flex:0 0 8px"></span>
+                        <span style="flex:1;font-size:13px;font-weight:500">{{ svc.name }}</span>
+                        <span style="{{ svc.badge }}">{{ svc.label }}</span>
+                      </div>
+                    </sc-for>
+                  </div>
+                </div>
+                <div style="background:linear-gradient(180deg,#fffaf3 0%,#fff 60%);border:1px solid #ffd9ad;border-radius:12px;padding:18px 20px;box-shadow:0 1px 2px rgba(239,126,0,0.08)">
+                  <div style="display:flex;align-items:center;gap:8px;margin-bottom:11px">
+                    <span style="display:flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:7px;background:#ef7e00">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 13.9 8.6 19.5 8.6 15 12 16.8 17.5 12 14.2 7.2 17.5 9 12 4.5 8.6 10.1 8.6z"></path></svg>
+                    </span>
+                    <span style="font-size:14px;font-weight:600">AI recommendation</span>
+                    <span style="font-size:10px;font-weight:600;color:#c2630a;background:#fff4e8;border:1px solid #ffd9ad;border-radius:5px;padding:1px 6px;text-transform:uppercase;letter-spacing:0.04em">mock</span>
+                  </div>
+                  <p style="margin:0 0 14px 0;font-size:13px;line-height:1.55;color:#3a414a"><strong style="font-weight:600;color:#14171a">3 critical signals</strong> from <strong style="font-weight:600;color:#14171a">Partner API</strong> share the same latency pattern. Grouping them into one incident may reduce qualification time by ~22%.</p>
+                  <div style="display:flex;gap:8px">
+                    <button class="so-focus" style="flex:1;height:34px;border-radius:8px;background:#ef7e00;color:#fff;font-size:12.5px;font-weight:600;box-shadow:0 1px 2px rgba(239,126,0,0.35)">Group signals</button>
+                    <button class="so-focus" style="height:34px;padding:0 14px;border-radius:8px;background:#fff;border:1px solid #e8c9a3;color:#c2630a;font-size:12.5px;font-weight:600">Dismiss</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- recent incidents -->
+            <div style="background:#fff;border:1px solid #e8eaed;border-radius:12px;box-shadow:0 1px 2px rgba(16,24,40,0.04);overflow:hidden;margin-bottom:20px">
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid #eceef0">
+                <div style="font-size:14px;font-weight:600">Recent incidents</div>
+                <button onClick="{{ goIncidents }}" class="so-focus" style="font-size:12.5px;font-weight:600;color:#c2630a;display:flex;align-items:center;gap:4px">View all<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#c2630a" stroke-width="2.2" stroke-linecap="round"><path d="m9 18 6-6-6-6"></path></svg></button>
+              </div>
+              <table style="width:100%;border-collapse:collapse;font-size:13px">
+                <thead>
+                  <tr style="background:#fafbfc">
+                    <th style="text-align:left;padding:9px 20px;font-size:11px;font-weight:600;color:#8a929e;text-transform:uppercase;letter-spacing:0.04em">Incident</th>
+                    <th style="text-align:left;padding:9px 12px;font-size:11px;font-weight:600;color:#8a929e;text-transform:uppercase;letter-spacing:0.04em">Severity</th>
+                    <th style="text-align:left;padding:9px 12px;font-size:11px;font-weight:600;color:#8a929e;text-transform:uppercase;letter-spacing:0.04em">Status</th>
+                    <th style="text-align:left;padding:9px 12px;font-size:11px;font-weight:600;color:#8a929e;text-transform:uppercase;letter-spacing:0.04em">Linked signals</th>
+                    <th style="text-align:left;padding:9px 20px;font-size:11px;font-weight:600;color:#8a929e;text-transform:uppercase;letter-spacing:0.04em">Owner</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <sc-for list="{{ recentIncidents }}" as="inc" hint-placeholder-count="5">
+                    <tr style="border-top:1px solid #f2f3f5">
+                      <td style="padding:11px 20px"><span style="font-family:'Geist Mono',monospace;font-size:11.5px;color:#8a929e">{{ inc.id }}</span><span style="display:block;font-weight:500;margin-top:1px">{{ inc.title }}</span></td>
+                      <td style="padding:11px 12px"><span style="{{ inc.sevBadge }}">{{ inc.severity }}</span></td>
+                      <td style="padding:11px 12px"><span style="{{ inc.statusBadge }}">{{ inc.status }}</span></td>
+                      <td style="padding:11px 12px;color:#5c6470">{{ inc.linked }} signals</td>
+                      <td style="padding:11px 20px"><span style="display:flex;align-items:center;gap:8px"><span style="width:22px;height:22px;border-radius:50%;background:#eceef0;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;color:#5c6470">{{ inc.ownerInit }}</span>{{ inc.owner }}</span></td>
+                    </tr>
+                  </sc-for>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </sc-if>
+
+        <!-- ===================== SIGNALS EXPLORER ===================== -->
+        <sc-if value="{{ isSignals }}" hint-placeholder-val="">
+          <div>
+            <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:18px">
+              <div>
+                <h1 style="margin:0;font-size:22px;font-weight:700;letter-spacing:-0.025em">Signals Explorer</h1>
+                <p style="margin:5px 0 0 0;font-size:13.5px;color:#5c6470">{{ resultLabel }} · sorted by risk score</p>
+              </div>
+              <div style="display:flex;gap:10px">
+                <button class="so-focus" style="height:36px;padding:0 13px;border-radius:9px;background:#fff;border:1px solid #dde0e4;font-size:13px;font-weight:600;color:#14171a;display:flex;align-items:center;gap:7px">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#5c6470" stroke-width="1.9" stroke-linecap="round"><path d="M3 6h18M7 12h10M11 18h2"></path></svg>Columns
+                </button>
+                <button class="so-focus" style="height:36px;padding:0 14px;border-radius:9px;background:#fff;border:1px solid #dde0e4;font-size:13px;font-weight:600;color:#14171a;display:flex;align-items:center;gap:7px">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#5c6470" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"></path></svg>Export
+                </button>
+              </div>
+            </div>
+
+            <!-- filters -->
+            <div style="background:#fff;border:1px solid #e8eaed;border-radius:12px;padding:14px 16px;margin-bottom:16px;display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap;box-shadow:0 1px 2px rgba(16,24,40,0.04)">
+              <label style="display:flex;flex-direction:column;gap:5px;flex:1;min-width:200px">
+                <span style="font-size:11px;font-weight:600;color:#8a929e">Search</span>
+                <span style="display:flex;align-items:center;gap:8px;height:34px;padding:0 11px;background:#f7f8f9;border:1px solid #e1e4e8;border-radius:8px">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8a929e" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.2-3.2"></path></svg>
+                  <input value="{{ search }}" onInput="{{ onSearch }}" placeholder="Title, ID, source, assignee…" class="so-focus" style="flex:1;border:none;background:transparent;outline:none;font-size:12.5px" aria-label="Search signals" />
+                </span>
+              </label>
+              <label style="display:flex;flex-direction:column;gap:5px">
+                <span style="font-size:11px;font-weight:600;color:#8a929e">Severity</span>
+                <select value="{{ fSev }}" onChange="{{ onSev }}" class="so-focus" aria-label="Filter by severity" style="height:34px;border:1px solid #e1e4e8;border-radius:8px;padding:0 8px;font-size:12.5px;background:#fff;color:#14171a;font-family:inherit;min-width:110px">
+                  <sc-for list="{{ severityOptions }}" as="o" hint-placeholder-count="5"><option value="{{ o }}">{{ o }}</option></sc-for>
+                </select>
+              </label>
+              <label style="display:flex;flex-direction:column;gap:5px">
+                <span style="font-size:11px;font-weight:600;color:#8a929e">Status</span>
+                <select value="{{ fStatus }}" onChange="{{ onStatus }}" class="so-focus" aria-label="Filter by status" style="height:34px;border:1px solid #e1e4e8;border-radius:8px;padding:0 8px;font-size:12.5px;background:#fff;color:#14171a;font-family:inherit;min-width:130px">
+                  <sc-for list="{{ statusOptions }}" as="o" hint-placeholder-count="6"><option value="{{ o }}">{{ o }}</option></sc-for>
+                </select>
+              </label>
+              <label style="display:flex;flex-direction:column;gap:5px">
+                <span style="font-size:11px;font-weight:600;color:#8a929e">Source</span>
+                <select value="{{ fSource }}" onChange="{{ onSource }}" class="so-focus" aria-label="Filter by source" style="height:34px;border:1px solid #e1e4e8;border-radius:8px;padding:0 8px;font-size:12.5px;background:#fff;color:#14171a;font-family:inherit;min-width:110px">
+                  <sc-for list="{{ sourceOptions }}" as="o" hint-placeholder-count="7"><option value="{{ o }}">{{ o }}</option></sc-for>
+                </select>
+              </label>
+              <label style="display:flex;flex-direction:column;gap:5px">
+                <span style="font-size:11px;font-weight:600;color:#8a929e">Assigned to</span>
+                <select value="{{ fAssigned }}" onChange="{{ onAssigned }}" class="so-focus" aria-label="Filter by assignee" style="height:34px;border:1px solid #e1e4e8;border-radius:8px;padding:0 8px;font-size:12.5px;background:#fff;color:#14171a;font-family:inherit;min-width:130px">
+                  <sc-for list="{{ assigneeOptions }}" as="o" hint-placeholder-count="7"><option value="{{ o }}">{{ o }}</option></sc-for>
+                </select>
+              </label>
+              <label style="display:flex;flex-direction:column;gap:5px">
+                <span style="font-size:11px;font-weight:600;color:#8a929e">Date range</span>
+                <select value="{{ fDate }}" onChange="{{ onDate }}" class="so-focus" aria-label="Filter by date range" style="height:34px;border:1px solid #e1e4e8;border-radius:8px;padding:0 8px;font-size:12.5px;background:#fff;color:#14171a;font-family:inherit;min-width:130px">
+                  <sc-for list="{{ dateOptions }}" as="o" hint-placeholder-count="4"><option value="{{ o }}">{{ o }}</option></sc-for>
+                </select>
+              </label>
+              <button onClick="{{ resetFilters }}" class="so-focus" style="height:34px;padding:0 13px;border-radius:8px;background:#fff;border:1px solid #dde0e4;font-size:12.5px;font-weight:600;color:#5c6470;display:flex;align-items:center;gap:6px">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8a929e" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v6h6M3.5 12a9 9 0 1 0 2.6-5.8L3 8"></path></svg>Reset filters
+              </button>
+            </div>
+
+            <!-- table card -->
+            <div style="background:#fff;border:1px solid #e8eaed;border-radius:12px;box-shadow:0 1px 2px rgba(16,24,40,0.04);overflow:hidden;margin-bottom:20px">
+              <!-- toolbar: selection summary OR result count -->
+              <sc-if value="{{ hasSelection }}" hint-placeholder-val="">
+                <div style="display:flex;align-items:center;justify-content:space-between;padding:11px 16px;background:#fff7ee;border-bottom:1px solid #ffd9ad">
+                  <div style="display:flex;align-items:center;gap:16px">
+                    <span style="font-size:13px;font-weight:600;color:#c2630a">{{ selCount }} selected</span>
+                    <span style="font-size:12.5px;color:#8a929e">Avg risk score <strong style="color:#14171a;font-family:'Geist Mono',monospace">{{ selAvgRisk }}</strong></span>
+                  </div>
+                  <div style="display:flex;align-items:center;gap:8px">
+                    <button onClick="{{ assignSelected }}" class="so-focus" style="height:32px;padding:0 12px;border-radius:8px;background:#fff;border:1px solid #e8c9a3;color:#c2630a;font-size:12.5px;font-weight:600;display:flex;align-items:center;gap:6px">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#c2630a" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M19 8v6M22 11h-6"></path></svg>Assign selected
+                    </button>
+                    <button onClick="{{ markTriaged }}" class="so-focus" style="height:32px;padding:0 12px;border-radius:8px;background:#ef7e00;color:#fff;font-size:12.5px;font-weight:600;display:flex;align-items:center;gap:6px;box-shadow:0 1px 2px rgba(239,126,0,0.35)">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>Mark as triaged
+                    </button>
+                    <button onClick="{{ clearSelection }}" class="so-focus" style="height:32px;padding:0 10px;border-radius:8px;background:transparent;color:#8a929e;font-size:12.5px;font-weight:600">Clear</button>
+                  </div>
+                </div>
+              </sc-if>
+              <sc-if value="{{ noSelection }}" hint-placeholder-val="{{ true }}">
+                <div style="display:flex;align-items:center;justify-content:space-between;padding:11px 16px;border-bottom:1px solid #eceef0">
+                  <span style="font-size:12.5px;color:#5c6470"><strong style="color:#14171a">{{ sigCount }}</strong> results · ready for 10,000+ rows</span>
+                  <span style="display:flex;align-items:center;gap:7px;font-size:12px;color:#8a929e">Risk score<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#8a929e" stroke-width="2.2" stroke-linecap="round"><path d="m6 9 6 6 6-6"></path></svg></span>
+                </div>
+              </sc-if>
+
+              <div class="so-scroll" style="overflow-x:auto">
+                <table style="width:100%;min-width:1080px;border-collapse:collapse;font-size:12.5px">
+                  <thead>
+                    <tr style="background:#fafbfc;border-bottom:1px solid #eceef0">
+                      <th style="width:40px;padding:9px 0 9px 16px;text-align:left"><input type="checkbox" checked="{{ allChecked }}" onChange="{{ onToggleAll }}" class="so-focus" aria-label="Select all" style="width:15px;height:15px;accent-color:#ef7e00;cursor:pointer" /></th>
+                      <th style="text-align:left;padding:9px 12px;font-size:10.5px;font-weight:600;color:#8a929e;text-transform:uppercase;letter-spacing:0.04em">Title</th>
+                      <th style="text-align:left;padding:9px 12px;font-size:10.5px;font-weight:600;color:#8a929e;text-transform:uppercase;letter-spacing:0.04em">Severity</th>
+                      <th style="text-align:left;padding:9px 12px;font-size:10.5px;font-weight:600;color:#8a929e;text-transform:uppercase;letter-spacing:0.04em">Status</th>
+                      <th style="text-align:left;padding:9px 12px;font-size:10.5px;font-weight:600;color:#8a929e;text-transform:uppercase;letter-spacing:0.04em">Source</th>
+                      <th style="text-align:left;padding:9px 12px;font-size:10.5px;font-weight:600;color:#8a929e;text-transform:uppercase;letter-spacing:0.04em">Risk score</th>
+                      <th style="text-align:left;padding:9px 12px;font-size:10.5px;font-weight:600;color:#8a929e;text-transform:uppercase;letter-spacing:0.04em">Confidence</th>
+                      <th style="text-align:left;padding:9px 12px;font-size:10.5px;font-weight:600;color:#8a929e;text-transform:uppercase;letter-spacing:0.04em">Assigned to</th>
+                      <th style="text-align:left;padding:9px 12px;font-size:10.5px;font-weight:600;color:#8a929e;text-transform:uppercase;letter-spacing:0.04em">Created</th>
+                      <th style="text-align:left;padding:9px 12px;font-size:10.5px;font-weight:600;color:#8a929e;text-transform:uppercase;letter-spacing:0.04em">Incident</th>
+                      <th style="text-align:right;padding:9px 16px 9px 12px;font-size:10.5px;font-weight:600;color:#8a929e;text-transform:uppercase;letter-spacing:0.04em"></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <sc-for list="{{ sigRows }}" as="r" hint-placeholder-count="16">
+                      <tr style="{{ r.rowStyle }}">
+                        <td style="padding:0 0 0 16px"><input type="checkbox" checked="{{ r.checked }}" onChange="{{ r.toggle }}" class="so-focus" aria-label="Select row" style="width:15px;height:15px;accent-color:#ef7e00;cursor:pointer" /></td>
+                        <td style="padding:10px 12px">
+                          <button onClick="{{ r.open }}" class="so-focus" style="text-align:left;background:none">
+                            <span style="display:block;font-size:12.5px;font-weight:500;color:#14171a">{{ r.title }}</span>
+                            <span style="display:block;font-size:11px;color:#a3aab4;font-family:'Geist Mono',monospace;margin-top:1px">{{ r.id }}</span>
+                          </button>
+                        </td>
+                        <td style="padding:10px 12px"><span style="{{ r.sevBadge }}">{{ r.severity }}</span></td>
+                        <td style="padding:10px 12px"><span style="{{ r.statusBadge }}">{{ r.status }}</span></td>
+                        <td style="padding:10px 12px;color:#5c6470">{{ r.source }}</td>
+                        <td style="padding:10px 12px">
+                          <span style="display:flex;align-items:center;gap:8px">
+                            <span style="width:42px;height:5px;background:#f0f1f3;border-radius:4px;overflow:hidden;flex:0 0 42px"><span style="{{ r.riskBar }}"></span></span>
+                            <span style="font-family:'Geist Mono',monospace;font-weight:600;color:{{ r.riskColor }}">{{ r.risk }}</span>
+                          </span>
+                        </td>
+                        <td style="padding:10px 12px"><span style="display:flex;align-items:center;gap:6px"><span style="width:7px;height:7px;border-radius:50%;background:{{ r.confColor }}"></span><span style="color:{{ r.confColor }};font-weight:500">{{ r.confLabel }}</span></span></td>
+                        <td style="padding:10px 12px;color:#3a414a">{{ r.assigneeShow }}</td>
+                        <td style="padding:10px 12px;color:#8a929e;white-space:nowrap">{{ r.created }}</td>
+                        <td style="padding:10px 12px">
+                          <sc-if value="{{ r.hasIncident }}" hint-placeholder-val="{{ true }}"><button onClick="{{ goIncidents }}" class="so-focus" style="font-family:'Geist Mono',monospace;font-size:11.5px;color:#175cd3;font-weight:600;background:none">{{ r.incidentShow }}</button></sc-if>
+                          <sc-if value="{{ r.noIncident }}" hint-placeholder-val=""><span style="color:#c2c8cf">—</span></sc-if>
+                        </td>
+                        <td style="padding:10px 16px 10px 12px;text-align:right">
+                          <button onClick="{{ r.open }}" class="so-focus" style="height:28px;padding:0 11px;border-radius:7px;border:1px solid #e1e4e8;background:#fff;font-size:12px;font-weight:600;color:#14171a">View</button>
+                        </td>
+                      </tr>
+                    </sc-for>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </sc-if>
+
+        <!-- ===================== SIGNAL DETAIL ===================== -->
+        <sc-if value="{{ isDetail }}" hint-placeholder-val="">
+          <div>
+            <button onClick="{{ d.goSignals }}" class="so-focus" style="display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;color:#8a929e;margin-bottom:14px;background:none">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8a929e" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg>Back to signals
+            </button>
+
+            <!-- header card -->
+            <div style="background:#fff;border:1px solid #e8eaed;border-radius:12px;padding:22px 24px;box-shadow:0 1px 2px rgba(16,24,40,0.04);margin-bottom:16px">
+              <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:24px">
+                <div style="min-width:0">
+                  <div style="display:flex;align-items:center;gap:9px;margin-bottom:9px">
+                    <span style="{{ d.sevBadge }}">{{ d.severity }}</span>
+                    <span style="{{ d.statusBadge }}">{{ d.status }}</span>
+                    <span style="font-family:'Geist Mono',monospace;font-size:12px;color:#a3aab4">{{ d.id }}</span>
+                  </div>
+                  <h1 style="margin:0;font-size:23px;font-weight:700;letter-spacing:-0.025em;line-height:1.2">{{ d.title }}</h1>
+                  <p style="margin:8px 0 0 0;font-size:13px;color:#8a929e">Source <strong style="color:#3a414a;font-weight:600">{{ d.source }}</strong> · Created {{ d.created }}</p>
+                </div>
+                <div style="display:flex;gap:8px;flex:0 0 auto">
+                  <button onClick="{{ d.onAssign }}" class="so-focus" style="height:36px;padding:0 13px;border-radius:9px;background:#fff;border:1px solid #dde0e4;font-size:13px;font-weight:600;color:#14171a;display:flex;align-items:center;gap:7px">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#5c6470" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M19 8v6M22 11h-6"></path></svg>Assign
+                  </button>
+                  <button onClick="{{ d.onStatus }}" class="so-focus" style="height:36px;padding:0 13px;border-radius:9px;background:#fff;border:1px solid #dde0e4;font-size:13px;font-weight:600;color:#14171a;display:flex;align-items:center;gap:7px">Change status<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#8a929e" stroke-width="2.2" stroke-linecap="round"><path d="m6 9 6 6 6-6"></path></svg></button>
+                  <button onClick="{{ d.onEscalate }}" class="so-focus" style="height:36px;padding:0 13px;border-radius:9px;background:#fff;border:1px solid #fbd5d2;font-size:13px;font-weight:600;color:#d92d20;display:flex;align-items:center;gap:7px">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#d92d20" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"></path></svg>Escalate
+                  </button>
+                  <button onClick="{{ d.onResolve }}" class="so-focus" style="height:36px;padding:0 15px;border-radius:9px;background:#ef7e00;color:#fff;font-size:13px;font-weight:600;display:flex;align-items:center;gap:7px;box-shadow:0 1px 2px rgba(239,126,0,0.4)">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>Resolve
+                  </button>
+                </div>
+              </div>
+              <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:#eceef0;border:1px solid #eceef0;border-radius:10px;overflow:hidden;margin-top:20px">
+                <div style="background:#fff;padding:14px 16px">
+                  <div style="font-size:10.5px;font-weight:600;color:#8a929e;text-transform:uppercase;letter-spacing:0.04em">Risk score</div>
+                  <div style="display:flex;align-items:baseline;gap:6px;margin-top:6px"><span style="font-size:26px;font-weight:700;font-family:'Geist Mono',monospace;color:{{ d.riskColor }};line-height:1">{{ d.risk }}</span><span style="font-size:12px;color:#a3aab4">/ 100</span></div>
+                  <div style="height:5px;background:#f0f1f3;border-radius:4px;overflow:hidden;margin-top:9px"><div style="{{ d.riskBar }}"></div></div>
+                </div>
+                <div style="background:#fff;padding:14px 16px">
+                  <div style="font-size:10.5px;font-weight:600;color:#8a929e;text-transform:uppercase;letter-spacing:0.04em">Confidence</div>
+                  <div style="font-size:18px;font-weight:700;margin-top:8px;line-height:1;color:#14171a">{{ d.confLabel }}</div>
+                  <div style="height:5px;background:#f0f1f3;border-radius:4px;overflow:hidden;margin-top:11px"><div style="{{ d.confBar }}"></div></div>
+                </div>
+                <div style="background:#fff;padding:14px 16px">
+                  <div style="font-size:10.5px;font-weight:600;color:#8a929e;text-transform:uppercase;letter-spacing:0.04em">Source</div>
+                  <div style="font-size:18px;font-weight:600;margin-top:8px;color:#14171a">{{ d.source }}</div>
+                  <div style="font-size:11.5px;color:#a3aab4;margin-top:4px">Ingestion channel</div>
+                </div>
+                <div style="background:#fff;padding:14px 16px">
+                  <div style="font-size:10.5px;font-weight:600;color:#8a929e;text-transform:uppercase;letter-spacing:0.04em">Assigned to</div>
+                  <div style="font-size:18px;font-weight:600;margin-top:8px;color:#14171a">{{ d.assigneeShow }}</div>
+                  <div style="font-size:11.5px;color:#a3aab4;margin-top:4px">Owning analyst</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- body grid -->
+            <div style="display:grid;grid-template-columns:1.55fr 1fr;gap:16px;margin-bottom:20px">
+              <div style="display:flex;flex-direction:column;gap:16px">
+                <div style="background:#fff;border:1px solid #e8eaed;border-radius:12px;padding:18px 20px;box-shadow:0 1px 2px rgba(16,24,40,0.04)">
+                  <div style="font-size:14px;font-weight:600;margin-bottom:11px">Description</div>
+                  <p style="margin:0 0 16px 0;font-size:13.5px;line-height:1.6;color:#3a414a">{{ d.description }}</p>
+                  <div style="font-size:11px;font-weight:600;color:#8a929e;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:9px">Tags</div>
+                  <div style="display:flex;flex-wrap:wrap;gap:7px">
+                    <sc-for list="{{ d.tags }}" as="t" hint-placeholder-count="4">
+                      <span style="display:inline-flex;align-items:center;font-size:12px;font-weight:500;color:#5c6470;background:#f3f4f6;border:1px solid #e8eaed;border-radius:6px;padding:3px 9px;font-family:'Geist Mono',monospace">{{ t }}</span>
+                    </sc-for>
+                  </div>
+                </div>
+                <div style="background:#fff;border:1px solid #e8eaed;border-radius:12px;padding:18px 20px;box-shadow:0 1px 2px rgba(16,24,40,0.04)">
+                  <div style="font-size:14px;font-weight:600;margin-bottom:11px">Linked sources</div>
+                  <div style="display:flex;flex-direction:column;gap:11px">
+                    <sc-for list="{{ d.sources }}" as="src" hint-placeholder-count="3">
+                      <div style="display:flex;align-items:center;gap:11px">
+                        <span style="width:8px;height:8px;border-radius:50%;background:{{ src.dot }};flex:0 0 8px"></span>
+                        <span style="flex:1"><span style="display:block;font-size:13px;font-weight:500">{{ src.name }}</span><span style="display:block;font-size:11.5px;color:#8a929e;margin-top:1px">{{ src.meta }}</span></span>
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#c2c8cf" stroke-width="2" stroke-linecap="round"><path d="M7 17 17 7M9 7h8v8"></path></svg>
+                      </div>
+                    </sc-for>
+                  </div>
+                </div>
+                <div style="background:#fff;border:1px solid #e8eaed;border-radius:12px;padding:18px 20px;box-shadow:0 1px 2px rgba(16,24,40,0.04)">
+                  <div style="font-size:14px;font-weight:600;margin-bottom:16px">Timeline</div>
+                  <div>
+                    <sc-for list="{{ d.timeline }}" as="ev" hint-placeholder-count="4">
+                      <div style="position:relative;padding:0 0 18px 22px;border-left:2px solid #eceef0;margin-left:5px">
+                        <span style="position:absolute;left:-7px;top:0;width:12px;height:12px;border-radius:50%;background:{{ ev.color }};border:2px solid #fff;box-shadow:0 0 0 1px #e8eaed"></span>
+                        <div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px">
+                          <span style="font-size:13px;font-weight:600;color:#14171a">{{ ev.title }}</span>
+                          <span style="font-size:11.5px;color:#a3aab4;font-family:'Geist Mono',monospace;white-space:nowrap">{{ ev.time }}</span>
+                        </div>
+                        <div style="font-size:12.5px;color:#8a929e;margin-top:2px">{{ ev.desc }}</div>
+                      </div>
+                    </sc-for>
+                  </div>
+                </div>
+              </div>
+
+              <div style="display:flex;flex-direction:column;gap:16px">
+                <div style="background:linear-gradient(180deg,#fffaf3 0%,#fff 55%);border:1px solid #ffd9ad;border-radius:12px;padding:18px 20px;box-shadow:0 1px 2px rgba(239,126,0,0.08)">
+                  <div style="display:flex;align-items:center;gap:8px;margin-bottom:11px">
+                    <span style="display:flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:7px;background:#ef7e00"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 13.9 8.6 19.5 8.6 15 12 16.8 17.5 12 14.2 7.2 17.5 9 12 4.5 8.6 10.1 8.6z"></path></svg></span>
+                    <span style="font-size:14px;font-weight:600">AI summary</span>
+                    <span style="font-size:10px;font-weight:600;color:#c2630a;background:#fff4e8;border:1px solid #ffd9ad;border-radius:5px;padding:1px 6px;text-transform:uppercase;letter-spacing:0.04em">mock</span>
+                  </div>
+                  <p style="margin:0;font-size:13px;line-height:1.6;color:#3a414a">{{ d.ai }}</p>
+                </div>
+                <div style="background:#fff;border:1px solid #e8eaed;border-radius:12px;padding:18px 20px;box-shadow:0 1px 2px rgba(16,24,40,0.04)">
+                  <div style="font-size:14px;font-weight:600;margin-bottom:12px">Recommended action</div>
+                  <div style="display:flex;gap:11px;padding:13px;border-radius:10px;background:{{ d.recBg }};border:1px solid {{ d.recBorder }}">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="{{ d.recColor }}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:0 0 18px;margin-top:1px"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"></path><path d="M12 9v4M12 17h.01"></path></svg>
+                    <div><div style="font-size:13px;font-weight:600;color:{{ d.recColor }}">{{ d.recommended }}</div><div style="font-size:12px;color:#5c6470;margin-top:3px;line-height:1.5">{{ d.recommendedDetail }}</div></div>
+                  </div>
+                </div>
+                <div style="background:#fff;border:1px solid #e8eaed;border-radius:12px;padding:18px 20px;box-shadow:0 1px 2px rgba(16,24,40,0.04)">
+                  <div style="font-size:14px;font-weight:600;margin-bottom:12px">Linked incident</div>
+                  <sc-if value="{{ d.hasIncident }}" hint-placeholder-val="{{ true }}">
+                    <button onClick="{{ goIncidents }}" class="so-focus" style="width:100%;display:flex;align-items:center;gap:12px;padding:13px;border:1px solid #e8eaed;border-radius:10px;background:#fafbfc;text-align:left">
+                      <span style="display:flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:9px;background:#eff4ff;flex:0 0 34px"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#175cd3" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"></path><path d="M12 9v4M12 17h.01"></path></svg></span>
+                      <span style="flex:1"><span style="display:block;font-family:'Geist Mono',monospace;font-size:12px;color:#175cd3;font-weight:600">{{ d.incident }}</span><span style="display:block;font-size:12.5px;color:#5c6470;margin-top:1px">Open incident · view details</span></span>
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#c2c8cf" stroke-width="2.2" stroke-linecap="round"><path d="m9 18 6-6-6-6"></path></svg>
+                    </button>
+                  </sc-if>
+                  <sc-if value="{{ d.noIncident }}" hint-placeholder-val="">
+                    <div style="text-align:center;padding:18px 12px;color:#8a929e"><div style="font-size:13px;font-weight:500;color:#5c6470">Not linked to an incident</div><div style="font-size:12px;margin-top:3px">Escalate to create one</div></div>
+                  </sc-if>
+                </div>
+              </div>
+            </div>
+          </div>
+        </sc-if>
+
+        <!-- ===================== INCIDENTS ===================== -->
+        <sc-if value="{{ isIncidents }}" hint-placeholder-val="">
+          <div>
+            <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:18px">
+              <div>
+                <h1 style="margin:0;font-size:22px;font-weight:700;letter-spacing:-0.025em">Incidents</h1>
+                <p style="margin:5px 0 0 0;font-size:13.5px;color:#5c6470">Open incidents and the signals behind them.</p>
+              </div>
+              <button class="so-focus" style="height:36px;padding:0 14px;border-radius:9px;background:#ef7e00;color:#fff;font-size:13px;font-weight:600;display:flex;align-items:center;gap:7px;box-shadow:0 1px 2px rgba(239,126,0,0.4)">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>New incident
+              </button>
+            </div>
+
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:16px">
+              <sc-for list="{{ incCards }}" as="c" hint-placeholder-count="4">
+                <div style="background:#fff;border:1px solid #e8eaed;border-radius:12px;padding:18px;box-shadow:0 1px 2px rgba(16,24,40,0.04)">
+                  <div style="display:flex;align-items:center;justify-content:space-between">
+                    <span style="font-size:12.5px;font-weight:500;color:#5c6470">{{ c.label }}</span>
+                    <span style="display:flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;background:{{ c.iconBg }}">{{ c.icon }}</span>
+                  </div>
+                  <div style="font-size:30px;font-weight:700;letter-spacing:-0.03em;margin-top:12px;line-height:1">{{ c.value }}</div>
+                  <div style="font-size:11.5px;color:#8a929e;margin-top:8px">{{ c.note }}</div>
+                </div>
+              </sc-for>
+            </div>
+
+            <div style="background:#fff;border:1px solid #e8eaed;border-radius:12px;padding:14px 16px;margin-bottom:16px;display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap;box-shadow:0 1px 2px rgba(16,24,40,0.04)">
+              <label style="display:flex;flex-direction:column;gap:5px">
+                <span style="font-size:11px;font-weight:600;color:#8a929e">Status</span>
+                <select value="{{ fIncStatus }}" onChange="{{ onIncStatus }}" class="so-focus" aria-label="Filter incidents by status" style="height:34px;border:1px solid #e1e4e8;border-radius:8px;padding:0 8px;font-size:12.5px;background:#fff;color:#14171a;font-family:inherit;min-width:140px">
+                  <sc-for list="{{ incStatusOptions }}" as="o" hint-placeholder-count="5"><option value="{{ o }}">{{ o }}</option></sc-for>
+                </select>
+              </label>
+              <label style="display:flex;flex-direction:column;gap:5px">
+                <span style="font-size:11px;font-weight:600;color:#8a929e">Severity</span>
+                <select value="{{ fIncSev }}" onChange="{{ onIncSev }}" class="so-focus" aria-label="Filter incidents by severity" style="height:34px;border:1px solid #e1e4e8;border-radius:8px;padding:0 8px;font-size:12.5px;background:#fff;color:#14171a;font-family:inherit;min-width:140px">
+                  <sc-for list="{{ incSeverityOptions }}" as="o" hint-placeholder-count="5"><option value="{{ o }}">{{ o }}</option></sc-for>
+                </select>
+              </label>
+              <label style="display:flex;flex-direction:column;gap:5px">
+                <span style="font-size:11px;font-weight:600;color:#8a929e">Impact</span>
+                <select value="{{ fIncImpact }}" onChange="{{ onIncImpact }}" class="so-focus" aria-label="Filter incidents by impact" style="height:34px;border:1px solid #e1e4e8;border-radius:8px;padding:0 8px;font-size:12.5px;background:#fff;color:#14171a;font-family:inherit;min-width:140px">
+                  <sc-for list="{{ incImpactOptions }}" as="o" hint-placeholder-count="5"><option value="{{ o }}">{{ o }}</option></sc-for>
+                </select>
+              </label>
+              <div style="flex:1"></div>
+              <button onClick="{{ resetIncFilters }}" class="so-focus" style="height:34px;padding:0 13px;border-radius:8px;background:#fff;border:1px solid #dde0e4;font-size:12.5px;font-weight:600;color:#5c6470;display:flex;align-items:center;gap:6px;align-self:flex-end">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8a929e" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v6h6M3.5 12a9 9 0 1 0 2.6-5.8L3 8"></path></svg>Reset
+              </button>
+            </div>
+
+            <div style="background:#fff;border:1px solid #e8eaed;border-radius:12px;box-shadow:0 1px 2px rgba(16,24,40,0.04);overflow:hidden;margin-bottom:20px">
+              <div style="padding:11px 16px;border-bottom:1px solid #eceef0;font-size:12.5px;color:#5c6470"><strong style="color:#14171a">{{ incCount }}</strong> incidents</div>
+              <div class="so-scroll" style="overflow-x:auto">
+                <table style="width:100%;min-width:920px;border-collapse:collapse;font-size:12.5px">
+                  <thead>
+                    <tr style="background:#fafbfc;border-bottom:1px solid #eceef0">
+                      <th style="text-align:left;padding:9px 16px;font-size:10.5px;font-weight:600;color:#8a929e;text-transform:uppercase;letter-spacing:0.04em">Incident</th>
+                      <th style="text-align:left;padding:9px 12px;font-size:10.5px;font-weight:600;color:#8a929e;text-transform:uppercase;letter-spacing:0.04em">Severity</th>
+                      <th style="text-align:left;padding:9px 12px;font-size:10.5px;font-weight:600;color:#8a929e;text-transform:uppercase;letter-spacing:0.04em">Status</th>
+                      <th style="text-align:left;padding:9px 12px;font-size:10.5px;font-weight:600;color:#8a929e;text-transform:uppercase;letter-spacing:0.04em">Impact</th>
+                      <th style="text-align:left;padding:9px 12px;font-size:10.5px;font-weight:600;color:#8a929e;text-transform:uppercase;letter-spacing:0.04em">Linked signals</th>
+                      <th style="text-align:left;padding:9px 12px;font-size:10.5px;font-weight:600;color:#8a929e;text-transform:uppercase;letter-spacing:0.04em">Owner</th>
+                      <th style="text-align:left;padding:9px 12px;font-size:10.5px;font-weight:600;color:#8a929e;text-transform:uppercase;letter-spacing:0.04em">Open for</th>
+                      <th style="text-align:right;padding:9px 16px 9px 12px"></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <sc-for list="{{ incRows }}" as="i" hint-placeholder-count="8">
+                      <tr style="border-top:1px solid #f2f3f5">
+                        <td style="padding:11px 16px"><span style="font-family:'Geist Mono',monospace;font-size:11px;color:#a3aab4">{{ i.id }}</span><span style="display:block;font-weight:500;margin-top:1px">{{ i.title }}</span></td>
+                        <td style="padding:11px 12px"><span style="{{ i.sevBadge }}">{{ i.severity }}</span></td>
+                        <td style="padding:11px 12px"><span style="{{ i.statusBadge }}">{{ i.status }}</span></td>
+                        <td style="padding:11px 12px"><span style="{{ i.impactBadge }}">{{ i.impact }}</span></td>
+                        <td style="padding:11px 12px"><button onClick="{{ i.open }}" class="so-focus" style="font-size:12.5px;color:#175cd3;font-weight:600;background:none">{{ i.linked }} signals</button></td>
+                        <td style="padding:11px 12px"><span style="display:flex;align-items:center;gap:8px"><span style="width:22px;height:22px;border-radius:50%;background:#eceef0;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;color:#5c6470">{{ i.ownerInit }}</span>{{ i.owner }}</span></td>
+                        <td style="padding:11px 12px;color:#8a929e;font-family:'Geist Mono',monospace">{{ i.ageShow }}</td>
+                        <td style="padding:11px 16px 11px 12px;text-align:right"><button onClick="{{ i.open }}" class="so-focus" style="height:28px;padding:0 11px;border-radius:7px;border:1px solid #e1e4e8;background:#fff;font-size:12px;font-weight:600;color:#14171a">View</button></td>
+                      </tr>
+                    </sc-for>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </sc-if>
+
+        <!-- ===================== COMPARE ===================== -->
+        <sc-if value="{{ isCompare }}" hint-placeholder-val="">
+          <div>
+            <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:18px;gap:16px;flex-wrap:wrap">
+              <div>
+                <h1 style="margin:0;font-size:22px;font-weight:700;letter-spacing:-0.025em">Compare</h1>
+                <p style="margin:5px 0 0 0;font-size:13.5px;color:#5c6470">See what changed on a signal — and what it means for users.</p>
+              </div>
+              <div style="display:flex;align-items:flex-end;gap:10px">
+                <label style="display:flex;flex-direction:column;gap:5px">
+                  <span style="font-size:11px;font-weight:600;color:#8a929e">Signal</span>
+                  <select value="{{ compareSel }}" onChange="{{ onCompareSel }}" class="so-focus" aria-label="Select signal to compare" style="height:36px;border:1px solid #e1e4e8;border-radius:9px;padding:0 10px;font-size:13px;background:#fff;color:#14171a;font-family:inherit;min-width:300px">
+                    <sc-for list="{{ compareOptions }}" as="o" hint-placeholder-count="3"><option value="{{ o }}">{{ o }}</option></sc-for>
+                  </select>
+                </label>
+                <button class="so-focus" style="height:36px;padding:0 14px;border-radius:9px;background:#fff;border:1px solid #dde0e4;font-size:13px;font-weight:600;color:#14171a;display:flex;align-items:center;gap:7px;align-self:flex-end">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#5c6470" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v6h6M3.5 12a9 9 0 1 0 2.6-5.8L3 8"></path></svg>Re-run
+                </button>
+              </div>
+            </div>
+
+            <!-- diff card -->
+            <div style="background:#fff;border:1px solid #e8eaed;border-radius:12px;box-shadow:0 1px 2px rgba(16,24,40,0.04);overflow:hidden;margin-bottom:16px">
+              <div style="display:grid;grid-template-columns:170px 1fr 40px 1.3fr;column-gap:8px;padding:12px 18px;background:#fafbfc;border-bottom:1px solid #eceef0">
+                <span style="font-size:11px;font-weight:600;color:#8a929e;text-transform:uppercase;letter-spacing:0.04em">Attribute</span>
+                <span style="font-size:11px;font-weight:600;color:#8a929e;text-transform:uppercase;letter-spacing:0.04em">Before</span>
+                <span></span>
+                <span style="font-size:11px;font-weight:600;color:#8a929e;text-transform:uppercase;letter-spacing:0.04em">After</span>
+              </div>
+              <sc-for list="{{ cmpRows }}" as="r" hint-placeholder-count="6">
+                <div style="{{ r.rowStyle }}">
+                  <span style="font-size:13px;font-weight:500;color:#3a414a">{{ r.label }}</span>
+                  <span>
+                    <sc-if value="{{ r.badge }}" hint-placeholder-val="{{ true }}"><span style="{{ r.beforeStyle }}">{{ r.beforeText }}</span></sc-if>
+                    <sc-if value="{{ r.notBadge }}" hint-placeholder-val=""><span style="font-size:13.5px;color:#5c6470">{{ r.beforeText }}</span></sc-if>
+                  </span>
+                  <span style="display:flex;justify-content:center">
+                    <sc-if value="{{ r.changed }}" hint-placeholder-val="{{ true }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#c2630a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></sc-if>
+                  </span>
+                  <span style="display:flex;align-items:center;gap:10px">
+                    <sc-if value="{{ r.badge }}" hint-placeholder-val="{{ true }}"><span style="{{ r.afterStyle }}">{{ r.afterText }}</span></sc-if>
+                    <sc-if value="{{ r.notBadge }}" hint-placeholder-val=""><span style="font-size:13.5px;font-weight:600;color:#14171a">{{ r.afterText }}</span></sc-if>
+                    <span style="{{ r.deltaStyle }}">{{ r.delta }}</span>
+                  </span>
+                </div>
+              </sc-for>
+            </div>
+
+            <!-- changes + impact -->
+            <div style="display:grid;grid-template-columns:1.2fr 1fr;gap:16px;margin-bottom:20px">
+              <div style="background:#fff;border:1px solid #e8eaed;border-radius:12px;padding:18px 20px;box-shadow:0 1px 2px rgba(16,24,40,0.04)">
+                <div style="font-size:14px;font-weight:600;margin-bottom:16px">Timeline of changes</div>
+                <div>
+                  <sc-for list="{{ cmpChanges }}" as="c" hint-placeholder-count="4">
+                    <div style="position:relative;padding:0 0 16px 22px;border-left:2px solid #eceef0;margin-left:5px">
+                      <span style="position:absolute;left:-7px;top:0;width:12px;height:12px;border-radius:50%;background:{{ c.color }};border:2px solid #fff;box-shadow:0 0 0 1px #e8eaed"></span>
+                      <div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px">
+                        <span style="font-size:13px;font-weight:600;color:#14171a">{{ c.t }}</span>
+                        <span style="font-size:11.5px;color:#a3aab4;font-family:'Geist Mono',monospace">{{ c.time }}</span>
+                      </div>
+                      <div style="font-size:12.5px;color:#8a929e;margin-top:2px">{{ c.d }}</div>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+              <div style="background:linear-gradient(180deg,#fffaf3 0%,#fff 50%);border:1px solid #ffd9ad;border-radius:12px;padding:18px 20px;box-shadow:0 1px 2px rgba(239,126,0,0.08)">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:13px">
+                  <span style="display:flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:7px;background:#ef7e00"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg></span>
+                  <span style="font-size:14px;font-weight:600">User impact</span>
+                </div>
+                <p style="margin:0 0 16px 0;font-size:13.5px;line-height:1.6;color:#3a414a">This change <strong style="color:#14171a;font-weight:600">reduces qualification time</strong> but <strong style="color:#14171a;font-weight:600">increases review scope</strong> for the assigned analyst.</p>
+                <div style="display:flex;flex-direction:column;gap:9px">
+                  <sc-for list="{{ cmpImpactMetrics }}" as="m" hint-placeholder-count="3">
+                    <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 13px;background:#fff;border:1px solid #f0ddc5;border-radius:9px">
+                      <span style="font-size:13px;font-weight:500;color:#3a414a">{{ m.label }}</span>
+                      <span style="{{ m.style }}">{{ m.value }}</span>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+            </div>
+          </div>
+        </sc-if>
+
+        <!-- ===================== DX METRICS ===================== -->
+        <sc-if value="{{ isDx }}" hint-placeholder-val="">
+          <div>
+            <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:20px;gap:16px;flex-wrap:wrap">
+              <div>
+                <h1 style="margin:0;font-size:22px;font-weight:700;letter-spacing:-0.025em">DX Metrics</h1>
+                <p style="margin:5px 0 0 0;font-size:13.5px;color:#5c6470">Delivery cost and developer experience, compared across the three variants.</p>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px;height:36px;padding:0 13px;background:#fff;border:1px solid #ffd9ad;border-radius:9px">
+                <span style="width:7px;height:7px;border-radius:50%;background:#ef7e00"></span>
+                <span style="font-size:12.5px;color:#5c6470">Showing</span>
+                <span style="font-size:12.5px;font-weight:600;color:#c2630a">{{ dx.variantLabel }}</span>
+              </div>
+            </div>
+
+            <!-- big 4 cards -->
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:16px">
+              <sc-for list="{{ dx.cards }}" as="c" hint-placeholder-count="4">
+                <div style="background:#fff;border:1px solid #e8eaed;border-radius:12px;padding:18px;box-shadow:0 1px 2px rgba(16,24,40,0.04)">
+                  <div style="display:flex;align-items:center;gap:9px;margin-bottom:14px">
+                    <span style="display:flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;background:{{ c.iconBg }}">{{ c.icon }}</span>
+                    <span style="font-size:13px;font-weight:700;color:{{ c.accent }};letter-spacing:-0.01em">{{ c.label }}</span>
+                  </div>
+                  <div style="font-size:11px;font-weight:600;color:#8a929e;text-transform:uppercase;letter-spacing:0.04em">{{ c.metric }}</div>
+                  <div style="font-size:28px;font-weight:700;letter-spacing:-0.03em;line-height:1;margin-top:6px;font-family:'Geist Mono',monospace">{{ c.value }}</div>
+                  <div style="display:flex;flex-direction:column;gap:6px;margin-top:14px;padding-top:13px;border-top:1px solid #f2f3f5">
+                    <sc-for list="{{ c.subs }}" as="s" hint-placeholder-count="3">
+                      <div style="display:flex;align-items:center;justify-content:space-between"><span style="font-size:12px;color:#8a929e">{{ s.label }}</span><span style="font-size:12.5px;font-weight:600;color:#3a414a;font-family:'Geist Mono',monospace">{{ s.value }}</span></div>
+                    </sc-for>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+
+            <!-- comparison + AI task -->
+            <div style="display:grid;grid-template-columns:1.25fr 1fr;gap:16px;margin-bottom:16px">
+              <div style="background:#fff;border:1px solid #e8eaed;border-radius:12px;padding:18px 20px;box-shadow:0 1px 2px rgba(16,24,40,0.04)">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+                  <div style="font-size:14px;font-weight:600">Variant comparison</div>
+                  <span style="font-size:11.5px;color:#8a929e">lower is better</span>
+                </div>
+                <div style="font-size:12px;color:#8a929e;margin-bottom:18px">Current variant highlighted in orange</div>
+                <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:18px">
+                  <sc-for list="{{ dx.charts }}" as="ch" hint-placeholder-count="3">
+                    <div>
+                      <div style="display:flex;align-items:flex-end;justify-content:center;gap:10px;height:118px">
+                        <sc-for list="{{ ch.bars }}" as="bar" hint-placeholder-count="3">
+                          <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:6px">
+                            <span style="{{ bar.nameStyle }}">{{ bar.label }}</span>
+                            <div style="width:62%;display:flex;align-items:flex-end"><div style="{{ bar.barStyle }}"></div></div>
+                          </div>
+                        </sc-for>
+                      </div>
+                      <div style="border-top:1px solid #eceef0;margin-top:8px;padding-top:8px;display:flex;justify-content:space-around">
+                        <sc-for list="{{ ch.bars }}" as="bar" hint-placeholder-count="3"><span style="{{ bar.nameStyle }}">{{ bar.key }}</span></sc-for>
+                      </div>
+                      <div style="text-align:center;font-size:11.5px;font-weight:600;color:#3a414a;margin-top:8px">{{ ch.title }}</div>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+
+              <div style="background:#fff;border:1px solid #e8eaed;border-radius:12px;padding:18px 20px;box-shadow:0 1px 2px rgba(16,24,40,0.04)">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+                  <span style="display:flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:6px;background:#ef7e00"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 13.9 8.6 19.5 8.6 15 12 16.8 17.5 12 14.2 7.2 17.5 9 12 4.5 8.6 10.1 8.6z"></path></svg></span>
+                  <span style="font-size:14px;font-weight:600">AI task result</span>
+                </div>
+                <div style="font-size:12.5px;color:#5c6470;margin-bottom:15px">Task · <strong style="color:#14171a;font-weight:600">{{ dx.ai.task }}</strong></div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:15px">
+                  <sc-for list="{{ dx.ai.metrics }}" as="m" hint-placeholder-count="4">
+                    <div style="background:#fafbfc;border:1px solid #eceef0;border-radius:9px;padding:11px 13px">
+                      <div style="font-size:11px;color:#8a929e">{{ m.label }}</div>
+                      <div style="font-size:20px;font-weight:700;font-family:'Geist Mono',monospace;margin-top:3px">{{ m.value }}</div>
+                    </div>
+                  </sc-for>
+                </div>
+                <div style="display:flex;align-items:flex-start;gap:10px;padding:12px 13px;background:#fafbfc;border:1px solid #eceef0;border-radius:9px">
+                  <span style="{{ dx.ai.outcomeStyle }}">{{ dx.ai.outcomeLabel }}</span>
+                  <span style="font-size:12.5px;color:#3a414a;line-height:1.5;flex:1">{{ dx.ai.outcome }}</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- bundle & performance -->
+            <div style="background:#fff;border:1px solid #e8eaed;border-radius:12px;padding:18px 20px;box-shadow:0 1px 2px rgba(16,24,40,0.04);margin-bottom:16px">
+              <div style="font-size:14px;font-weight:600;margin-bottom:16px">Bundle &amp; performance</div>
+              <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px">
+                <sc-for list="{{ dx.perf }}" as="p" hint-placeholder-count="4">
+                  <div style="border:1px solid #eceef0;border-radius:10px;padding:14px 16px">
+                    <div style="font-size:11.5px;color:#8a929e;font-weight:500">{{ p.label }}</div>
+                    <div style="display:flex;align-items:baseline;gap:6px;margin-top:7px"><span style="font-size:24px;font-weight:700;font-family:'Geist Mono',monospace;line-height:1">{{ p.value }}</span><span style="font-size:11.5px;color:#a3aab4">{{ p.note }}</span></div>
+                    <sc-if value="{{ p.bar }}" hint-placeholder-val=""><div style="height:5px;background:#f0f1f3;border-radius:4px;overflow:hidden;margin-top:10px"><div style="{{ p.bar }}"></div></div></sc-if>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+
+            <!-- metrics table -->
+            <div style="background:#fff;border:1px solid #e8eaed;border-radius:12px;box-shadow:0 1px 2px rgba(16,24,40,0.04);overflow:hidden;margin-bottom:16px">
+              <div style="padding:16px 20px;border-bottom:1px solid #eceef0;display:flex;align-items:center;justify-content:space-between">
+                <div style="font-size:14px;font-weight:600">Full metrics table</div>
+                <div style="display:flex;align-items:center;gap:6px;font-size:11.5px;color:#8a929e"><span style="width:9px;height:9px;border-radius:3px;background:#067647"></span>Best per row</div>
+              </div>
+              <div class="so-scroll" style="overflow-x:auto">
+                <table style="width:100%;min-width:760px;border-collapse:collapse;font-size:12.5px">
+                  <thead>
+                    <tr style="border-bottom:1px solid #eceef0">
+                      <th style="text-align:left;padding:10px 20px;font-size:11px;font-weight:600;color:#8a929e;text-transform:uppercase;letter-spacing:0.04em">Metric</th>
+                      <sc-for list="{{ dx.headers }}" as="h" hint-placeholder-count="3">
+                        <th style="{{ h.style }}"><div>{{ h.name }}</div><div style="font-size:9.5px;font-weight:600;opacity:0.7;margin-top:1px">{{ h.tag }}</div></th>
+                      </sc-for>
+                      <th style="text-align:right;padding:10px 20px 10px 14px;font-size:11px;font-weight:600;color:#8a929e;text-transform:uppercase;letter-spacing:0.04em">Best</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <sc-for list="{{ dx.tableRows }}" as="r" hint-placeholder-count="14">
+                      <tr style="border-top:1px solid #f4f5f6">
+                        <td style="padding:10px 20px;font-weight:500;color:#14171a">{{ r.metric }}</td>
+                        <sc-for list="{{ r.cells }}" as="cell" hint-placeholder-count="3">
+                          <td style="{{ cell.style }}">{{ cell.v }}</td>
+                        </sc-for>
+                        <td style="padding:10px 20px 10px 14px;text-align:right"><span style="font-size:11px;font-weight:600;color:#067647;background:#ecfdf3;border-radius:6px;padding:2px 8px;font-family:'Geist Mono',monospace">{{ r.best }}</span></td>
+                      </tr>
+                    </sc-for>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- CI history -->
+            <div style="background:#fff;border:1px solid #e8eaed;border-radius:12px;box-shadow:0 1px 2px rgba(16,24,40,0.04);overflow:hidden;margin-bottom:20px">
+              <div style="padding:16px 20px;border-bottom:1px solid #eceef0;font-size:14px;font-weight:600">CI history</div>
+              <div>
+                <sc-for list="{{ dx.ci }}" as="run" hint-placeholder-count="6">
+                  <div style="display:flex;align-items:center;gap:14px;padding:12px 20px;border-bottom:1px solid #f4f5f6">
+                    <span style="width:9px;height:9px;border-radius:50%;background:{{ run.dot }};flex:0 0 9px"></span>
+                    <span style="flex:1;min-width:0"><span style="display:block;font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ run.commit }}</span><span style="display:block;font-size:11.5px;color:#a3aab4;font-family:'Geist Mono',monospace;margin-top:1px">{{ run.sha }} · {{ run.when }}</span></span>
+                    <span style="font-size:12.5px;color:#5c6470;font-family:'Geist Mono',monospace">{{ run.dur }}</span>
+                    <span style="{{ run.statusStyle }}">{{ run.statusLabel }}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+        </sc-if>
+
+        <!-- ===================== SETTINGS ===================== -->
+        <sc-if value="{{ isSettings }}" hint-placeholder-val="">
+          <div style="max-width:760px">
+            <div style="margin-bottom:20px">
+              <h1 style="margin:0;font-size:22px;font-weight:700;letter-spacing:-0.025em">Settings</h1>
+              <p style="margin:5px 0 0 0;font-size:13.5px;color:#5c6470">Environment, feature flags and demo controls.</p>
+            </div>
+
+            <sc-if value="{{ simMsg }}" hint-placeholder-val="">
+              <div style="display:flex;align-items:center;gap:10px;padding:12px 16px;border-radius:10px;margin-bottom:16px;background:{{ simMsg.bg }};border:1px solid {{ simMsg.border }}">
+                <span style="width:8px;height:8px;border-radius:50%;background:{{ simMsg.dot }};flex:0 0 8px"></span>
+                <span style="font-size:13px;font-weight:500;color:{{ simMsg.fg }}">{{ simMsg.text }}</span>
+              </div>
+            </sc-if>
+
+            <!-- environment -->
+            <div style="background:#fff;border:1px solid #e8eaed;border-radius:12px;box-shadow:0 1px 2px rgba(16,24,40,0.04);overflow:hidden;margin-bottom:16px">
+              <div style="padding:16px 20px;border-bottom:1px solid #eceef0;font-size:14px;font-weight:600">Environment</div>
+              <div>
+                <sc-for list="{{ settingsEnv }}" as="e" hint-placeholder-count="4">
+                  <div style="display:flex;align-items:center;justify-content:space-between;padding:13px 20px;border-bottom:1px solid #f4f5f6">
+                    <span style="font-size:13px;color:#5c6470">{{ e.label }}</span>
+                    <span style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:#14171a">
+                      <sc-if value="{{ e.dot }}" hint-placeholder-val=""><span style="width:8px;height:8px;border-radius:50%;background:{{ e.dot }}"></span></sc-if>
+                      {{ e.value }}
+                    </span>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+
+            <!-- feature flags -->
+            <div style="background:#fff;border:1px solid #e8eaed;border-radius:12px;box-shadow:0 1px 2px rgba(16,24,40,0.04);overflow:hidden;margin-bottom:16px">
+              <div style="padding:16px 20px;border-bottom:1px solid #eceef0;font-size:14px;font-weight:600">Feature flags</div>
+              <div>
+                <sc-for list="{{ flagRows }}" as="f" hint-placeholder-count="5">
+                  <div style="display:flex;align-items:center;justify-content:space-between;gap:18px;padding:14px 20px;border-bottom:1px solid #f4f5f6">
+                    <span style="min-width:0"><span style="display:block;font-size:13.5px;font-weight:500;color:#14171a">{{ f.label }}</span><span style="display:block;font-size:12px;color:#8a929e;margin-top:2px">{{ f.desc }}</span></span>
+                    <button onClick="{{ f.toggle }}" role="switch" aria-checked="{{ f.ariaChecked }}" aria-label="{{ f.label }}" class="so-focus" style="{{ f.trackStyle }}">
+                      <span style="{{ f.knobStyle }}"></span>
+                    </button>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+
+            <!-- simulation -->
+            <div style="background:#fff;border:1px solid #e8eaed;border-radius:12px;box-shadow:0 1px 2px rgba(16,24,40,0.04);overflow:hidden;margin-bottom:20px">
+              <div style="padding:16px 20px;border-bottom:1px solid #eceef0">
+                <div style="font-size:14px;font-weight:600">Demo controls</div>
+                <div style="font-size:12px;color:#8a929e;margin-top:2px">Simulate failure conditions for the demo. These do not affect real data.</div>
+              </div>
+              <div style="display:flex;flex-wrap:wrap;gap:10px;padding:18px 20px">
+                <button onClick="{{ onSimError }}" class="so-focus" style="height:38px;padding:0 15px;border-radius:9px;background:#fff;border:1px solid #fbd5d2;color:#d92d20;font-size:13px;font-weight:600;display:flex;align-items:center;gap:8px">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#d92d20" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v4M12 16h.01"></path></svg>Simulate API error
+                </button>
+                <button onClick="{{ onSimSlow }}" class="so-focus" style="height:38px;padding:0 15px;border-radius:9px;background:#fff;border:1px solid #f5e3b8;color:#a86a04;font-size:13px;font-weight:600;display:flex;align-items:center;gap:8px">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#a86a04" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>Simulate slow network
+                </button>
+                <div style="flex:1"></div>
+                <button onClick="{{ onReset }}" class="so-focus" style="height:38px;padding:0 15px;border-radius:9px;background:#14171a;color:#fff;font-size:13px;font-weight:600;display:flex;align-items:center;gap:8px">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v6h6M3.5 12a9 9 0 1 0 2.6-5.8L3 8"></path></svg>Reset demo state
+                </button>
+              </div>
+            </div>
+          </div>
+        </sc-if>
+
+        <!-- ===================== DESIGN SYSTEM ===================== -->
+        <sc-if value="{{ isDesignSystem }}" hint-placeholder-val="">
+          <div>
+            <div style="margin-bottom:20px">
+              <h1 style="margin:0;font-size:22px;font-weight:700;letter-spacing:-0.025em">Design system</h1>
+              <p style="margin:5px 0 0 0;font-size:13.5px;color:#5c6470">The shared foundations and components behind every SignalOps screen.</p>
+            </div>
+
+            <!-- Colors -->
+            <div style="background:#fff;border:1px solid #e8eaed;border-radius:12px;padding:20px;box-shadow:0 1px 2px rgba(16,24,40,0.04);margin-bottom:16px">
+              <div style="font-size:14px;font-weight:600;margin-bottom:4px">Colors</div>
+              <div style="font-size:12px;color:#8a929e;margin-bottom:18px">Orange accent, neutral greys for surfaces and text, status hues used only for meaning.</div>
+              <div style="font-size:11px;font-weight:600;color:#8a929e;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:10px">Brand</div>
+              <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px">
+                <sc-for list="{{ dsBrand }}" as="c" hint-placeholder-count="4">
+                  <div><div style="height:54px;border-radius:9px;{{ c.sw }}"></div><div style="font-size:12px;font-weight:500;margin-top:7px">{{ c.name }}</div><div style="font-size:11.5px;color:#8a929e;font-family:'Geist Mono',monospace">{{ c.hex }}</div></div>
+                </sc-for>
+              </div>
+              <div style="font-size:11px;font-weight:600;color:#8a929e;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:10px">Neutrals</div>
+              <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:12px;margin-bottom:20px">
+                <sc-for list="{{ dsNeutral }}" as="c" hint-placeholder-count="7">
+                  <div><div style="height:54px;border-radius:9px;{{ c.sw }}"></div><div style="font-size:11.5px;font-weight:500;margin-top:7px">{{ c.name }}</div><div style="font-size:11px;color:#8a929e;font-family:'Geist Mono',monospace">{{ c.hex }}</div></div>
+                </sc-for>
+              </div>
+              <div style="font-size:11px;font-weight:600;color:#8a929e;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:10px">Status</div>
+              <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px">
+                <sc-for list="{{ dsStatus }}" as="c" hint-placeholder-count="4">
+                  <div><div style="height:54px;border-radius:9px;{{ c.sw }}"></div><div style="font-size:12px;font-weight:500;margin-top:7px">{{ c.name }}</div><div style="font-size:11.5px;color:#8a929e;font-family:'Geist Mono',monospace">{{ c.hex }}</div></div>
+                </sc-for>
+              </div>
+            </div>
+
+            <div style="display:grid;grid-template-columns:1.3fr 1fr;gap:16px;margin-bottom:16px">
+              <!-- Typography -->
+              <div style="background:#fff;border:1px solid #e8eaed;border-radius:12px;padding:20px;box-shadow:0 1px 2px rgba(16,24,40,0.04)">
+                <div style="font-size:14px;font-weight:600;margin-bottom:4px">Typography</div>
+                <div style="font-size:12px;color:#8a929e;margin-bottom:18px">Geist for UI, Geist Mono for IDs, scores and code.</div>
+                <div style="display:flex;flex-direction:column;gap:14px">
+                  <div style="display:flex;align-items:baseline;justify-content:space-between;border-bottom:1px solid #f4f5f6;padding-bottom:12px"><span style="font-size:28px;font-weight:700;letter-spacing:-0.03em">Display</span><span style="font-size:11.5px;color:#8a929e;font-family:'Geist Mono',monospace">28 / 700</span></div>
+                  <div style="display:flex;align-items:baseline;justify-content:space-between;border-bottom:1px solid #f4f5f6;padding-bottom:12px"><span style="font-size:22px;font-weight:700;letter-spacing:-0.025em">Heading</span><span style="font-size:11.5px;color:#8a929e;font-family:'Geist Mono',monospace">22 / 700</span></div>
+                  <div style="display:flex;align-items:baseline;justify-content:space-between;border-bottom:1px solid #f4f5f6;padding-bottom:12px"><span style="font-size:14px;font-weight:600">Section title</span><span style="font-size:11.5px;color:#8a929e;font-family:'Geist Mono',monospace">14 / 600</span></div>
+                  <div style="display:flex;align-items:baseline;justify-content:space-between;border-bottom:1px solid #f4f5f6;padding-bottom:12px"><span style="font-size:13.5px;color:#3a414a">Body — prioritize what matters first.</span><span style="font-size:11.5px;color:#8a929e;font-family:'Geist Mono',monospace">13.5 / 400</span></div>
+                  <div style="display:flex;align-items:baseline;justify-content:space-between"><span style="font-size:12px;color:#8a929e;font-family:'Geist Mono',monospace">S-1042 · risk 94</span><span style="font-size:11.5px;color:#8a929e;font-family:'Geist Mono',monospace">mono</span></div>
+                </div>
+              </div>
+              <!-- Spacing + radius + shadow -->
+              <div style="display:flex;flex-direction:column;gap:16px">
+                <div style="background:#fff;border:1px solid #e8eaed;border-radius:12px;padding:20px;box-shadow:0 1px 2px rgba(16,24,40,0.04)">
+                  <div style="font-size:14px;font-weight:600;margin-bottom:14px">Spacing</div>
+                  <div style="display:flex;flex-direction:column;gap:9px">
+                    <sc-for list="{{ dsSpacing }}" as="s" hint-placeholder-count="8">
+                      <div style="display:flex;align-items:center;gap:12px"><span style="width:24px;font-size:11.5px;color:#8a929e;font-family:'Geist Mono',monospace">{{ s.n }}</span><div style="{{ s.barStyle }}"></div></div>
+                    </sc-for>
+                  </div>
+                </div>
+                <div style="background:#fff;border:1px solid #e8eaed;border-radius:12px;padding:20px;box-shadow:0 1px 2px rgba(16,24,40,0.04)">
+                  <div style="font-size:14px;font-weight:600;margin-bottom:14px">Radius</div>
+                  <div style="display:flex;align-items:flex-end;gap:14px">
+                    <sc-for list="{{ dsRadius }}" as="r" hint-placeholder-count="5">
+                      <div style="text-align:center"><div style="{{ r.boxStyle }}"></div><div style="font-size:11px;color:#8a929e;margin-top:6px;font-family:'Geist Mono',monospace">{{ r.val }}</div></div>
+                    </sc-for>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Buttons + Badges -->
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+              <div style="background:#fff;border:1px solid #e8eaed;border-radius:12px;padding:20px;box-shadow:0 1px 2px rgba(16,24,40,0.04)">
+                <div style="font-size:14px;font-weight:600;margin-bottom:16px">Buttons</div>
+                <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center">
+                  <button class="so-focus" style="height:36px;padding:0 15px;border-radius:9px;background:#ef7e00;color:#fff;font-size:13px;font-weight:600;box-shadow:0 1px 2px rgba(239,126,0,0.4)">Primary</button>
+                  <button class="so-focus" style="height:36px;padding:0 15px;border-radius:9px;background:#fff;border:1px solid #dde0e4;color:#14171a;font-size:13px;font-weight:600">Secondary</button>
+                  <button class="so-focus" style="height:36px;padding:0 13px;border-radius:9px;background:transparent;color:#c2630a;font-size:13px;font-weight:600">Ghost</button>
+                  <button class="so-focus" style="height:36px;padding:0 15px;border-radius:9px;background:#fff;border:1px solid #fbd5d2;color:#d92d20;font-size:13px;font-weight:600">Danger</button>
+                  <button class="so-focus" style="height:36px;padding:0 15px;border-radius:9px;background:#14171a;color:#fff;font-size:13px;font-weight:600">Dark</button>
+                  <button disabled style="height:36px;padding:0 15px;border-radius:9px;background:#f0f1f3;color:#a3aab4;font-size:13px;font-weight:600;cursor:not-allowed">Disabled</button>
+                </div>
+              </div>
+              <div style="background:#fff;border:1px solid #e8eaed;border-radius:12px;padding:20px;box-shadow:0 1px 2px rgba(16,24,40,0.04)">
+                <div style="font-size:14px;font-weight:600;margin-bottom:16px">Badges</div>
+                <div style="font-size:11px;font-weight:600;color:#8a929e;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:9px">Severity</div>
+                <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px"><sc-for list="{{ dsSev }}" as="b" hint-placeholder-count="4"><span style="{{ b.style }}">{{ b.label }}</span></sc-for></div>
+                <div style="font-size:11px;font-weight:600;color:#8a929e;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:9px">Status</div>
+                <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px"><sc-for list="{{ dsStat }}" as="b" hint-placeholder-count="5"><span style="{{ b.style }}">{{ b.label }}</span></sc-for></div>
+                <div style="font-size:11px;font-weight:600;color:#8a929e;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:9px">Impact</div>
+                <div style="display:flex;flex-wrap:wrap;gap:8px"><sc-for list="{{ dsImpact }}" as="b" hint-placeholder-count="4"><span style="{{ b.style }}">{{ b.label }}</span></sc-for></div>
+              </div>
+            </div>
+
+            <!-- Shadows + states -->
+            <div style="display:grid;grid-template-columns:0.8fr 1.2fr;gap:16px;margin-bottom:20px">
+              <div style="background:#fff;border:1px solid #e8eaed;border-radius:12px;padding:20px;box-shadow:0 1px 2px rgba(16,24,40,0.04)">
+                <div style="font-size:14px;font-weight:600;margin-bottom:16px">Elevation</div>
+                <div style="display:flex;gap:16px">
+                  <div style="flex:1;text-align:center"><div style="height:56px;border-radius:10px;background:#fff;border:1px solid #e8eaed;box-shadow:0 1px 2px rgba(16,24,40,0.06)"></div><div style="font-size:11px;color:#8a929e;margin-top:8px">card</div></div>
+                  <div style="flex:1;text-align:center"><div style="height:56px;border-radius:10px;background:#fff;box-shadow:0 8px 24px rgba(16,24,40,0.12)"></div><div style="font-size:11px;color:#8a929e;margin-top:8px">raised</div></div>
+                </div>
+              </div>
+              <div style="background:#fff;border:1px solid #e8eaed;border-radius:12px;padding:20px;box-shadow:0 1px 2px rgba(16,24,40,0.04)">
+                <div style="font-size:14px;font-weight:600;margin-bottom:16px">States — empty &amp; error</div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+                  <div style="border:1px dashed #dde0e4;border-radius:10px;padding:20px 16px;text-align:center;background:#fafbfc">
+                    <div style="width:32px;height:32px;border-radius:9px;background:#f0f1f3;display:flex;align-items:center;justify-content:center;margin:0 auto 10px"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#a3aab4" stroke-width="1.9" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.2-3.2"></path></svg></div>
+                    <div style="font-size:12.5px;font-weight:500;color:#5c6470">No signals match your current filters.</div>
+                  </div>
+                  <div style="border:1px solid #fbd5d2;border-radius:10px;padding:20px 16px;text-align:center;background:#fef3f2">
+                    <div style="width:32px;height:32px;border-radius:9px;background:#fee2e0;display:flex;align-items:center;justify-content:center;margin:0 auto 10px"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#d92d20" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"></path><path d="M12 9v4M12 17h.01"></path></svg></div>
+                    <div style="font-size:12.5px;font-weight:500;color:#d92d20">Some widgets could not be refreshed.</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </sc-if>
+
+        <!-- ===================== UI STATES ===================== -->
+        <sc-if value="{{ isUiStates }}" hint-placeholder-val="">
+          <div>
+            <div style="margin-bottom:20px">
+              <h1 style="margin:0;font-size:22px;font-weight:700;letter-spacing:-0.025em">UI states</h1>
+              <p style="margin:5px 0 0 0;font-size:13.5px;color:#5c6470">How components behave when data is loading, missing, partial or unavailable.</p>
+            </div>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+              <!-- loading -->
+              <div style="background:#fff;border:1px solid #e8eaed;border-radius:12px;padding:18px 20px;box-shadow:0 1px 2px rgba(16,24,40,0.04)">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px"><span style="font-size:13px;font-weight:600">Loading</span><span style="font-size:10.5px;font-weight:600;color:#5c6470;background:#f2f4f6;border-radius:5px;padding:1px 7px;text-transform:uppercase;letter-spacing:0.04em">Skeleton</span></div>
+                <div style="border:1px solid #eceef0;border-radius:10px;padding:16px">
+                  <div style="height:11px;width:42%;border-radius:5px;background:linear-gradient(90deg,#eef0f2 25%,#f7f8f9 37%,#eef0f2 63%);background-size:400px 100%;animation:so-shimmer 1.4s infinite linear"></div>
+                  <div style="height:26px;width:60%;border-radius:6px;margin-top:14px;background:linear-gradient(90deg,#eef0f2 25%,#f7f8f9 37%,#eef0f2 63%);background-size:400px 100%;animation:so-shimmer 1.4s infinite linear"></div>
+                  <div style="height:9px;width:80%;border-radius:5px;margin-top:16px;background:linear-gradient(90deg,#eef0f2 25%,#f7f8f9 37%,#eef0f2 63%);background-size:400px 100%;animation:so-shimmer 1.4s infinite linear"></div>
+                </div>
+              </div>
+              <!-- slow network -->
+              <div style="background:#fff;border:1px solid #e8eaed;border-radius:12px;padding:18px 20px;box-shadow:0 1px 2px rgba(16,24,40,0.04)">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px"><span style="font-size:13px;font-weight:600">Slow network</span><span style="font-size:10.5px;font-weight:600;color:#a86a04;background:#fef7e6;border-radius:5px;padding:1px 7px;text-transform:uppercase;letter-spacing:0.04em">Degraded</span></div>
+                <div style="display:flex;align-items:center;gap:12px;border:1px solid #f5e3b8;background:#fefbf3;border-radius:10px;padding:16px">
+                  <span style="width:22px;height:22px;border-radius:50%;border:2.5px solid #f0ddc5;border-top-color:#d9a200;animation:so-spin 0.8s linear infinite;flex:0 0 22px"></span>
+                  <div><div style="font-size:13px;font-weight:500;color:#14171a">Still loading…</div><div style="font-size:12px;color:#8a929e;margin-top:1px">The network is slower than usual.</div></div>
+                </div>
+              </div>
+              <!-- empty -->
+              <div style="background:#fff;border:1px solid #e8eaed;border-radius:12px;padding:18px 20px;box-shadow:0 1px 2px rgba(16,24,40,0.04)">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px"><span style="font-size:13px;font-weight:600">Empty</span><span style="font-size:10.5px;font-weight:600;color:#5c6470;background:#f2f4f6;border-radius:5px;padding:1px 7px;text-transform:uppercase;letter-spacing:0.04em">Table</span></div>
+                <div style="border:1px solid #eceef0;border-radius:10px;padding:34px 16px;text-align:center">
+                  <div style="width:34px;height:34px;border-radius:9px;background:#f0f1f3;display:flex;align-items:center;justify-content:center;margin:0 auto 12px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#a3aab4" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.2-3.2"></path></svg></div>
+                  <div style="font-size:13px;font-weight:500;color:#3a414a">No signals match your current filters.</div>
+                  <button class="so-focus" style="margin-top:12px;height:32px;padding:0 14px;border-radius:8px;background:#fff;border:1px solid #dde0e4;font-size:12.5px;font-weight:600;color:#5c6470">Reset filters</button>
+                </div>
+              </div>
+              <!-- partial error -->
+              <div style="background:#fff;border:1px solid #e8eaed;border-radius:12px;padding:18px 20px;box-shadow:0 1px 2px rgba(16,24,40,0.04)">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px"><span style="font-size:13px;font-weight:600">Partial error</span><span style="font-size:10.5px;font-weight:600;color:#d92d20;background:#fef3f2;border-radius:5px;padding:1px 7px;text-transform:uppercase;letter-spacing:0.04em">Widget</span></div>
+                <div style="border:1px solid #eceef0;border-radius:10px;overflow:hidden">
+                  <div style="padding:12px 14px;border-bottom:1px solid #eceef0;font-size:13px;font-weight:600">Signals over time</div>
+                  <div style="padding:26px 16px;text-align:center;background:#fffbfb">
+                    <div style="font-size:13px;font-weight:500;color:#d92d20">Some widgets could not be refreshed.</div>
+                    <div style="font-size:12px;color:#8a929e;margin-top:3px">Showing the last known data.</div>
+                    <button class="so-focus" style="margin-top:12px;height:32px;padding:0 14px;border-radius:8px;background:#fff;border:1px solid #fbd5d2;color:#d92d20;font-size:12.5px;font-weight:600">Retry</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- invalid data + unauthorized -->
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+              <div style="background:#fff;border:1px solid #e8eaed;border-radius:12px;padding:18px 20px;box-shadow:0 1px 2px rgba(16,24,40,0.04)">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px"><span style="font-size:13px;font-weight:600">Invalid data</span><span style="font-size:10.5px;font-weight:600;color:#5c6470;background:#f2f4f6;border-radius:5px;padding:1px 7px;text-transform:uppercase;letter-spacing:0.04em">Field</span></div>
+                <div style="border:1px solid #eceef0;border-radius:10px;padding:16px;display:flex;align-items:center;justify-content:space-between">
+                  <span style="font-size:13px;color:#5c6470">Confidence</span>
+                  <span style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:#a3aab4"><span style="width:7px;height:7px;border-radius:50%;background:#cdd2d8"></span>Confidence unavailable.</span>
+                </div>
+              </div>
+              <div style="background:#fff;border:1px solid #e8eaed;border-radius:12px;padding:18px 20px;box-shadow:0 1px 2px rgba(16,24,40,0.04)">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px"><span style="font-size:13px;font-weight:600">Unauthorized</span><span style="font-size:10.5px;font-weight:600;color:#a86a04;background:#fef7e6;border-radius:5px;padding:1px 7px;text-transform:uppercase;letter-spacing:0.04em">Mock</span></div>
+                <div style="border:1px solid #eceef0;border-radius:10px;padding:20px 16px;text-align:center">
+                  <div style="width:34px;height:34px;border-radius:9px;background:#fef7e6;display:flex;align-items:center;justify-content:center;margin:0 auto 12px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#a86a04" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg></div>
+                  <div style="font-size:13px;font-weight:500;color:#3a414a">You don't have access to this view.</div>
+                  <div style="font-size:12px;color:#8a929e;margin-top:3px">Ask an admin to grant the Analyst role.</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- global error + not found -->
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">
+              <div style="background:#fff;border:1px solid #e8eaed;border-radius:12px;padding:18px 20px;box-shadow:0 1px 2px rgba(16,24,40,0.04)">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px"><span style="font-size:13px;font-weight:600">Global error</span><span style="font-size:10.5px;font-weight:600;color:#d92d20;background:#fef3f2;border-radius:5px;padding:1px 7px;text-transform:uppercase;letter-spacing:0.04em">Page</span></div>
+                <div style="border:1px solid #fbd5d2;background:#fffbfb;border-radius:10px;padding:30px 16px;text-align:center">
+                  <div style="width:40px;height:40px;border-radius:11px;background:#fef3f2;display:flex;align-items:center;justify-content:center;margin:0 auto 14px"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#d92d20" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"></path><path d="M12 9v4M12 17h.01"></path></svg></div>
+                  <div style="font-size:15px;font-weight:600;color:#14171a">Something went wrong</div>
+                  <div style="font-size:12.5px;color:#8a929e;margin-top:5px;line-height:1.5">We couldn't load SignalOps. Our team has been notified.</div>
+                  <div style="display:flex;gap:8px;justify-content:center;margin-top:16px"><button class="so-focus" style="height:34px;padding:0 15px;border-radius:8px;background:#ef7e00;color:#fff;font-size:12.5px;font-weight:600">Reload</button><button class="so-focus" style="height:34px;padding:0 15px;border-radius:8px;background:#fff;border:1px solid #dde0e4;font-size:12.5px;font-weight:600;color:#5c6470">Status page</button></div>
+                </div>
+              </div>
+              <div style="background:#fff;border:1px solid #e8eaed;border-radius:12px;padding:18px 20px;box-shadow:0 1px 2px rgba(16,24,40,0.04)">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px"><span style="font-size:13px;font-weight:600">Not found</span><span style="font-size:10.5px;font-weight:600;color:#5c6470;background:#f2f4f6;border-radius:5px;padding:1px 7px;text-transform:uppercase;letter-spacing:0.04em">404</span></div>
+                <div style="border:1px solid #eceef0;border-radius:10px;padding:30px 16px;text-align:center">
+                  <div style="font-size:34px;font-weight:700;font-family:'Geist Mono',monospace;color:#ef7e00;letter-spacing:-0.02em">404</div>
+                  <div style="font-size:15px;font-weight:600;color:#14171a;margin-top:8px">Signal not found</div>
+                  <div style="font-size:12.5px;color:#8a929e;margin-top:5px;line-height:1.5">It may have been resolved, merged or dismissed.</div>
+                  <button class="so-focus" style="margin-top:16px;height:34px;padding:0 15px;border-radius:8px;background:#fff;border:1px solid #dde0e4;font-size:12.5px;font-weight:600;color:#14171a">Back to signals</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </sc-if>
+
+        <!-- ===================== RESPONSIVE ===================== -->
+        <sc-if value="{{ isResponsive }}" hint-placeholder-val="">
+          <div>
+            <div style="margin-bottom:22px">
+              <h1 style="margin:0;font-size:22px;font-weight:700;letter-spacing:-0.025em">Responsive</h1>
+              <p style="margin:5px 0 0 0;font-size:13.5px;color:#5c6470">Mobile adaptations of the key screens — the layout stacks but stays fully usable.</p>
+            </div>
+
+            <div style="display:flex;flex-wrap:wrap;gap:30px">
+
+              <!-- ===== Dashboard mobile ===== -->
+              <div style="width:380px;flex:0 0 380px">
+                <div style="font-size:12.5px;font-weight:600;color:#5c6470;margin-bottom:11px;display:flex;align-items:center;gap:8px"><span style="width:7px;height:7px;border-radius:50%;background:#ef7e00"></span>Dashboard · 390px</div>
+                <div style="border:10px solid #1b1d21;border-radius:36px;background:#1b1d21;box-shadow:0 14px 44px rgba(16,24,40,0.18)">
+                  <div style="border-radius:26px;overflow:hidden;background:#f6f7f8">
+                    <div style="height:30px;background:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 20px;font-size:11px;font-weight:700;font-family:'Geist Mono',monospace">9:41<span style="display:flex;gap:4px"><span style="width:15px;height:9px;border:1.5px solid #14171a;border-radius:2px"></span></span></div>
+                    <div style="background:#fff;border-bottom:1px solid #e8eaed;padding:10px 14px;display:flex;align-items:center;gap:10px">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5c6470" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"></path></svg>
+                      <div style="position:relative;width:24px;height:24px;border-radius:7px;background:#ef7e00;display:flex;align-items:center;justify-content:center"><div style="width:6px;height:6px;border-radius:50%;background:#fff"></div></div>
+                      <span style="font-size:14px;font-weight:700;flex:1">SignalOps</span>
+                      <span style="font-size:10px;font-weight:600;color:#c2630a;background:#fff4e8;border:1px solid #ffd9ad;border-radius:6px;padding:2px 7px">Flow</span>
+                    </div>
+                    <div class="so-scroll" style="height:560px;overflow-y:auto;padding:14px;background:#f6f7f8">
+                      <h2 style="margin:2px 0 2px 0;font-size:18px;font-weight:700;letter-spacing:-0.02em">Overview</h2>
+                      <p style="margin:0 0 14px 0;font-size:12.5px;color:#8a929e">Prioritize what matters first.</p>
+                      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
+                        <sc-for list="{{ mobileKpis }}" as="k" hint-placeholder-count="4">
+                          <div style="background:#fff;border:1px solid #e8eaed;border-radius:11px;padding:13px">
+                            <div style="font-size:11.5px;color:#5c6470">{{ k.label }}</div>
+                            <div style="font-size:22px;font-weight:700;letter-spacing:-0.02em;margin-top:6px;line-height:1">{{ k.value }}</div>
+                            <div style="margin-top:8px"><span style="{{ k.trendStyle }}">{{ k.trend }}</span></div>
+                          </div>
+                        </sc-for>
+                      </div>
+                      <div style="background:#fff;border:1px solid #e8eaed;border-radius:11px;overflow:hidden">
+                        <div style="padding:12px 14px;border-bottom:1px solid #eceef0;font-size:13px;font-weight:600">Most critical signals</div>
+                        <sc-for list="{{ mobileSignals }}" as="s" hint-placeholder-count="4">
+                          <div style="display:flex;align-items:center;gap:10px;padding:11px 14px;border-bottom:1px solid #f4f5f6">
+                            <span style="width:8px;height:8px;border-radius:50%;background:{{ s.sevDot }};flex:0 0 8px"></span>
+                            <span style="flex:1;min-width:0"><span style="display:block;font-size:12.5px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ s.title }}</span><span style="display:block;font-size:11px;color:#a3aab4;font-family:'Geist Mono',monospace">{{ s.id }}</span></span>
+                            <span style="font-size:13px;font-weight:700;font-family:'Geist Mono',monospace">{{ s.risk }}</span>
+                          </div>
+                        </sc-for>
+                      </div>
+                    </div>
+                    <div style="background:#fff;border-top:1px solid #e8eaed;display:flex;height:58px">
+                      <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:#ef7e00"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#ef7e00" stroke-width="1.9"><rect x="3" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="3" width="7" height="7" rx="1.5"></rect><rect x="3" y="14" width="7" height="7" rx="1.5"></rect><rect x="14" y="14" width="7" height="7" rx="1.5"></rect></svg><span style="font-size:9.5px;font-weight:600">Overview</span></div>
+                      <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:#a3aab4"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#a3aab4" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg><span style="font-size:9.5px;font-weight:500">Signals</span></div>
+                      <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:#a3aab4"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#a3aab4" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"></path><path d="M12 9v4M12 17h.01"></path></svg><span style="font-size:9.5px;font-weight:500">Incidents</span></div>
+                      <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:#a3aab4"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#a3aab4" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18M7 15v-4M12 15V8M17 15v-6"></path></svg><span style="font-size:9.5px;font-weight:500">DX</span></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- ===== Signals mobile ===== -->
+              <div style="width:380px;flex:0 0 380px">
+                <div style="font-size:12.5px;font-weight:600;color:#5c6470;margin-bottom:11px;display:flex;align-items:center;gap:8px"><span style="width:7px;height:7px;border-radius:50%;background:#ef7e00"></span>Signals Explorer · 390px</div>
+                <div style="border:10px solid #1b1d21;border-radius:36px;background:#1b1d21;box-shadow:0 14px 44px rgba(16,24,40,0.18)">
+                  <div style="border-radius:26px;overflow:hidden;background:#f6f7f8">
+                    <div style="height:30px;background:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 20px;font-size:11px;font-weight:700;font-family:'Geist Mono',monospace">9:41<span style="width:15px;height:9px;border:1.5px solid #14171a;border-radius:2px"></span></div>
+                    <div style="background:#fff;border-bottom:1px solid #e8eaed;padding:12px 14px">
+                      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:11px"><span style="font-size:16px;font-weight:700;letter-spacing:-0.02em">Signals</span><span style="font-size:11.5px;color:#8a929e">1,284 total</span></div>
+                      <div style="display:flex;align-items:center;gap:8px;height:36px;padding:0 11px;background:#f3f4f6;border:1px solid #e8eaed;border-radius:9px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8a929e" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.2-3.2"></path></svg><span style="font-size:12.5px;color:#a3aab4">Search signals…</span></div>
+                      <div class="so-scroll" style="display:flex;gap:7px;margin-top:10px;overflow-x:auto">
+                        <span style="white-space:nowrap;font-size:12px;font-weight:600;color:#fff;background:#ef7e00;border-radius:999px;padding:5px 12px">Critical</span>
+                        <span style="white-space:nowrap;font-size:12px;font-weight:500;color:#5c6470;background:#f3f4f6;border:1px solid #e8eaed;border-radius:999px;padding:5px 12px">Status</span>
+                        <span style="white-space:nowrap;font-size:12px;font-weight:500;color:#5c6470;background:#f3f4f6;border:1px solid #e8eaed;border-radius:999px;padding:5px 12px">Source</span>
+                        <span style="white-space:nowrap;font-size:12px;font-weight:500;color:#5c6470;background:#f3f4f6;border:1px solid #e8eaed;border-radius:999px;padding:5px 12px">Assignee</span>
+                      </div>
+                    </div>
+                    <div class="so-scroll" style="height:526px;overflow-y:auto;padding:12px;background:#f6f7f8;display:flex;flex-direction:column;gap:10px">
+                      <sc-for list="{{ mobileSig }}" as="s" hint-placeholder-count="5">
+                        <div style="background:#fff;border:1px solid #e8eaed;border-radius:11px;padding:13px">
+                          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px">
+                            <span style="font-size:13px;font-weight:500;line-height:1.35">{{ s.title }}</span>
+                            <span style="font-size:14px;font-weight:700;font-family:'Geist Mono',monospace;flex:0 0 auto">{{ s.risk }}</span>
+                          </div>
+                          <div style="font-size:11px;color:#a3aab4;font-family:'Geist Mono',monospace;margin-top:3px">{{ s.id }}</div>
+                          <div style="display:flex;gap:7px;margin-top:10px"><span style="{{ s.sevBadge }}">{{ s.severity }}</span><span style="{{ s.statusBadge }}">{{ s.status }}</span></div>
+                        </div>
+                      </sc-for>
+                    </div>
+                    <div style="background:#fff;border-top:1px solid #e8eaed;display:flex;height:58px">
+                      <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:#a3aab4"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#a3aab4" stroke-width="1.9"><rect x="3" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="3" width="7" height="7" rx="1.5"></rect><rect x="3" y="14" width="7" height="7" rx="1.5"></rect><rect x="14" y="14" width="7" height="7" rx="1.5"></rect></svg><span style="font-size:9.5px;font-weight:500">Overview</span></div>
+                      <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:#ef7e00"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#ef7e00" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg><span style="font-size:9.5px;font-weight:600">Signals</span></div>
+                      <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:#a3aab4"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#a3aab4" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"></path><path d="M12 9v4M12 17h.01"></path></svg><span style="font-size:9.5px;font-weight:500">Incidents</span></div>
+                      <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:#a3aab4"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#a3aab4" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18M7 15v-4M12 15V8M17 15v-6"></path></svg><span style="font-size:9.5px;font-weight:500">DX</span></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- ===== Signal Detail mobile ===== -->
+              <div style="width:380px;flex:0 0 380px">
+                <div style="font-size:12.5px;font-weight:600;color:#5c6470;margin-bottom:11px;display:flex;align-items:center;gap:8px"><span style="width:7px;height:7px;border-radius:50%;background:#ef7e00"></span>Signal Detail · 390px</div>
+                <div style="border:10px solid #1b1d21;border-radius:36px;background:#1b1d21;box-shadow:0 14px 44px rgba(16,24,40,0.18)">
+                  <div style="border-radius:26px;overflow:hidden;background:#f6f7f8">
+                    <div style="height:30px;background:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 20px;font-size:11px;font-weight:700;font-family:'Geist Mono',monospace">9:41<span style="width:15px;height:9px;border:1.5px solid #14171a;border-radius:2px"></span></div>
+                    <div style="background:#fff;border-bottom:1px solid #e8eaed;padding:11px 14px;display:flex;align-items:center;gap:10px">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5c6470" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg>
+                      <span style="font-size:13px;font-weight:600;color:#5c6470">Signal</span>
+                    </div>
+                    <div class="so-scroll" style="height:556px;overflow-y:auto;padding:14px;background:#f6f7f8">
+                      <div style="background:#fff;border:1px solid #e8eaed;border-radius:12px;padding:15px;margin-bottom:12px">
+                        <div style="display:flex;gap:7px;margin-bottom:9px"><span style="{{ mobileDetail.sevBadge }}">{{ mobileDetail.severity }}</span><span style="{{ mobileDetail.statusBadge }}">{{ mobileDetail.status }}</span></div>
+                        <div style="font-size:17px;font-weight:700;letter-spacing:-0.02em;line-height:1.25">{{ mobileDetail.title }}</div>
+                        <div style="font-size:11.5px;color:#8a929e;margin-top:7px">Source {{ mobileDetail.source }} · {{ mobileDetail.created }}</div>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px">
+                          <div style="border:1px solid #eceef0;border-radius:9px;padding:11px"><div style="font-size:10.5px;color:#8a929e;text-transform:uppercase;letter-spacing:0.04em;font-weight:600">Risk</div><div style="font-size:22px;font-weight:700;font-family:'Geist Mono',monospace;color:{{ mobileDetail.riskColor }};margin-top:4px;line-height:1">{{ mobileDetail.risk }}</div></div>
+                          <div style="border:1px solid #eceef0;border-radius:9px;padding:11px"><div style="font-size:10.5px;color:#8a929e;text-transform:uppercase;letter-spacing:0.04em;font-weight:600">Confidence</div><div style="font-size:16px;font-weight:700;margin-top:6px;line-height:1">{{ mobileDetail.confLabel }}</div></div>
+                        </div>
+                      </div>
+                      <div style="background:linear-gradient(180deg,#fffaf3 0%,#fff 60%);border:1px solid #ffd9ad;border-radius:12px;padding:15px;margin-bottom:12px">
+                        <div style="font-size:13px;font-weight:600;margin-bottom:8px;display:flex;align-items:center;gap:7px"><span style="width:18px;height:18px;border-radius:5px;background:#ef7e00;display:inline-block"></span>AI summary</div>
+                        <p style="margin:0;font-size:12.5px;line-height:1.55;color:#3a414a">{{ mobileDetail.ai }}</p>
+                      </div>
+                      <div style="display:flex;gap:8px"><button class="so-focus" style="flex:1;height:40px;border-radius:9px;background:#fff;border:1px solid #dde0e4;font-size:13px;font-weight:600;color:#14171a">Assign</button><button class="so-focus" style="flex:1;height:40px;border-radius:9px;background:#ef7e00;color:#fff;font-size:13px;font-weight:600">Resolve</button></div>
+                    </div>
+                    <div style="background:#fff;border-top:1px solid #e8eaed;display:flex;height:58px">
+                      <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:#a3aab4"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#a3aab4" stroke-width="1.9"><rect x="3" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="3" width="7" height="7" rx="1.5"></rect><rect x="3" y="14" width="7" height="7" rx="1.5"></rect><rect x="14" y="14" width="7" height="7" rx="1.5"></rect></svg><span style="font-size:9.5px;font-weight:500">Overview</span></div>
+                      <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:#ef7e00"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#ef7e00" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg><span style="font-size:9.5px;font-weight:600">Signals</span></div>
+                      <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:#a3aab4"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#a3aab4" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"></path><path d="M12 9v4M12 17h.01"></path></svg><span style="font-size:9.5px;font-weight:500">Incidents</span></div>
+                      <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:#a3aab4"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#a3aab4" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18M7 15v-4M12 15V8M17 15v-6"></path></svg><span style="font-size:9.5px;font-weight:500">DX</span></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- ===== DX mobile ===== -->
+              <div style="width:380px;flex:0 0 380px">
+                <div style="font-size:12.5px;font-weight:600;color:#5c6470;margin-bottom:11px;display:flex;align-items:center;gap:8px"><span style="width:7px;height:7px;border-radius:50%;background:#ef7e00"></span>DX Metrics · 390px</div>
+                <div style="border:10px solid #1b1d21;border-radius:36px;background:#1b1d21;box-shadow:0 14px 44px rgba(16,24,40,0.18)">
+                  <div style="border-radius:26px;overflow:hidden;background:#f6f7f8">
+                    <div style="height:30px;background:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 20px;font-size:11px;font-weight:700;font-family:'Geist Mono',monospace">9:41<span style="width:15px;height:9px;border:1.5px solid #14171a;border-radius:2px"></span></div>
+                    <div style="background:#fff;border-bottom:1px solid #e8eaed;padding:12px 14px;display:flex;align-items:center;justify-content:space-between"><span style="font-size:16px;font-weight:700;letter-spacing:-0.02em">DX Metrics</span><span style="font-size:10px;font-weight:600;color:#c2630a;background:#fff4e8;border:1px solid #ffd9ad;border-radius:6px;padding:2px 7px">Flow</span></div>
+                    <div class="so-scroll" style="height:556px;overflow-y:auto;padding:14px;background:#f6f7f8">
+                      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
+                        <sc-for list="{{ mobileDxCards }}" as="c" hint-placeholder-count="4">
+                          <div style="background:#fff;border:1px solid #e8eaed;border-radius:11px;padding:13px">
+                            <div style="font-size:12px;font-weight:700;color:{{ c.accent }}">{{ c.label }}</div>
+                            <div style="font-size:10.5px;color:#8a929e;margin-top:6px">{{ c.metric }}</div>
+                            <div style="font-size:19px;font-weight:700;font-family:'Geist Mono',monospace;margin-top:3px;line-height:1">{{ c.value }}</div>
+                          </div>
+                        </sc-for>
+                      </div>
+                      <div style="background:#fff;border:1px solid #e8eaed;border-radius:11px;padding:14px">
+                        <div style="font-size:13px;font-weight:600;margin-bottom:3px">{{ mobileChart.title }}</div>
+                        <div style="font-size:11px;color:#8a929e;margin-bottom:14px">lower is better</div>
+                        <div style="display:flex;align-items:flex-end;justify-content:center;gap:16px;height:110px">
+                          <sc-for list="{{ mobileChart.bars }}" as="bar" hint-placeholder-count="3">
+                            <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:6px">
+                              <span style="{{ bar.nameStyle }}">{{ bar.label }}</span>
+                              <div style="width:60%;display:flex;align-items:flex-end"><div style="{{ bar.barStyle }}"></div></div>
+                            </div>
+                          </sc-for>
+                        </div>
+                        <div style="border-top:1px solid #eceef0;margin-top:8px;padding-top:8px;display:flex;justify-content:space-around"><sc-for list="{{ mobileChart.bars }}" as="bar" hint-placeholder-count="3"><span style="{{ bar.nameStyle }}">{{ bar.key }}</span></sc-for></div>
+                      </div>
+                    </div>
+                    <div style="background:#fff;border-top:1px solid #e8eaed;display:flex;height:58px">
+                      <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:#a3aab4"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#a3aab4" stroke-width="1.9"><rect x="3" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="3" width="7" height="7" rx="1.5"></rect><rect x="3" y="14" width="7" height="7" rx="1.5"></rect><rect x="14" y="14" width="7" height="7" rx="1.5"></rect></svg><span style="font-size:9.5px;font-weight:500">Overview</span></div>
+                      <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:#a3aab4"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#a3aab4" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg><span style="font-size:9.5px;font-weight:500">Signals</span></div>
+                      <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:#a3aab4"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#a3aab4" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"></path><path d="M12 9v4M12 17h.01"></path></svg><span style="font-size:9.5px;font-weight:500">Incidents</span></div>
+                      <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:#ef7e00"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#ef7e00" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18M7 15v-4M12 15V8M17 15v-6"></path></svg><span style="font-size:9.5px;font-weight:600">DX</span></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </sc-if>
+
+        <!-- ===================== COMPONENTS ===================== -->
+        <sc-if value="{{ isComponents }}" hint-placeholder-val="">
+          <div>
+            <div style="margin-bottom:20px">
+              <h1 style="margin:0;font-size:22px;font-weight:700;letter-spacing:-0.025em">Components</h1>
+              <p style="margin:5px 0 0 0;font-size:13.5px;color:#5c6470">The reusable building blocks shared across all three technical variants.</p>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">
+              <sc-for list="{{ componentGroups }}" as="g" hint-placeholder-count="5">
+                <div style="background:#fff;border:1px solid #e8eaed;border-radius:12px;box-shadow:0 1px 2px rgba(16,24,40,0.04);overflow:hidden">
+                  <div style="padding:14px 18px;border-bottom:1px solid #eceef0;font-size:13px;font-weight:600">{{ g.group }}</div>
+                  <div>
+                    <sc-for list="{{ g.items }}" as="it" hint-placeholder-count="5">
+                      <div style="display:flex;align-items:flex-start;gap:12px;padding:11px 18px;border-bottom:1px solid #f4f5f6">
+                        <span style="font-size:12.5px;font-weight:600;font-family:'Geist Mono',monospace;color:#c2630a;flex:0 0 118px">{{ it.name }}</span>
+                        <span style="font-size:12.5px;color:#5c6470;line-height:1.45">{{ it.desc }}</span>
+                      </div>
+                    </sc-for>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </sc-if>
+
+        <!--SCREENS_END-->
+
+      </div>
+
+      <!-- footer -->
+      <footer style="border-top:1px solid #e8eaed;background:#fff;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;font-size:12px;color:#8a929e">
+        <span>SignalOps · Internal demo build · Data is mock</span>
+        <span style="display:flex;align-items:center;gap:16px"><span>Dataset v2.4.0</span><span style="display:flex;align-items:center;gap:6px"><span style="width:6px;height:6px;border-radius:50%;background:#12b76a"></span>API operational</span></span>
+      </footer>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1440,&quot;height&quot;:1024},&quot;variant&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Variant A — Friction&quot;,&quot;Variant B — Flow&quot;,&quot;Variant C — Overfit&quot;],&quot;default&quot;:&quot;Variant B — Flow&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Demo&quot;}}">
+class Component extends DCLogic {
+  state = { route: 'overview', signalId: 'S-1042', selected: {}, search: '', sevFilter: 'All', statusFilter: 'All', sourceFilter: 'All', assignedFilter: 'All', dateFilter: 'Last 7 days', incStatus: 'All', incSeverity: 'All', incImpact: 'All', stateDemo: 'normal', overrides: {}, flags: { ai:true, grouping:true, dense:true, autoEscalate:false, experimental:false }, simMsg: null };
+
+  toggleFlag(key){ this.setState(st=>({ flags:Object.assign({},st.flags,{[key]:!st.flags[key]}) })); }
+
+  // ---------- palettes ----------
+  sevMeta = {
+    Low:      { bg:'#eff4ff', fg:'#175cd3', dot:'#2563eb', bar:'#3b82f6' },
+    Medium:   { bg:'#fef7e6', fg:'#a86a04', dot:'#d9a200', bar:'#eab308' },
+    High:     { bg:'#fff1e3', fg:'#b65a06', dot:'#ef7e00', bar:'#ef7e00' },
+    Critical: { bg:'#fef3f2', fg:'#d92d20', dot:'#d92d20', bar:'#ef4444' },
+  };
+  statusMeta = {
+    New:           { bg:'#eff4ff', fg:'#175cd3' },
+    Triaged:       { bg:'#fef7e6', fg:'#a86a04' },
+    Investigating: { bg:'#fff1e3', fg:'#b65a06' },
+    Resolved:      { bg:'#ecfdf3', fg:'#067647' },
+    Dismissed:     { bg:'#f2f4f6', fg:'#5c6470' },
+  };
+
+  badge(m, extra) {
+    return Object.assign({ display:'inline-flex', alignItems:'center', gap:'5px', padding:'2px 9px', borderRadius:'999px', fontSize:'11.5px', fontWeight:600, lineHeight:'18px', whiteSpace:'nowrap', background:m.bg, color:m.fg }, extra||{});
+  }
+
+  // ---------- icons ----------
+  ic(name, color) {
+    const c = color || 'currentColor';
+    const sv = (children, fill) => React.createElement('svg', { width:18, height:18, viewBox:'0 0 24 24', fill: fill||'none', stroke: fill?'none':c, strokeWidth:1.8, strokeLinecap:'round', strokeLinejoin:'round' }, children);
+    const P = (d,i)=>React.createElement('path',{ d, key:i||d });
+    const R = (x,y,w,h,i)=>React.createElement('rect',{ x,y,width:w,height:h,rx:1.5,key:'r'+i });
+    const C = (cx,cy,r,i)=>React.createElement('circle',{ cx,cy,r,key:'c'+i });
+    switch(name){
+      case 'overview': return sv([R(3,3,7,7,1),R(14,3,7,7,2),R(14,14,7,7,3),R(3,14,7,7,4)]);
+      case 'signals':  return sv([P('M22 12h-4l-3 9L9 3l-3 9H2')]);
+      case 'incidents':return sv([P('M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z','t'),P('M12 9v4','l'),P('M12 17h.01','d')]);
+      case 'compare':  return sv([P('M8 3 4 7l4 4','a'),P('M4 7h13','b'),P('M16 21l4-4-4-4','c'),P('M20 17H7','d')]);
+      case 'dx':       return sv([P('M3 3v18h18','x'),P('M7 15v-4','b1'),P('M12 15V8','b2'),P('M17 15v-6','b3')]);
+      case 'settings': return sv([P('M21 5H10','a'),P('M6 5H3','b'),P('M21 12h-7','c'),P('M10 12H3','d'),P('M21 19h-3','e'),P('M14 19H3','f'),C(8,5,2,1),C(12,12,2,2),C(16,19,2,3)]);
+      case 'ds':       return sv([R(3,3,7,7,1),R(14,3,7,7,2),C(7,17,3.5,3),P('M14 14h7v7h-7z','q')]);
+      case 'components':return sv([P('M21 16V8a2 2 0 0 0-1-1.7l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.7l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z','b'),P('M3.3 7 12 12l8.7-5','l'),P('M12 22V12','v')]);
+      case 'states':   return sv([P('M12 2 2 7l10 5 10-5-10-5Z','t'),P('m2 17 10 5 10-5','m'),P('m2 12 10 5 10-5','b')]);
+      case 'responsive':return sv([R(7,2,10,20,1),P('M11 18h2','h')]);
+      // kpi icons (filled tone)
+      case 'k-open':   return React.createElement('svg',{width:16,height:16,viewBox:'0 0 24 24',fill:'none',stroke:c,strokeWidth:2,strokeLinecap:'round',strokeLinejoin:'round'},[P('M22 12h-4l-3 9L9 3l-3 9H2')]);
+      case 'k-crit':   return React.createElement('svg',{width:16,height:16,viewBox:'0 0 24 24',fill:'none',stroke:c,strokeWidth:2,strokeLinecap:'round',strokeLinejoin:'round'},[P('M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z','t'),P('M12 9v4','l'),P('M12 17h.01','d')]);
+      case 'k-inc':    return React.createElement('svg',{width:16,height:16,viewBox:'0 0 24 24',fill:'none',stroke:c,strokeWidth:2,strokeLinecap:'round',strokeLinejoin:'round'},[C(12,12,9,1),P('M12 8v4l3 2','h')]);
+      case 'k-time':   return React.createElement('svg',{width:16,height:16,viewBox:'0 0 24 24',fill:'none',stroke:c,strokeWidth:2,strokeLinecap:'round',strokeLinejoin:'round'},[C(12,12,9,1),P('M12 7v5l3 2','h')]);
+      default: return null;
+    }
+  }
+
+  // ---------- mock data ----------
+  signalsRaw = [
+    ['S-1042','Unusual authentication pattern detected','Critical','Investigating','Internal',94,'High','A. Mercier','Jun 29, 09:14','INC-204'],
+    ['S-1041','Partner API latency spike','Critical','New','Partner',91,'Medium','—','Jun 29, 08:52','INC-204'],
+    ['S-1039','Unexpected data export volume','Critical','Triaged','API',88,'High','R. Silva','Jun 29, 07:30','INC-201'],
+    ['S-1037','Suspicious document access','High','Investigating','Internal',82,'High','J. Tan','Jun 29, 06:11','INC-198'],
+    ['S-1035','Critical workflow failure','Critical','New','System',86,'Low','—','Jun 28, 23:40','—'],
+    ['S-1033','PII access outside business hours','High','Triaged','Internal',79,'Medium','M. Okafor','Jun 28, 22:05','INC-198'],
+    ['S-1031','Spike in 5xx error rate','High','Investigating','API',76,'High','R. Silva','Jun 28, 19:48','INC-201'],
+    ['S-1029','Anomalous outbound traffic','High','New','Web',72,'Medium','—','Jun 28, 18:22','—'],
+    ['S-1027','Stale credentials in use','Medium','Triaged','Internal',58,'High','J. Tan','Jun 28, 16:09','—'],
+    ['S-1025','Webhook delivery failures','Medium','Investigating','Partner',61,'Medium','A. Mercier','Jun 28, 14:33','INC-196'],
+    ['S-1023','Rate limit threshold exceeded','Medium','New','API',54,'High','—','Jun 28, 12:50','—'],
+    ['S-1021','Config drift in production','High','Triaged','System',74,'Low','M. Okafor','Jun 28, 11:27','INC-196'],
+    ['S-1019','Manual review required','Low','New','Manual',31,'—','—','Jun 28, 10:02','—'],
+    ['S-1017','Elevated failed login rate','Medium','Resolved','Web',49,'High','L. Petrov','Jun 28, 08:41','—'],
+    ['S-1014','Suspicious document access','High','Dismissed','Social',44,'Low','J. Tan','Jun 27, 21:15','—'],
+    ['S-1011','Partner API latency spike','Medium','Resolved','Partner',52,'Medium','R. Silva','Jun 27, 17:58','INC-189'],
+  ];
+  signal(row){
+    return { id:row[0], title:row[1], severity:row[2], status:row[3], source:row[4], risk:row[5], confidence:row[6], assignee:row[7], created:row[8], incident:row[9] };
+  }
+  get signals(){ const ov=this.state.overrides||{}; return this.signalsRaw.map(r=>{ const s=this.signal(r); return ov[s.id]?Object.assign(s,ov[s.id]):s; }); }
+
+  // explorer handlers
+  toggleSel(id){ this.setState(st=>({ selected:Object.assign({},st.selected,{[id]:!st.selected[id]}) })); }
+
+  incidentsRaw = [
+    ['INC-204','Partner API degradation','Critical','Investigating','System',3,'A. Mercier','42m'],
+    ['INC-201','Abnormal export activity','High','Investigating','Security',4,'R. Silva','2h 10m'],
+    ['INC-198','Internal access anomalies','High','Triaged','Security',2,'J. Tan','1h 35m'],
+    ['INC-196','Production config instability','Medium','Triaged','System',2,'M. Okafor','3h 02m'],
+    ['INC-193','Elevated checkout error rate','High','Investigating','Business',5,'A. Mercier','55m'],
+    ['INC-189','Partner latency (recurring)','Medium','Resolved','Business',1,'R. Silva','—'],
+    ['INC-185','Credential stuffing attempt','Critical','Resolved','Security',6,'J. Tan','—'],
+    ['INC-182','Webhook delivery backlog','Low','Resolved','System',1,'M. Okafor','—'],
+  ];
+  impactMeta = {
+    User:     { bg:'#eff4ff', fg:'#175cd3' },
+    System:   { bg:'#f2f4f6', fg:'#5c6470' },
+    Security: { bg:'#fef3f2', fg:'#d92d20' },
+    Business: { bg:'#ecfdf3', fg:'#067647' },
+  };
+
+  // ---------- handlers ----------
+  go(route){ return ()=> this.setState({ route }); }
+  openSignal(id){ return ()=> this.setState({ route:'signal-detail', signalId:id }); }
+
+  navItem(label, key, route, icon, count){
+    const active = this.state.route === route || (route==='signals' && this.state.route==='signal-detail');
+    const style = {
+      width:'100%', display:'flex', alignItems:'center', gap:'11px', padding:'8px 10px', marginBottom:'2px',
+      borderRadius:'8px', fontSize:'13px', fontWeight: active?600:500,
+      color: active?'#c2630a':'#4a515b', background: active?'#fff4e8':'transparent',
+    };
+    const countStyle = { fontSize:'11px', fontWeight:600, padding:'1px 7px', borderRadius:'999px', background: active?'#ffe3c2':'#eef0f2', color: active?'#c2630a':'#8a929e' };
+    return { label, route, icon:this.ic(icon, active?'#ef7e00':'#7a828d'), style, count, countStyle, go:this.go(route) };
+  }
+
+  crumbsFor(){
+    const map = {
+      overview:['Overview'], signals:['Signals'], 'signal-detail':['Signals', this.state.signalId], incidents:['Incidents'],
+      compare:['Compare'], 'dx-metrics':['DX Metrics'], settings:['Settings'], 'design-system':['Design system'], components:['Components'], 'ui-states':['UI states'], responsive:['Responsive']
+    };
+    const parts = ['SignalOps'].concat(map[this.state.route]||['Overview']);
+    return parts.map((label,i)=>({ label, sep:i>0, style:{ fontWeight: i===parts.length-1?600:500, color: i===parts.length-1?'#14171a':'#8a929e' } }));
+  }
+
+  overTimeChartEl(){
+    const W=560, H=190, pad=8;
+    const all=[120,138,131,156,149,172,168,181,164,193,205,198,221,236];
+    const crit=[14,19,16,22,18,27,24,31,26,33,36,34,40,37];
+    const max=260, n=all.length;
+    const x=i=> pad + i*((W-pad*2)/(n-1));
+    const y=v=> H-26 - (v/max)*(H-44);
+    const line=(arr)=> arr.map((v,i)=>`${i===0?'M':'L'}${x(i).toFixed(1)} ${y(v).toFixed(1)}`).join(' ');
+    const area= line(all) + ` L ${x(n-1)} ${H-26} L ${x(0)} ${H-26} Z`;
+    const days=['','','','','','','','','','','','','',''];
+    const labels=['Jun 16','Jun 19','Jun 22','Jun 25','Jun 28'];
+    return React.createElement('svg',{ viewBox:`0 0 ${W} ${H}`, style:{width:'100%',height:'190px',display:'block'} },[
+      React.createElement('defs',{key:'d'},[React.createElement('linearGradient',{key:'g',id:'soGrad',x1:0,y1:0,x2:0,y2:1},[React.createElement('stop',{key:0,offset:'0%',stopColor:'#ef7e00',stopOpacity:0.18}),React.createElement('stop',{key:1,offset:'100%',stopColor:'#ef7e00',stopOpacity:0})])]),
+      ...[0,1,2,3].map(g=>React.createElement('line',{key:'gl'+g,x1:pad,x2:W-pad,y1:26+g*((H-52)/3),y2:26+g*((H-52)/3),stroke:'#f0f1f3',strokeWidth:1})),
+      React.createElement('path',{key:'ar',d:area,fill:'url(#soGrad)'}),
+      React.createElement('path',{key:'al',d:line(all),fill:'none',stroke:'#ef7e00',strokeWidth:2.2,strokeLinejoin:'round',strokeLinecap:'round'}),
+      React.createElement('path',{key:'cl',d:line(crit),fill:'none',stroke:'#d92d20',strokeWidth:2,strokeLinejoin:'round',strokeLinecap:'round'}),
+      ...labels.map((lb,i)=>React.createElement('text',{key:'t'+i,x:pad+i*((W-pad*2)/(labels.length-1)),y:H-6,fontSize:10.5,fill:'#a3aab4',textAnchor:i===0?'start':(i===labels.length-1?'end':'middle'),fontFamily:'Geist, sans-serif'},lb)),
+    ]);
+  }
+
+  buildDx(short){
+    const D = {
+      A:{ name:'Variant A — Friction', install:'48s', typecheck:'19s', test:'2m 40s', build:'1m 12s', docker:'4m 10s', ci:'9m 20s', bundle:'412 KB', chunk:'287 KB', lighthouse:71, tableRender:'480 ms', files:23, tests:48, repro:7, docs:5 },
+      B:{ name:'Variant B — Flow', install:'22s', typecheck:'8s', test:'54s', build:'38s', docker:'1m 50s', ci:'3m 40s', bundle:'198 KB', chunk:'121 KB', lighthouse:94, tableRender:'120 ms', files:6, tests:9, repro:2, docs:1 },
+      C:{ name:'Variant C — Overfit', install:'31s', typecheck:'12s', test:'1m 38s', build:'26s', docker:'2m 05s', ci:'5m 10s', bundle:'164 KB', chunk:'96 KB', lighthouse:97, tableRender:'90 ms', files:41, tests:72, repro:9, docs:8 },
+    };
+    const cur = D[short];
+    const accent = { Build:['#ef7e00','#fff1e3'], Ship:['#175cd3','#eff4ff'], Run:['#067647','#ecfdf3'], Change:['#7c5cff','#f1edff'] };
+    const card = (label, icon, metric, value, subs) => ({ label, metric, value, icon:this.ic(icon, accent[label][0]), accent:accent[label][0], iconBg:accent[label][1], subs:subs.map(s=>({label:s[0],value:s[1]})) });
+    const cards = [
+      card('Build','dx','Build time', cur.build, [['Install',cur.install],['Typecheck',cur.typecheck],['Test',cur.test]]),
+      card('Ship','compare','CI duration', cur.ci, [['Docker build',cur.docker],['Pipeline','build → test → ship']]),
+      card('Run','signals','Lighthouse', String(cur.lighthouse), [['Bundle size',cur.bundle],['Table render',cur.tableRender]]),
+      card('Change','components','Files touched', String(cur.files), [['Tests impacted',String(cur.tests)],['Docs pages',String(cur.docs)]]),
+    ];
+
+    const chartDef = [
+      { title:'CI duration', vals:{A:560,B:220,C:310}, labels:{A:'9m 20s',B:'3m 40s',C:'5m 10s'} },
+      { title:'Bundle size', vals:{A:412,B:198,C:164}, labels:{A:'412 KB',B:'198 KB',C:'164 KB'} },
+      { title:'Files touched · AI task', vals:{A:23,B:6,C:41}, labels:{A:'23',B:'6',C:'41'} },
+    ];
+    const charts = chartDef.map(c=>{
+      const max=Math.max(c.vals.A,c.vals.B,c.vals.C);
+      return { title:c.title, bars:['A','B','C'].map(k=>({
+        key:k, label:c.labels[k], cur:k===short,
+        barStyle:{ width:'100%', height:Math.max(6,(c.vals[k]/max)*86)+'px', borderRadius:'6px 6px 0 0', background: k===short?'#ef7e00':'#cdd2d8' },
+        nameStyle:{ fontSize:'11px', fontWeight: k===short?700:500, color: k===short?'#c2630a':'#8a929e' }
+      })) };
+    });
+
+    const rows = [
+      ['Install time', D.A.install, D.B.install, D.C.install, 'B'],
+      ['Typecheck time', D.A.typecheck, D.B.typecheck, D.C.typecheck, 'B'],
+      ['Test time', D.A.test, D.B.test, D.C.test, 'B'],
+      ['Build time', D.A.build, D.B.build, D.C.build, 'C'],
+      ['Docker build time', D.A.docker, D.B.docker, D.C.docker, 'B'],
+      ['CI duration', D.A.ci, D.B.ci, D.C.ci, 'B'],
+      ['Bundle size', D.A.bundle, D.B.bundle, D.C.bundle, 'C'],
+      ['Main chunk size', D.A.chunk, D.B.chunk, D.C.chunk, 'C'],
+      ['Lighthouse performance', String(D.A.lighthouse), String(D.B.lighthouse), String(D.C.lighthouse), 'C'],
+      ['Table render time', D.A.tableRender, D.B.tableRender, D.C.tableRender, 'C'],
+      ['Files touched · AI task', String(D.A.files), String(D.B.files), String(D.C.files), 'B'],
+      ['Tests impacted', String(D.A.tests), String(D.B.tests), String(D.C.tests), 'B'],
+      ['Error reproduction steps', String(D.A.repro), String(D.B.repro), String(D.C.repro), 'B'],
+      ['Docs pages needed', String(D.A.docs), String(D.B.docs), String(D.C.docs), 'B'],
+    ];
+    const cellHi = (col)=> col===short ? { background:'#fff7ee' } : {};
+    const tableRows = rows.map(r=>({
+      metric:r[0],
+      cells:[
+        { v:r[1], best:r[4]==='A', hi:'A'===short, style:Object.assign({padding:'10px 14px',textAlign:'right',fontFamily:"'Geist Mono',monospace",fontWeight:r[4]==='A'?700:500,color:r[4]==='A'?'#067647':'#3a414a'}, cellHi('A')) },
+        { v:r[2], best:r[4]==='B', hi:'B'===short, style:Object.assign({padding:'10px 14px',textAlign:'right',fontFamily:"'Geist Mono',monospace",fontWeight:r[4]==='B'?700:500,color:r[4]==='B'?'#067647':'#3a414a'}, cellHi('B')) },
+        { v:r[3], best:r[4]==='C', hi:'C'===short, style:Object.assign({padding:'10px 14px',textAlign:'right',fontFamily:"'Geist Mono',monospace",fontWeight:r[4]==='C'?700:500,color:r[4]==='C'?'#067647':'#3a414a'}, cellHi('C')) },
+      ],
+      best:r[4],
+    }));
+
+    const aiOutcome = {
+      A:{ text:'Completed, but required manual fixes across several modules before tests passed.', kind:'bad' },
+      B:{ text:'Completed in a single pass. Low review scope and no manual fixes needed.', kind:'good' },
+      C:{ text:'Completed, but the change rippled across 41 files — review scope is high.', kind:'bad' },
+    }[short];
+    const ai = {
+      task:'Add a "Source" filter to Signals Explorer',
+      metrics:[
+        { label:'Files touched', value:String(cur.files) },
+        { label:'Tests impacted', value:String(cur.tests) },
+        { label:'Error repro steps', value:String(cur.repro) },
+        { label:'Docs pages needed', value:String(cur.docs) },
+      ],
+      outcome:aiOutcome.text, outcomeStyle:this.chip(aiOutcome.kind),
+      outcomeLabel: aiOutcome.kind==='good'?'Healthy':'High cost',
+    };
+
+    const perf = [
+      { label:'Bundle size', value:cur.bundle, note:'gzipped' },
+      { label:'Main chunk', value:cur.chunk, note:'entry' },
+      { label:'Lighthouse', value:String(cur.lighthouse), note:'/ 100', bar:{height:'100%',width:cur.lighthouse+'%',borderRadius:'4px',background: cur.lighthouse>=90?'#12b76a':cur.lighthouse>=75?'#eab308':'#ef4444'} },
+      { label:'Table render', value:cur.tableRender, note:'10k rows' },
+    ];
+
+    const ciStatus = { pass:{dot:'#12b76a', style:this.chip('good'), label:'Passed'}, fail:{dot:'#d92d20', style:this.chip('bad'), label:'Failed'} };
+    const ciRaw = [
+      ['feat: add source filter to explorer', cur.ci, 'pass', '12m ago', 'a3f9c1'],
+      ['fix: badge contrast on dismissed status', cur.ci, 'pass', '38m ago', '7b2e08'],
+      ['refactor: signal scoring worker', '—', 'fail', '1h 04m ago', 'c91d4a'],
+      ['chore: bump dataset to v2.4.0', cur.ci, 'pass', '2h 11m ago', '1d77ef'],
+      ['feat: incident grouping recommendation', cur.ci, 'pass', '3h 49m ago', '5a0c33'],
+      ['test: cover qualification timing', cur.ci, 'pass', '5h 20m ago', 'b6e144'],
+    ];
+    const ci = ciRaw.map(r=>({ commit:r[0], dur:r[1], when:r[3], sha:r[4], dot:ciStatus[r[2]].dot, statusStyle:ciStatus[r[2]].style, statusLabel:ciStatus[r[2]].label }));
+
+    const hStyle = (k)=> Object.assign({ padding:'10px 14px', textAlign:'right', fontSize:'11px', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.04em', color:k===short?'#c2630a':'#8a929e' }, k===short?{background:'#fff7ee'}:{});
+    const headers = [
+      { name:'Variant A', cur:short==='A', tag:short==='A'?'Current':'Friction', style:hStyle('A') },
+      { name:'Variant B', cur:short==='B', tag:short==='B'?'Current':'Flow', style:hStyle('B') },
+      { name:'Variant C', cur:short==='C', tag:short==='C'?'Current':'Overfit', style:hStyle('C') },
+    ];
+    return { variantLabel:cur.name, short, cards, charts, tableRows, headers, ai, perf, ci };
+  }
+
+  renderVals(){
+    const variant = this.props.variant ?? 'Variant B — Flow';
+    const route = this.state.route;
+    const S = this.signals;
+
+    const navProduct = [
+      this.navItem('Overview','overview','overview','overview'),
+      this.navItem('Signals','signals','signals','signals','1,284'),
+      this.navItem('Incidents','incidents','incidents','incidents','9'),
+      this.navItem('Compare','compare','compare','compare'),
+      this.navItem('DX Metrics','dx-metrics','dx-metrics','dx'),
+      this.navItem('Settings','settings','settings','settings'),
+    ];
+    const navDocs = [
+      this.navItem('Design system','design-system','design-system','ds'),
+      this.navItem('Components','components','components','components'),
+      this.navItem('UI states','ui-states','ui-states','states'),
+      this.navItem('Responsive','responsive','responsive','responsive'),
+    ];
+
+    // KPIs
+    const kpis = [
+      { label:'Open signals', value:'1,284', icon:this.ic('k-open','#c2630a'), iconBg:'#fff1e3', trend:'▲ 6.2%', trendNote:'vs last week', trendStyle:this.trendStyle('up','neutral') },
+      { label:'Critical signals', value:'37', icon:this.ic('k-crit','#d92d20'), iconBg:'#fef3f2', trend:'▲ 4', trendNote:'new today', trendStyle:this.trendStyle('up','bad') },
+      { label:'Active incidents', value:'9', icon:this.ic('k-inc','#175cd3'), iconBg:'#eff4ff', trend:'▼ 2', trendNote:'vs yesterday', trendStyle:this.trendStyle('down','good') },
+      { label:'Avg qualification time', value:'3h 42m', icon:this.ic('k-time','#067647'), iconBg:'#ecfdf3', trend:'▼ 18m', trendNote:'faster than avg', trendStyle:this.trendStyle('down','good') },
+    ];
+
+    // severity distribution
+    const counts = { Low:0, Medium:0, High:0, Critical:0 };
+    S.forEach(s=>{ if(s.status!=='Resolved'&&s.status!=='Dismissed') counts[s.severity]++; });
+    const display = { Low:312, Medium:486, High:449, Critical:37 };
+    const maxC = Math.max(...Object.values(display));
+    const severityBars = ['Critical','High','Medium','Low'].map(k=>({
+      label:k, count:display[k].toLocaleString(), color:this.sevMeta[k].dot,
+      barStyle:{ height:'100%', width:(display[k]/maxC*100)+'%', background:this.sevMeta[k].bar, borderRadius:'6px' }
+    }));
+
+    // top critical signals
+    const topCritical = S.filter(s=>s.severity==='Critical'||s.severity==='High').filter(s=>s.status!=='Resolved'&&s.status!=='Dismissed').sort((a,b)=>b.risk-a.risk).slice(0,8).map(s=>({
+      id:s.id, title:s.title, source:s.source, created:s.created, severity:s.severity, risk:s.risk,
+      sevDot:this.sevMeta[s.severity].dot, sevBadge:this.badge(this.sevMeta[s.severity]), open:this.openSignal(s.id)
+    }));
+
+    const systemStatus = [
+      this.svcRow('Ingestion pipeline','op'),
+      this.svcRow('Signal scoring','op'),
+      this.svcRow('Partner API connector','degraded'),
+      this.svcRow('Notification service','op'),
+      this.svcRow('Export worker','down'),
+    ];
+
+    // ---------- Signals Explorer ----------
+    const q = (this.state.search||'').toLowerCase().trim();
+    const fSev=this.state.sevFilter, fStatus=this.state.statusFilter, fSource=this.state.sourceFilter, fAssigned=this.state.assignedFilter||'All';
+    const filtered = S.filter(s=>{
+      if(fSev!=='All'&&s.severity!==fSev) return false;
+      if(fStatus!=='All'&&s.status!==fStatus) return false;
+      if(fSource!=='All'&&s.source!==fSource) return false;
+      if(fAssigned!=='All'){ if(fAssigned==='Unassigned'){ if(s.assignee!=='—') return false; } else if(s.assignee!==fAssigned) return false; }
+      if(q && !(s.title.toLowerCase().includes(q)||s.id.toLowerCase().includes(q)||s.source.toLowerCase().includes(q)||(s.assignee||'').toLowerCase().includes(q))) return false;
+      return true;
+    });
+    const sel = this.state.selected||{};
+    const selIds = filtered.filter(s=>sel[s.id]);
+    const confC = { High:'#067647', Medium:'#a86a04', Low:'#5c6470', '—':'#a3aab4' };
+    const sigRows = filtered.map(s=>({
+      id:s.id, title:s.title, severity:s.severity, status:s.status, source:s.source, risk:s.risk, created:s.created,
+      checked:!!sel[s.id],
+      rowStyle:{ borderTop:'1px solid #f2f3f5', background: sel[s.id]?'#fffaf3':'#fff' },
+      sevBadge:this.badge(this.sevMeta[s.severity]), statusBadge:this.badge(this.statusMeta[s.status]),
+      riskColor: s.risk>=85?'#d92d20':s.risk>=70?'#b65a06':s.risk>=50?'#a86a04':'#5c6470',
+      riskBar:{ height:'100%', width:s.risk+'%', borderRadius:'4px', background:(s.risk>=85?'#ef4444':s.risk>=70?'#ef7e00':s.risk>=50?'#eab308':'#9aa1ab') },
+      confColor: confC[s.confidence]||'#a3aab4', confLabel: s.confidence==='—'?'Unavailable':s.confidence, confMuted: s.confidence==='—',
+      assigneeShow: s.assignee==='—'?'Unassigned':s.assignee, assigneeMuted: s.assignee==='—', assigneeInit: s.assignee==='—'?'?':s.assignee.replace(/[^A-Z]/g,'').slice(0,2),
+      incidentShow: s.incident, hasIncident: s.incident!=='—', noIncident: s.incident==='—',
+      toggle:()=>this.toggleSel(s.id), open:this.openSignal(s.id),
+    }));
+    const allChecked = filtered.length>0 && selIds.length===filtered.length;
+    const selCount = selIds.length;
+    const selAvgRisk = selCount? Math.round(selIds.reduce((a,b)=>a+b.risk,0)/selCount):0;
+    const onToggleAll = ()=>{ const next=Object.assign({},sel); if(allChecked){ filtered.forEach(s=>delete next[s.id]); } else { filtered.forEach(s=>next[s.id]=true); } this.setState({selected:next}); };
+    const clearSelection = ()=>this.setState({selected:{}});
+    const bulkOverride = (patch)=>{ const ov=Object.assign({},this.state.overrides); selIds.forEach(s=>ov[s.id]=Object.assign({},ov[s.id],patch)); this.setState({overrides:ov,selected:{}}); };
+
+    const recentIncidents = this.incidentsRaw.slice(0,5).map(r=>({
+      id:r[0], title:r[1], severity:r[2], status:r[3], linked:r[5], owner:r[6], ownerInit:r[6].replace(/[^A-Z]/g,'').slice(0,2),
+      sevBadge:this.badge(this.sevMeta[r[2]]), statusBadge:this.badge(this.statusMeta[r[3]])
+    }));
+
+    // ---------- Signal Detail ----------
+    const cur = S.find(x=>x.id===this.state.signalId) || S[0];
+    const confPct = { High:88, Medium:62, Low:34, '—':0 };
+    const dPatch = (patch)=>{ const ov=Object.assign({},this.state.overrides); ov[cur.id]=Object.assign({},ov[cur.id],patch); this.setState({overrides:ov}); };
+    const detail = {
+      id:cur.id, title:cur.title, severity:cur.severity, status:cur.status, source:cur.source, risk:cur.risk,
+      created:cur.created, assigneeShow: cur.assignee==='—'?'Unassigned':cur.assignee, assigneeMuted: cur.assignee==='—',
+      confLabel: cur.confidence==='—'?'Unavailable':cur.confidence, confPct: confPct[cur.confidence]||0, confMuted: cur.confidence==='—',
+      sevBadge:this.badge(this.sevMeta[cur.severity],{fontSize:'12px',padding:'3px 11px'}),
+      statusBadge:this.badge(this.statusMeta[cur.status],{fontSize:'12px',padding:'3px 11px'}),
+      riskColor: cur.risk>=85?'#d92d20':cur.risk>=70?'#b65a06':'#a86a04',
+      riskBar:{height:'100%',width:cur.risk+'%',borderRadius:'5px',background:(cur.risk>=85?'#ef4444':cur.risk>=70?'#ef7e00':'#eab308')},
+      confBar:{height:'100%',width:(confPct[cur.confidence]||0)+'%',borderRadius:'5px',background: cur.confidence==='—'?'#d4d8dd':'#2563eb'},
+      description:`${cur.title} was detected through ${cur.source} ingestion at ${cur.created}. The pattern deviates from the 30-day baseline by a significant margin and was automatically flagged for analyst qualification. Correlated activity across nearby events suggests a coordinated rather than isolated occurrence.`,
+      tags:['baseline-deviation', cur.source.toLowerCase()+'-source', cur.severity.toLowerCase()+'-severity', 'auto-scored'],
+      hasIncident: cur.incident!=='—', noIncident: cur.incident==='—', incident:cur.incident,
+      sources:[
+        { name: cur.source+' connector', meta:'Primary source · '+cur.created, dot:'#ef7e00' },
+        { name:'Auth event stream', meta:'Correlated · 3 related events', dot:'#2563eb' },
+        { name:'Baseline model v2.4', meta:'Scoring reference', dot:'#9aa1ab' },
+      ],
+      timeline:[
+        { title:'Signal created', desc:'Ingested from '+cur.source, time:cur.created, color:'#9aa1ab' },
+        { title:'Auto-scored', desc:'Risk '+cur.risk+' · confidence '+(cur.confidence==='—'?'unavailable':cur.confidence.toLowerCase()), time:'+2m', color:'#ef7e00' },
+        { title: cur.assignee==='—'?'Awaiting assignment':'Assigned to '+cur.assignee, desc: cur.assignee==='—'?'No analyst assigned yet':'Picked up for triage', time:'+14m', color: cur.assignee==='—'?'#d9a200':'#2563eb' },
+        { title:'Status · '+cur.status, desc: cur.status==='Resolved'?'Closed after review':'Currently '+cur.status.toLowerCase(), time:'+32m', color:this.statusMeta[cur.status].fg },
+      ],
+      ai:`This signal shares its access and latency fingerprint with 2 other ${cur.source} signals opened in the last hour. Confidence is ${cur.confidence==='—'?'currently unavailable':cur.confidence.toLowerCase()} — treat the score as provisional. The grouping points to a coordinated pattern rather than an isolated event.`,
+      recommended: cur.severity==='Critical'?'Escalate to an incident and notify the on-call analyst.':'Review recommended before escalation.',
+      recommendedDetail: cur.severity==='Critical'?'Risk score and correlation both exceed the escalation threshold.':'Risk is elevated but remains below the automatic escalation threshold.',
+      recColor: cur.severity==='Critical'?'#d92d20':'#a86a04', recBg: cur.severity==='Critical'?'#fef3f2':'#fef7e6', recBorder: cur.severity==='Critical'?'#fbd5d2':'#f5e3b8',
+      onAssign:()=>dPatch({assignee:'A. Mercier'}), onStatus:()=>dPatch({status:'Investigating'}),
+      onEscalate:()=>dPatch({severity:'Critical',status:'Investigating'}), onResolve:()=>dPatch({status:'Resolved'}),
+      goSignals:this.go('signals'),
+    };
+
+    // ---------- Incidents ----------
+    const fIncStatus=this.state.incStatus||'All', fIncSev=this.state.incSeverity||'All', fIncImpact=this.state.incImpact||'All';
+    const incAll = this.incidentsRaw.map(r=>({ id:r[0], title:r[1], severity:r[2], status:r[3], impact:r[4], linked:r[5], owner:r[6], age:r[7] }));
+    const incFiltered = incAll.filter(i=>{
+      if(fIncStatus!=='All'&&i.status!==fIncStatus) return false;
+      if(fIncSev!=='All'&&i.severity!==fIncSev) return false;
+      if(fIncImpact!=='All'&&i.impact!==fIncImpact) return false;
+      return true;
+    });
+    const incRows = incFiltered.map(i=>({
+      ...i, ownerInit: i.owner.replace(/[^A-Z]/g,'').slice(0,2),
+      sevBadge:this.badge(this.sevMeta[i.severity]), statusBadge:this.badge(this.statusMeta[i.status]),
+      impactBadge:this.badge(this.impactMeta[i.impact]),
+      resolved: i.status==='Resolved', ageShow: i.age==='—'?'Closed':i.age,
+      open:this.go('signals'),
+    }));
+    const incActive = incAll.filter(i=>i.status!=='Resolved').length;
+    const incCritical = incAll.filter(i=>i.severity==='Critical'&&i.status!=='Resolved').length;
+    const incCards = [
+      { label:'Active incidents', value:String(incActive), note:'Currently open', icon:this.ic('k-inc','#175cd3'), iconBg:'#eff4ff' },
+      { label:'Critical', value:String(incCritical), note:'Need attention now', icon:this.ic('k-crit','#d92d20'), iconBg:'#fef3f2' },
+      { label:'Avg resolution time', value:'2h 18m', note:'Last 7 days', icon:this.ic('k-time','#067647'), iconBg:'#ecfdf3' },
+      { label:'Resolved this week', value:'14', note:'+3 vs last week', icon:this.ic('k-open','#c2630a'), iconBg:'#fff1e3' },
+    ];
+
+    const dxShort = variant.includes('A —')?'A':variant.includes('C —')?'C':'B';
+    const dx = this.buildDx(dxShort);
+
+    return {
+      variant, route,
+      isDx: route==='dx-metrics', dx,
+      isSettings: route==='settings',
+      isDesignSystem: route==='design-system',
+      isComponents: route==='components',
+      componentGroups: [
+        { group:'Layout & navigation', items:[['AppShell','Sidebar + header + content frame shared by every route'],['Sidebar','Logo, variant pill and primary + docs navigation'],['TopBar','Breadcrumb, global search, notifications, primary action'],['Breadcrumb','Route path with the current page emphasised'],['Footer','Build info and API status strip']] },
+        { group:'Data display', items:[['KpiCard','Label, value, trend chip and icon'],['StatTile','Compact metric tile (detail / DX headers)'],['DataTable','Dense table: signals, incidents and metrics'],['SeverityBars','Horizontal distribution bars'],['TrendChart','Multi-series area / line chart'],['VariantBars','Grouped A/B/C comparison bars'],['Timeline','Vertical event list with status dots'],['StatusList','Service / CI rows with status dots']] },
+        { group:'Inputs & controls', items:[['SearchInput','Icon + input with keyboard hint'],['FilterSelect','Labelled dropdown for filters'],['Checkbox','Row + select-all, orange accent'],['Toggle','Feature-flag switch (on / off)'],['BulkActionBar','Selection summary + batch actions']] },
+        { group:'Feedback & status', items:[['Badge','Severity, status and impact pills (text + colour)'],['Banner','Inline simulation / error / success message'],['EmptyState','Icon, message and recovery action'],['ErrorState','Partial and global error treatments'],['Skeleton','Shimmer placeholder while loading'],['Spinner','Slow-network indicator']] },
+        { group:'Actions & AI', items:[['Button','primary · secondary · ghost · danger · dark · disabled'],['AiCard','Orange-tinted AI summary / recommendation'],['RecommendedAction','Severity-aware guidance callout'],['DiffRow','Before → after comparison row'],['VariantBadge','Variant A / B / C indicator pill']] },
+      ].map(g=>({ group:g.group, items:g.items.map(i=>({ name:i[0], desc:i[1] })) })),
+      isUiStates: route==='ui-states',
+      isResponsive: route==='responsive',
+      mobileKpis: kpis.slice(0,4),
+      mobileSignals: topCritical.slice(0,4),
+      mobileSig: this.signals.filter(s=>s.severity==='Critical'||s.severity==='High').slice(0,5).map(s=>({ id:s.id, title:s.title, severity:s.severity, status:s.status, risk:s.risk, sevBadge:this.badge(this.sevMeta[s.severity]), statusBadge:this.badge(this.statusMeta[s.status]) })),
+      mobileDxCards: dx.cards, mobileChart: dx.charts[0], mobileDxRows: dx.tableRows.slice(0,6), mobileDetail: detail,
+      dsBrand: [['Accent','#ef7e00'],['Accent hover','#c2630a'],['Accent 100','#fff1e3'],['Accent 50','#fffaf3']].map(c=>({name:c[0],hex:c[1],sw:{background:c[1],border:'1px solid rgba(0,0,0,0.06)'}})),
+      dsNeutral: [['Ink','#14171a'],['Slate 700','#3a414a'],['Slate 500','#5c6470'],['Slate 400','#8a929e'],['Border','#e8eaed'],['Surface','#f6f7f8'],['White','#ffffff']].map(c=>({name:c[0],hex:c[1],sw:{background:c[1],border:'1px solid #e8eaed'}})),
+      dsStatus: [['Green','#067647'],['Red','#d92d20'],['Amber','#a86a04'],['Blue','#175cd3']].map(c=>({name:c[0],hex:c[1],sw:{background:c[1],border:'1px solid rgba(0,0,0,0.06)'}})),
+      dsSpacing: [4,8,12,16,20,24,32,40].map(n=>({n:String(n), barStyle:{width:n+'px',height:'14px',background:'#ef7e00',borderRadius:'3px'}})),
+      dsRadius: [['sm','6'],['md','8'],['lg','9'],['xl','12'],['pill','999']].map(r=>({name:r[0],val:r[1],boxStyle:{width:'52px',height:'40px',background:'#fff1e3',border:'1.5px solid #ef7e00',borderRadius:(r[1]==='999'?'999px':r[1]+'px')}})),
+      dsSev: ['Low','Medium','High','Critical'].map(k=>({label:k,style:this.badge(this.sevMeta[k])})),
+      dsStat: ['New','Triaged','Investigating','Resolved','Dismissed'].map(k=>({label:k,style:this.badge(this.statusMeta[k])})),
+      dsImpact: ['User','System','Security','Business'].map(k=>({label:k,style:this.badge(this.impactMeta[k])})),
+      settingsEnv: [
+        { label:'API status', value:'Operational', dot:'#12b76a', mono:false },
+        { label:'Dataset version', value:'v2.4.0', dot:null, mono:true },
+        { label:'Variant name', value:variant, dot:'#ef7e00', mono:false },
+        { label:'Region', value:'eu-west-1', dot:null, mono:true },
+      ],
+      flagRows: [
+        ['ai','AI recommendations','Show mock AI recommendations on Overview and Signal detail'],
+        ['grouping','Incident grouping','Suggest grouping related signals into a single incident'],
+        ['dense','Dense tables','Use compact row height in Signals Explorer'],
+        ['autoEscalate','Auto-escalation','Automatically escalate signals scoring above 90'],
+        ['experimental','Experimental scoring','Use baseline model v2.5 (preview) for risk scores'],
+      ].map(f=>{
+        const on=!!this.state.flags[f[0]];
+        return { key:f[0], label:f[1], desc:f[2], on, ariaChecked:on?'true':'false',
+          trackStyle:{ position:'relative', width:'40px', height:'23px', borderRadius:'999px', background:on?'#ef7e00':'#cdd2d8', transition:'background .15s', flex:'0 0 40px' },
+          knobStyle:{ position:'absolute', top:'2px', left:on?'19px':'2px', width:'19px', height:'19px', borderRadius:'50%', background:'#fff', transition:'left .15s', boxShadow:'0 1px 2px rgba(0,0,0,0.25)' },
+          toggle:()=>this.toggleFlag(f[0]) };
+      }),
+      simMsg:this.state.simMsg,
+      onSimError:()=>this.setState({simMsg:{ text:'Simulated API error — widgets now show a partial-error state.', bg:'#fef3f2', border:'#fbd5d2', fg:'#d92d20', dot:'#d92d20' }}),
+      onSimSlow:()=>this.setState({simMsg:{ text:'Simulated slow network — responses are delayed by ~3s.', bg:'#fef7e6', border:'#f5e3b8', fg:'#a86a04', dot:'#d9a200' }}),
+      onReset:()=>this.setState({ overrides:{}, selected:{}, sevFilter:'All', statusFilter:'All', sourceFilter:'All', assignedFilter:'All', incStatus:'All', incSeverity:'All', incImpact:'All', search:'', flags:{ ai:true, grouping:true, dense:true, autoEscalate:false, experimental:false }, simMsg:{ text:'Demo state has been reset to defaults.', bg:'#ecfdf3', border:'#bbf0d0', fg:'#067647', dot:'#12b76a' } }),
+      isOverview: route==='overview',
+      isSignals: route==='signals',
+      isDetail: route==='signal-detail', d:detail,
+      isIncidents: route==='incidents',
+      isCompare: route==='compare',
+      cmpRows: [
+        { label:'Severity', badge:true, beforeStyle:this.badge(this.sevMeta.High), beforeText:'High', afterStyle:this.badge(this.sevMeta.Critical), afterText:'Critical', changed:true, delta:'Escalated', deltaStyle:this.chip('bad') },
+        { label:'Status', badge:true, beforeStyle:this.badge(this.statusMeta.New), beforeText:'New', afterStyle:this.badge(this.statusMeta.Investigating), afterText:'Investigating', changed:true, delta:'Advanced', deltaStyle:this.chip('neutral') },
+        { label:'Risk score', badge:false, beforeText:'78', afterText:'91', changed:true, delta:'+13', deltaStyle:this.chip('bad') },
+        { label:'Confidence', badge:false, beforeText:'Medium', afterText:'Medium', changed:false, delta:'No change', deltaStyle:this.chip('muted') },
+        { label:'Assigned to', badge:false, beforeText:'Unassigned', afterText:'A. Mercier', changed:true, delta:'Assigned', deltaStyle:this.chip('good') },
+        { label:'Recommended action', badge:false, beforeText:'Monitor for 24h', afterText:'Escalate to incident', changed:true, delta:'Changed', deltaStyle:this.chip('neutral') },
+      ].map(r=>({ ...r, notBadge:!r.badge, unchanged:!r.changed, rowStyle:{ display:'grid', gridTemplateColumns:'170px 1fr 40px 1.3fr', alignItems:'center', columnGap:'8px', padding:'13px 18px', borderTop:'1px solid #f2f3f5', background: r.changed?'#fffdf9':'#fff' } })),
+      cmpChanges: [
+        { t:'Re-scored by model v2.4', d:'Risk score increased 78 → 91', color:'#ef7e00', time:'09:02' },
+        { t:'Severity auto-escalated', d:'High → Critical', color:'#d92d20', time:'09:03' },
+        { t:'Assigned to A. Mercier', d:'Picked up for investigation', color:'#2563eb', time:'09:05' },
+        { t:'Linked to INC-204', d:'Grouped with 2 related signals', color:'#067647', time:'09:06' },
+      ],
+      cmpImpactMetrics: [
+        { label:'Qualification time', value:'−22%', style:this.chip('good') },
+        { label:'Review scope', value:'+3 signals', style:this.chip('bad') },
+        { label:'Time to escalate', value:'−14m', style:this.chip('good') },
+      ],
+      compareOptions:['S-1041 · Partner API latency spike','S-1037 · Suspicious document access','S-1031 · Spike in 5xx error rate'],
+      compareSel:this.state.compareSel||'S-1041 · Partner API latency spike',
+      onCompareSel:e=>this.setState({compareSel:e.target.value}),
+      incCards, incRows, incCount:incFiltered.length, incTotal:incAll.length,
+      incStatusOptions:['All','New','Triaged','Investigating','Resolved'],
+      incSeverityOptions:['All','Critical','High','Medium','Low'],
+      incImpactOptions:['All','User','System','Security','Business'],
+      fIncStatus, fIncSev, fIncImpact,
+      onIncStatus:e=>this.setState({incStatus:e.target.value}),
+      onIncSev:e=>this.setState({incSeverity:e.target.value}),
+      onIncImpact:e=>this.setState({incImpact:e.target.value}),
+      resetIncFilters:()=>this.setState({incStatus:'All',incSeverity:'All',incImpact:'All'}),
+      navProduct, navDocs, crumbs:this.crumbsFor(),
+      search:this.state.search, onSearch:(e)=>this.setState({search:e.target.value}),
+      goSignals:this.go('signals'), goIncidents:this.go('incidents'),
+      kpis, severityBars, overTimeChart:this.overTimeChartEl(),
+      topCritical, systemStatus, recentIncidents,
+      // explorer
+      sigRows, sigCount:filtered.length, sigTotal:S.length,
+      resultLabel:`${filtered.length} of ${S.length} signals`,
+      severityOptions:['All','Critical','High','Medium','Low'],
+      statusOptions:['All','New','Triaged','Investigating','Resolved','Dismissed'],
+      sourceOptions:['All','Web','Social','Internal','Partner','API','Manual'],
+      assigneeOptions:['All','A. Mercier','J. Tan','R. Silva','M. Okafor','L. Petrov','Unassigned'],
+      dateOptions:['Last 7 days','Last 30 days','Last 90 days','Custom range'],
+      fSev, fStatus, fSource, fAssigned, fDate:this.state.dateFilter,
+      onSev:e=>this.setState({sevFilter:e.target.value}),
+      onStatus:e=>this.setState({statusFilter:e.target.value}),
+      onSource:e=>this.setState({sourceFilter:e.target.value}),
+      onAssigned:e=>this.setState({assignedFilter:e.target.value}),
+      onDate:e=>this.setState({dateFilter:e.target.value}),
+      resetFilters:()=>this.setState({sevFilter:'All',statusFilter:'All',sourceFilter:'All',assignedFilter:'All',search:''}),
+      allChecked, onToggleAll, hasSelection:selCount>0, noSelection:selCount===0, selCount, selAvgRisk, clearSelection,
+      assignSelected:()=>bulkOverride({assignee:'A. Mercier'}),
+      markTriaged:()=>bulkOverride({status:'Triaged'}),
+    };
+  }
+
+  trendStyle(dir, kind){
+    const c = kind==='good' ? '#067647' : kind==='bad' ? '#d92d20' : '#5c6470';
+    const bg = kind==='good' ? '#ecfdf3' : kind==='bad' ? '#fef3f2' : '#f2f4f6';
+    return { fontSize:'11.5px', fontWeight:600, color:c, background:bg, padding:'1px 7px', borderRadius:'6px' };
+  }
+  chip(kind){
+    const m = { good:['#ecfdf3','#067647'], bad:['#fef3f2','#d92d20'], neutral:['#fff1e3','#b65a06'], muted:['#f2f4f6','#8a929e'] }[kind];
+    return { fontSize:'11px', fontWeight:600, padding:'2px 9px', borderRadius:'999px', background:m[0], color:m[1], whiteSpace:'nowrap' };
+  }
+  svcRow(name, state){
+    const map = { op:['#12b76a','Operational','#ecfdf3','#067647'], degraded:['#d9a200','Degraded','#fef7e6','#a86a04'], down:['#d92d20','Down','#fef3f2','#d92d20'] };
+    const m = map[state];
+    return { name, dot:m[0], label:m[1], badge:{ fontSize:'11px', fontWeight:600, padding:'1px 8px', borderRadius:'999px', background:m[2], color:m[3] } };
+  }
+}
+</script>
+</body>
+</html>

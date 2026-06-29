@@ -1,0 +1,21 @@
+{
+  "name": "@signalops/test-scenarios",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Common, typed user scenarios shared by every SignalOps variant's tests.",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "build": "tsc --noEmit",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --passWithNoTests",
+    "lint": "prettier --check \"src/**/*.ts\""
+  },
+  "dependencies": {
+    "@signalops/contracts": "workspace:*"
+  }
+}

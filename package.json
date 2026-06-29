@@ -1,0 +1,34 @@
+{
+  "name": "signalops-dx-lab",
+  "version": "0.0.0",
+  "private": true,
+  "description": "SignalOps DX Lab — shared monorepo foundation for the three SignalOps variants (Friction / Flow / Overfit).",
+  "type": "module",
+  "packageManager": "pnpm@9.15.0",
+  "engines": {
+    "node": ">=20.11.0",
+    "pnpm": ">=9.0.0"
+  },
+  "scripts": {
+    "build": "nx run-many -t build",
+    "test": "nx run-many -t test",
+    "typecheck": "nx run-many -t typecheck",
+    "lint": "nx run-many -t lint",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "fixtures:generate": "pnpm --filter @signalops/fixtures generate",
+    "metrics:collect": "pnpm --filter @signalops/metrics collect",
+    "metrics:all": "pnpm fixtures:generate && pnpm metrics:collect",
+    "ci:friction": "echo \"Friction CI will be implemented in the variant pass\"",
+    "ci:flow": "echo \"Flow CI will be implemented in the variant pass\"",
+    "ci:overfit": "echo \"Overfit CI will be implemented in the variant pass\""
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.5",
+    "nx": "^20.3.0",
+    "prettier": "^3.4.2",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.3",
+    "vitest": "^2.1.8"
+  }
+}

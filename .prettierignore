@@ -1,0 +1,7 @@
+node_modules
+dist
+.nx
+pnpm-lock.yaml
+packages/fixtures/data
+packages/metrics/results
+maquettes

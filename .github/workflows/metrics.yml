@@ -1,0 +1,50 @@
+name: metrics
+
+# Shared-foundation pipeline. Exercises the socle acceptance commands and publishes the
+# collected (seed, for now) DX metrics as an artifact.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  shared-metrics:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate fixtures
+        run: pnpm fixtures:generate
+
+      - name: Typecheck shared packages
+        run: pnpm typecheck
+
+      - name: Test shared packages
+        run: pnpm test
+
+      - name: Collect metrics
+        run: pnpm metrics:collect
+
+      - name: Upload metrics results
+        uses: actions/upload-artifact@v4
+        with:
+          name: metrics-results
+          path: packages/metrics/results/*.json
+          if-no-files-found: error

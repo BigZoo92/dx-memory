@@ -1,0 +1,23 @@
+{
+  "name": "@signalops/metrics",
+  "version": "0.0.0",
+  "private": true,
+  "description": "DX metrics collection shared by every SignalOps variant.",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "collect": "tsx src/write-results.ts",
+    "build": "tsc --noEmit",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --passWithNoTests",
+    "lint": "prettier --check \"src/**/*.ts\""
+  },
+  "dependencies": {
+    "@signalops/contracts": "workspace:*",
+    "@signalops/fixtures": "workspace:*"
+  }
+}

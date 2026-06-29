@@ -1,0 +1,82 @@
+{
+  "generatedAt": "2026-06-29T12:00:00.000Z",
+  "source": "seed",
+  "seed": 20260629,
+  "variants": [
+    {
+      "variant": "friction",
+      "installTimeMs": 48000,
+      "typecheckTimeMs": 19000,
+      "testTimeMs": 160000,
+      "buildTimeMs": 72000,
+      "dockerBuildTimeMs": 250000,
+      "ciDurationMs": 560000,
+      "bundleSizeKb": 412,
+      "mainChunkSizeKb": 287,
+      "lighthousePerformance": 71,
+      "tableRenderTimeMs": 480,
+      "filesTouchedForAiTask": 23,
+      "testsImpacted": 48,
+      "errorReproductionSteps": 7,
+      "docsPagesNeeded": 5,
+      "aiTaskResult": "partial"
+    },
+    {
+      "variant": "flow",
+      "installTimeMs": 22000,
+      "typecheckTimeMs": 8000,
+      "testTimeMs": 54000,
+      "buildTimeMs": 38000,
+      "dockerBuildTimeMs": 110000,
+      "ciDurationMs": 220000,
+      "bundleSizeKb": 198,
+      "mainChunkSizeKb": 121,
+      "lighthousePerformance": 94,
+      "tableRenderTimeMs": 120,
+      "filesTouchedForAiTask": 6,
+      "testsImpacted": 9,
+      "errorReproductionSteps": 2,
+      "docsPagesNeeded": 1,
+      "aiTaskResult": "success"
+    },
+    {
+      "variant": "overfit",
+      "installTimeMs": 31000,
+      "typecheckTimeMs": 12000,
+      "testTimeMs": 98000,
+      "buildTimeMs": 26000,
+      "dockerBuildTimeMs": 125000,
+      "ciDurationMs": 310000,
+      "bundleSizeKb": 164,
+      "mainChunkSizeKb": 96,
+      "lighthousePerformance": 97,
+      "tableRenderTimeMs": 90,
+      "filesTouchedForAiTask": 41,
+      "testsImpacted": 72,
+      "errorReproductionSteps": 9,
+      "docsPagesNeeded": 8,
+      "aiTaskResult": "partial"
+    }
+  ],
+  "winners": [
+    { "metric": "installTimeMs", "lowerIsBetter": true, "bestVariant": "flow", "bestValue": 22000, "values": { "friction": 48000, "flow": 22000, "overfit": 31000 } },
+    { "metric": "buildTimeMs", "lowerIsBetter": true, "bestVariant": "overfit", "bestValue": 26000, "values": { "friction": 72000, "flow": 38000, "overfit": 26000 } },
+    { "metric": "testTimeMs", "lowerIsBetter": true, "bestVariant": "flow", "bestValue": 54000, "values": { "friction": 160000, "flow": 54000, "overfit": 98000 } },
+    { "metric": "typecheckTimeMs", "lowerIsBetter": true, "bestVariant": "flow", "bestValue": 8000, "values": { "friction": 19000, "flow": 8000, "overfit": 12000 } },
+    { "metric": "bundleSizeKb", "lowerIsBetter": true, "bestVariant": "overfit", "bestValue": 164, "values": { "friction": 412, "flow": 198, "overfit": 164 } },
+    { "metric": "mainChunkSizeKb", "lowerIsBetter": true, "bestVariant": "overfit", "bestValue": 96, "values": { "friction": 287, "flow": 121, "overfit": 96 } },
+    { "metric": "dockerBuildTimeMs", "lowerIsBetter": true, "bestVariant": "flow", "bestValue": 110000, "values": { "friction": 250000, "flow": 110000, "overfit": 125000 } },
+    { "metric": "ciDurationMs", "lowerIsBetter": true, "bestVariant": "flow", "bestValue": 220000, "values": { "friction": 560000, "flow": 220000, "overfit": 310000 } },
+    { "metric": "lighthousePerformance", "lowerIsBetter": false, "bestVariant": "overfit", "bestValue": 97, "values": { "friction": 71, "flow": 94, "overfit": 97 } },
+    { "metric": "tableRenderTimeMs", "lowerIsBetter": true, "bestVariant": "overfit", "bestValue": 90, "values": { "friction": 480, "flow": 120, "overfit": 90 } },
+    { "metric": "filesTouchedForAiTask", "lowerIsBetter": true, "bestVariant": "flow", "bestValue": 6, "values": { "friction": 23, "flow": 6, "overfit": 41 } },
+    { "metric": "testsImpacted", "lowerIsBetter": true, "bestVariant": "flow", "bestValue": 9, "values": { "friction": 48, "flow": 9, "overfit": 72 } },
+    { "metric": "errorReproductionSteps", "lowerIsBetter": true, "bestVariant": "flow", "bestValue": 2, "values": { "friction": 7, "flow": 2, "overfit": 9 } },
+    { "metric": "docsPagesNeeded", "lowerIsBetter": true, "bestVariant": "flow", "bestValue": 1, "values": { "friction": 5, "flow": 1, "overfit": 8 } }
+  ],
+  "notes": [
+    "These are SEED/DEMO values transcribed from docs/product/01-design-spec.md.",
+    "Replace them with collected measurements before the defense (see docs/product/02-measurement-protocol.md).",
+    "Source: seed."
+  ]
+}

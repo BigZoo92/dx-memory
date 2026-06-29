@@ -1,0 +1,2 @@
+# Generated metrics results land here (git-ignored, except results.example.json).
+# Run `pnpm metrics:collect`.

@@ -1,0 +1,48 @@
+name: friction-ci
+
+# Variant A — Friction. SKELETON: the build/test/ship steps are added in the Variant A pass.
+# The job below validates the shared foundation the variant depends on.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'apps/friction-web/**'
+      - 'apps/friction-api/**'
+      - 'packages/**'
+      - 'docker/friction/**'
+      - '.github/workflows/friction-ci.yml'
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  friction:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate fixtures
+        run: pnpm fixtures:generate
+
+      # TODO(variant-a): typecheck/lint/test friction-web + friction-api
+      # TODO(variant-a): build the apps and measure build time
+      # TODO(variant-a): docker build (single-stage) and measure docker build time
+      # TODO(variant-a): run the @signalops/test-scenarios suite for this variant
+      # TODO(variant-a): collect per-variant metrics and upload as artifact
+      - name: Placeholder
+        run: pnpm ci:friction

@@ -1,0 +1,22 @@
+{
+  "name": "@signalops/fixtures",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Deterministic dataset generator shared by every SignalOps variant.",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "generate": "tsx src/write-fixtures.ts",
+    "build": "tsc --noEmit",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --passWithNoTests",
+    "lint": "prettier --check \"src/**/*.ts\""
+  },
+  "dependencies": {
+    "@signalops/contracts": "workspace:*"
+  }
+}

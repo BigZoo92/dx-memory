@@ -1,0 +1,28 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "lib": ["ES2022"],
+    "types": ["node"],
+    "strict": true,
+    "noImplicitOverride": true,
+    "noFallthroughCasesInSwitch": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "declaration": false,
+    "noEmit": true,
+    "baseUrl": ".",
+    "paths": {
+      "@signalops/contracts": ["packages/contracts/src/index.ts"],
+      "@signalops/fixtures": ["packages/fixtures/src/index.ts"],
+      "@signalops/metrics": ["packages/metrics/src/index.ts"],
+      "@signalops/test-scenarios": ["packages/test-scenarios/src/index.ts"],
+      "@signalops/ui-spec": ["packages/ui-spec/src/index.ts"]
+    }
+  },
+  "exclude": ["node_modules", "dist"]
+}
