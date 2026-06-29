@@ -1,0 +1,120 @@
+.empty,
+.error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 48px 24px;
+  text-align: center;
+}
+
+.title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--so-ink);
+  margin: 0;
+}
+
+.message {
+  font-size: 13px;
+  color: var(--so-slate-500);
+  margin: 0;
+  max-width: 420px;
+}
+
+/* Partial-error banner (inline, non-blocking) */
+.banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 14px;
+  border-radius: var(--so-radius-md);
+  font-size: 13px;
+}
+
+.banner.warning {
+  background: var(--so-amber-bg);
+  border: 1px solid #f5e3b8;
+  color: var(--so-amber-fg);
+}
+.banner.danger {
+  background: var(--so-red-bg);
+  border: 1px solid #fbd5d2;
+  color: var(--so-red-fg);
+}
+.banner.success {
+  background: var(--so-green-bg);
+  border: 1px solid #bbf0d0;
+  color: var(--so-green-fg);
+}
+.banner.info {
+  background: var(--so-blue-bg);
+  border: 1px solid #cfe0fb;
+  color: var(--so-blue-fg);
+}
+
+.bannerText {
+  flex: 1 1 auto;
+}
+
+.bannerDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+  flex: 0 0 auto;
+}
+
+/* Spinner */
+.spinner {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--so-slate-500);
+  font-size: 13px;
+}
+
+.ring {
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--so-border);
+  border-top-color: var(--so-accent);
+  border-radius: 50%;
+  animation: so-spin 0.7s linear infinite;
+}
+
+@keyframes so-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ring {
+    animation-duration: 2s;
+  }
+}
+
+/* Skeleton */
+.skeleton {
+  border-radius: var(--so-radius-sm);
+  background: linear-gradient(90deg, #eef0f2 25%, #f5f6f8 37%, #eef0f2 63%);
+  background-size: 400% 100%;
+  animation: so-shimmer 1.4s ease infinite;
+}
+
+@keyframes so-shimmer {
+  0% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0 50%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton {
+    animation: none;
+  }
+}

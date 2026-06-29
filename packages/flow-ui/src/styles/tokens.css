@@ -1,0 +1,98 @@
+/**
+ * SignalOps design tokens as CSS custom properties.
+ *
+ * Values are transcribed verbatim from `@signalops/ui-spec` (tokens.ts) / the design spec.
+ * Every Flow component styles itself from these variables, so the three variants stay
+ * pixel-identical and a token change is a one-line edit here.
+ */
+:root {
+  /* Surfaces */
+  --so-surface: #f6f7f8;
+  --so-card: #ffffff;
+  --so-border: #e8eaed;
+  --so-border-subtle: #eceef0;
+  --so-border-inner: #f2f3f5;
+
+  /* Text */
+  --so-ink: #14171a;
+  --so-slate-700: #3a414a;
+  --so-slate-500: #5c6470;
+  --so-slate-400: #8a929e;
+  --so-slate-300: #a3aab4;
+
+  /* Accent (orange) */
+  --so-accent: #ef7e00;
+  --so-accent-hover: #c2630a;
+  --so-accent-tint-100: #fff1e3;
+  --so-accent-tint-50: #fffaf3;
+  --so-accent-border: #ffd9ad;
+  --so-nav-active-bg: #fff4e8;
+
+  /* Semantic hues — fg (text/icon) + bg (badge) */
+  --so-blue-fg: #175cd3;
+  --so-blue-bg: #eff4ff;
+  --so-green-fg: #067647;
+  --so-green-bg: #ecfdf3;
+  --so-red-fg: #d92d20;
+  --so-red-bg: #fef3f2;
+  --so-amber-fg: #a86a04;
+  --so-amber-bg: #fef7e6;
+  --so-grey-fg: #5c6470;
+  --so-grey-bg: #f2f3f5;
+
+  /* Radii */
+  --so-radius-sm: 6px;
+  --so-radius-md: 8px;
+  --so-radius-control: 9px;
+  --so-radius-card: 12px;
+  --so-radius-pill: 999px;
+
+  /* Elevation */
+  --so-shadow-card: 0 1px 2px rgba(16, 24, 40, 0.06);
+  --so-shadow-raised: 0 8px 24px rgba(16, 24, 40, 0.12);
+
+  /* Typography */
+  --so-font-ui: 'Geist', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --so-font-mono: 'Geist Mono', ui-monospace, 'SF Mono', 'Cascadia Mono', Menlo, Consolas, monospace;
+
+  /* Layout */
+  --so-sidebar-width: 248px;
+  --so-topbar-height: 60px;
+  --so-content-max: 1140px;
+
+  /* Focus ring */
+  --so-focus: 2px solid var(--so-accent);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--so-font-ui);
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--so-ink);
+  background: var(--so-surface);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Visible focus ring everywhere (accessibility baseline). */
+:focus-visible {
+  outline: var(--so-focus);
+  outline-offset: 2px;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}

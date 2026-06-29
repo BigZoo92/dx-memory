@@ -1,0 +1,74 @@
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  height: 34px;
+  padding: 0 14px;
+  border-radius: var(--so-radius-md);
+  border: 1px solid transparent;
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    background 0.12s ease,
+    border-color 0.12s ease,
+    color 0.12s ease;
+}
+
+.btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.primary {
+  background: var(--so-accent);
+  color: #fff;
+}
+.primary:hover:not(:disabled) {
+  background: var(--so-accent-hover);
+}
+
+.secondary {
+  background: var(--so-card);
+  border-color: #dde0e4;
+  color: var(--so-slate-500);
+}
+.secondary:hover:not(:disabled) {
+  border-color: var(--so-slate-400);
+  color: var(--so-slate-700);
+}
+
+.ghost {
+  background: transparent;
+  color: var(--so-slate-500);
+}
+.ghost:hover:not(:disabled) {
+  background: var(--so-border-inner);
+  color: var(--so-slate-700);
+}
+
+.danger {
+  background: var(--so-card);
+  border-color: #fbd5d2;
+  color: var(--so-red-fg);
+}
+.danger:hover:not(:disabled) {
+  background: var(--so-red-bg);
+}
+
+.dark {
+  background: var(--so-ink);
+  color: #fff;
+}
+.dark:hover:not(:disabled) {
+  background: #000;
+}
+
+.sm {
+  height: 30px;
+  padding: 0 11px;
+  font-size: 12px;
+}

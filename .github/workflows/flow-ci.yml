@@ -1,7 +1,9 @@
 name: flow-ci
 
-# Variant B — Flow. SKELETON: the build/test/ship steps are added in the Variant B pass.
-# The job below validates the shared foundation the variant depends on.
+# Variant B — Flow. Fast, fine-grained, but never green-by-accident:
+#  • PRs run `nx affected` over only the projects touched by the diff.
+#  • main runs the full `nx run-many` + the multi-stage Docker build.
+# No `continue-on-error` anywhere — lint, typecheck, test and build all gate the pipeline.
 
 on:
   push:
@@ -11,12 +13,73 @@ on:
       - 'packages/**'
       - 'docker/flow/**'
       - '.github/workflows/flow-ci.yml'
+      - 'pnpm-lock.yaml'
+      - 'pnpm-workspace.yaml'
   pull_request:
     branches: [main]
   workflow_dispatch:
 
+# Cancel superseded runs on the same ref so CI never reports a stale result.
+concurrency:
+  group: flow-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: '22'
+  PNPM_VERSION: '9'
+
 jobs:
-  flow:
+  # ---- Pull requests: only what the diff affects -------------------------------------------
+  affected:
+    if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Full history so Nx can diff base→head accurately.
+          fetch-depth: 0
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+
+      - name: Install (frozen lockfile)
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate fixtures
+        run: pnpm fixtures:generate
+
+      # Sets NX_BASE / NX_HEAD to (last successful main commit → HEAD).
+      # Fallback when no prior successful run exists: NX_BASE defaults to the merge-base with main.
+      - name: Derive Nx base/head
+        uses: nrwl/nx-set-shas@v4
+
+      - name: Nx affected — lint, typecheck, test, build
+        run: pnpm exec nx affected -t lint typecheck test build --base=$NX_BASE --head=$NX_HEAD
+
+      - name: Collect Flow metrics (builds flow-app if affected)
+        run: pnpm exec nx run flow-app:metrics
+
+      - name: Upload metrics artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: flow-metrics-pr
+          path: |
+            apps/flow-app/metrics.flow.json
+            packages/metrics/results/*.json
+          if-no-files-found: ignore
+
+  # ---- main: full verification + Docker ----------------------------------------------------
+  main:
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -24,24 +87,48 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 9
+          version: ${{ env.PNPM_VERSION }}
 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
 
-      - name: Install
+      - name: Install (frozen lockfile)
         run: pnpm install --frozen-lockfile
 
       - name: Generate fixtures
         run: pnpm fixtures:generate
 
-      # TODO(variant-b): nx affected -t typecheck lint test for flow-app
-      # TODO(variant-b): build flow-app and measure build time
-      # TODO(variant-b): docker build (multi-stage) and measure docker build time
-      # TODO(variant-b): run the @signalops/test-scenarios suite for this variant
-      # TODO(variant-b): collect per-variant metrics and upload as artifact
-      - name: Placeholder
-        run: pnpm ci:flow
+      - name: Nx run-many — lint, typecheck, test, build
+        run: pnpm exec nx run-many -t lint typecheck test build
+
+      - name: Docker build (multi-stage)
+        run: pnpm exec nx run flow-app:docker-build
+
+      - name: Collect Flow + shared metrics
+        run: |
+          pnpm exec nx run flow-app:metrics
+          pnpm metrics:collect
+
+      - name: Upload metrics artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: flow-metrics-main
+          path: |
+            apps/flow-app/metrics.flow.json
+            packages/metrics/results/*.json
+          if-no-files-found: error
+
+      - name: Generate Nx project graph
+        run: pnpm exec nx graph --file=flow-graph.html
+
+      - name: Upload Nx graph artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: flow-nx-graph
+          path: flow-graph.html
+          if-no-files-found: ignore

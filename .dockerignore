@@ -1,0 +1,16 @@
+# Keep the Docker build context small and reproducible.
+**/node_modules
+**/dist
+**/dist-types
+**/.output
+**/.nitro
+**/.tanstack
+**/.vinxi
+.nx/cache
+.nx/workspace-data
+.git
+**/*.log
+**/coverage
+packages/metrics/results/*.json
+!packages/metrics/results/results.example.json
+**/.DS_Store

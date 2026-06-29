@@ -1,3 +1,57 @@
 packages:
   - 'packages/*'
   - 'apps/*'
+
+# pnpm catalogs — one source of truth per dependency version.
+# Packages reference these with "catalog:" instead of repeating a range, so the Flow
+# variant's versions stay pinned, reproducible and drift-free across the workspace.
+# (Catalogs are stable since pnpm 9.5.)
+catalog:
+  # React
+  react: 19.2.7
+  react-dom: 19.2.7
+
+  # TanStack (the Flow runtime stack)
+  '@tanstack/react-start': 1.168.26
+  '@tanstack/react-router': 1.170.16
+  '@tanstack/react-query': 5.101.2
+  '@tanstack/react-table': 8.21.3
+  '@tanstack/react-virtual': 3.14.4
+
+  # Validation
+  zod: 4.4.3
+
+  # Production server adapter (serves the TanStack Start fetch handler on a port)
+  srvx: 0.11.17
+
+  # Targeted utilities (named imports only — no wholesale lodash)
+  lodash-es: ^4.17.21
+
+  # Build / dev
+  vite: 7.3.6
+  rolldown-vite: 7.3.1
+  '@tanstack/router-plugin': 1.168.18
+  '@vitejs/plugin-react': 5.2.0
+
+  # Test
+  vitest: 4.1.9
+  '@vitest/coverage-v8': 4.1.9
+  happy-dom: 20.10.6
+  '@testing-library/react': 16.3.2
+  '@testing-library/jest-dom': 6.9.1
+  '@testing-library/user-event': 14.6.1
+
+  # Lint (Oxlint — stable 1.x; replaces ESLint)
+  oxlint: 1.71.0
+
+  # Types
+  '@types/react': 19.2.17
+  '@types/react-dom': 19.2.3
+  '@types/node': 22.20.0
+  '@types/lodash-es': 4.17.12
+
+  # Monorepo tooling (kept at the socle's versions to avoid destabilizing shared packages)
+  nx: 20.8.4
+  typescript: 5.7.3
+  prettier: 3.4.2
+  tsx: 4.19.2

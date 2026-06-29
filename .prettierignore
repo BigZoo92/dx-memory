@@ -1,7 +1,14 @@
 node_modules
 dist
+dist-types
 .nx
+.output
 pnpm-lock.yaml
 packages/fixtures/data
 packages/metrics/results
 maquettes
+docs/product
+docs/static
+docs/results-log-flow-graph.html
+**/routeTree.gen.ts
+apps/flow-app/metrics.flow.json

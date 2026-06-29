@@ -6,7 +6,13 @@
  * NOT part of the product and must not ship.
  */
 export type ScreenId =
-  'overview' | 'signals' | 'signal-detail' | 'incidents' | 'compare' | 'dx-metrics' | 'settings'
+  | 'overview'
+  | 'signals'
+  | 'signal-detail'
+  | 'incidents'
+  | 'compare'
+  | 'dx-metrics'
+  | 'settings'
 
 export type RouteSpec = {
   id: ScreenId

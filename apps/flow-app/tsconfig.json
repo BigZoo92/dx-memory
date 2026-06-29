@@ -1,0 +1,15 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "types": ["node"],
+    "noEmit": true
+  },
+  "include": ["src", "src/routeTree.gen.ts", "vite.config.ts"],
+  "references": [
+    { "path": "../../packages/flow-domain" },
+    { "path": "../../packages/flow-data-access" },
+    { "path": "../../packages/flow-ui" }
+  ]
+}

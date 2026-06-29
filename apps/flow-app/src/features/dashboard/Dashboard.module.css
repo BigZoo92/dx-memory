@@ -1,0 +1,63 @@
+.criticalRow {
+  display: grid;
+  grid-template-columns: 10px 1fr auto auto;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+  border-top: 1px solid var(--so-border-inner);
+  cursor: pointer;
+}
+.criticalRow:first-of-type {
+  border-top: none;
+}
+.criticalRow:hover {
+  background: var(--so-accent-tint-50);
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.critTitle {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--so-ink);
+}
+.critMeta {
+  font-size: 11.5px;
+  color: var(--so-slate-400);
+  font-family: var(--so-font-mono);
+}
+.critRisk {
+  font-family: var(--so-font-mono);
+  font-weight: 700;
+  color: var(--so-slate-700);
+}
+
+.incidentTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12.5px;
+}
+.incidentTable th {
+  text-align: left;
+  padding: 8px 10px;
+  font-size: 10.5px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--so-slate-400);
+  border-bottom: 1px solid var(--so-border);
+}
+.incidentTable td {
+  padding: 10px;
+  border-top: 1px solid var(--so-border-inner);
+  color: var(--so-slate-700);
+}
+.incId {
+  font-family: var(--so-font-mono);
+  font-size: 11px;
+  color: var(--so-slate-400);
+}

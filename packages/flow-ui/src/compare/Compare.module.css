@@ -1,0 +1,107 @@
+.diff {
+  display: flex;
+  flex-direction: column;
+}
+
+.diffHead,
+.diffRow {
+  display: grid;
+  grid-template-columns: 170px 1fr 40px 1.3fr;
+  align-items: center;
+  column-gap: 8px;
+  padding: 13px 18px;
+}
+
+.diffHead {
+  font-size: 10.5px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--so-slate-400);
+  border-bottom: 1px solid var(--so-border-inner);
+}
+
+.diffRow {
+  border-top: 1px solid var(--so-border-inner);
+}
+
+.diffRowChanged {
+  background: #fffdf9;
+}
+
+.attr {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--so-slate-700);
+}
+
+.value {
+  font-size: 13px;
+  color: var(--so-ink);
+}
+
+.arrow {
+  color: var(--so-slate-300);
+  text-align: center;
+}
+
+.after {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: var(--so-radius-pill);
+}
+
+.good {
+  color: var(--so-green-fg);
+  background: var(--so-green-bg);
+}
+.bad {
+  color: var(--so-red-fg);
+  background: var(--so-red-bg);
+}
+.neutral {
+  color: var(--so-blue-fg);
+  background: var(--so-blue-bg);
+}
+.muted {
+  color: var(--so-slate-500);
+  background: var(--so-grey-bg);
+}
+
+/* User impact card */
+.impact {
+  background: var(--so-accent-tint-50);
+  border: 1px solid var(--so-accent-border);
+  border-radius: var(--so-radius-card);
+  padding: 16px;
+}
+
+.impactSentence {
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--so-slate-700);
+  margin: 0 0 14px;
+}
+
+.impactRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 0;
+  border-top: 1px solid var(--so-accent-border);
+  font-size: 13px;
+}
+
+.impactLabel {
+  color: var(--so-slate-700);
+}

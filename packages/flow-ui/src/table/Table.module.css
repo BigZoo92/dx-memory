@@ -1,0 +1,155 @@
+.shell {
+  display: flex;
+  flex-direction: column;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--so-border);
+  font-size: 13px;
+  color: var(--so-slate-500);
+  min-height: 56px;
+}
+
+.selectionBar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--so-accent-border);
+  background: var(--so-accent-tint-50);
+  min-height: 56px;
+}
+
+.selCount {
+  font-weight: 700;
+  color: var(--so-accent-hover);
+}
+
+.selMeta {
+  font-size: 12.5px;
+  color: var(--so-slate-500);
+}
+
+.selActions {
+  display: flex;
+  gap: 8px;
+  margin-left: auto;
+}
+
+/* Scroll area for the table at narrow widths */
+.scroll {
+  overflow-x: auto;
+}
+
+/* Dense table */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12.5px;
+}
+
+.th {
+  text-align: left;
+  padding: 9px 12px;
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--so-slate-400);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  background: var(--so-card);
+  border-bottom: 1px solid var(--so-border);
+  white-space: nowrap;
+}
+
+.thSortable {
+  cursor: pointer;
+  user-select: none;
+}
+
+.thSortable:hover {
+  color: var(--so-slate-700);
+}
+
+.td {
+  padding: 10px 12px;
+  border-top: 1px solid var(--so-border-inner);
+  color: var(--so-slate-700);
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.rowSelected {
+  background: var(--so-accent-tint-50);
+}
+
+.rowButton {
+  cursor: pointer;
+}
+
+.rowButton:hover {
+  background: var(--so-border-inner);
+}
+
+.title {
+  font-weight: 600;
+  color: var(--so-ink);
+  white-space: normal;
+}
+
+.id {
+  font-family: var(--so-font-mono);
+  font-size: 11px;
+  color: var(--so-slate-400);
+}
+
+.mono {
+  font-family: var(--so-font-mono);
+}
+
+.muted {
+  color: var(--so-slate-400);
+}
+
+/* Risk score cell */
+.risk {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.riskTrack {
+  width: 54px;
+  height: 6px;
+  border-radius: 4px;
+  background: var(--so-border-inner);
+  overflow: hidden;
+}
+
+.riskFill {
+  height: 100%;
+  border-radius: 4px;
+}
+
+.riskValue {
+  font-family: var(--so-font-mono);
+  font-weight: 600;
+  min-width: 22px;
+  text-align: right;
+}
+
+/* Virtual body */
+.virtualViewport {
+  overflow-y: auto;
+  position: relative;
+  max-height: 620px;
+}
+
+.virtualSizer {
+  position: relative;
+  width: 100%;
+}

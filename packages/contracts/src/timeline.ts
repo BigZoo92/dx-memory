@@ -1,5 +1,10 @@
 export type TimelineEventType =
-  'created' | 'updated' | 'assigned' | 'commented' | 'escalated' | 'resolved'
+  | 'created'
+  | 'updated'
+  | 'assigned'
+  | 'commented'
+  | 'escalated'
+  | 'resolved'
 
 export type TimelineEvent = {
   id: string

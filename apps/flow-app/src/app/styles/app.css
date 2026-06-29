@@ -1,0 +1,61 @@
+/* App-global layout helpers. Component-specific styling lives in CSS Modules next to features. */
+
+.so-page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.so-grid-kpis {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.so-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.so-grid-overview {
+  display: grid;
+  grid-template-columns: 0.95fr 1.55fr;
+  gap: 16px;
+}
+
+.so-grid-detail {
+  display: grid;
+  grid-template-columns: 1.55fr 1fr;
+  gap: 16px;
+}
+
+.so-grid-sidecol {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+.so-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.so-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 1080px) {
+  .so-grid-kpis {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .so-grid-2,
+  .so-grid-overview,
+  .so-grid-detail {
+    grid-template-columns: 1fr;
+  }
+}

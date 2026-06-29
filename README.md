@@ -111,7 +111,22 @@ A committed `packages/metrics/results/results.example.json` shows the expected s
 | [docs/engineering/05-ci-strategy.md](docs/engineering/05-ci-strategy.md)           | CI workflows & measurement          |
 | [docs/engineering/06-next-steps.md](docs/engineering/06-next-steps.md)             | What the variant passes will do     |
 
+## Rolldown
+
+The Flow variant builds on **Vite 7** with **Rolldown** enabled via a one-line, reversible pnpm
+override in this file:
+
+```jsonc
+"pnpm": { "overrides": { "vite": "npm:rolldown-vite@7.3.1" } }
+```
+
+`vite` then resolves to `rolldown-vite@7.3.1` everywhere (build, dev, Vitest). It is verified green
+(typecheck, tests, build and the Docker image all pass). To fall back to stock Vite 7 (Rollup),
+remove the override and `pnpm install` — the app stays green either way. Vite 8 (Rolldown native) was
+**not** adopted because TanStack Start has open SSR/server-runtime issues on it as of mid-2026.
+
 ## Status
 
-✅ Shared socle (this pass). ⏳ Variant applications (next passes — see
-[docs/engineering/06-next-steps.md](docs/engineering/06-next-steps.md)).
+✅ Shared socle. ✅ **Variant B — Flow** (`apps/flow-app` + `packages/flow-*`, see
+[apps/flow-app/README.md](apps/flow-app/README.md)). ⏳ Variant A (Friction) and Variant C (Overfit)
+— see [docs/engineering/06-next-steps.md](docs/engineering/06-next-steps.md).

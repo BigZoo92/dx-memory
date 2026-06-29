@@ -1,0 +1,163 @@
+/* KpiCard */
+.kpi {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.kpiTop {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.kpiLabel {
+  font-size: 12.5px;
+  color: var(--so-slate-500);
+  font-weight: 500;
+}
+
+.iconTile {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: var(--so-radius-md);
+}
+
+.kpiValue {
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  color: var(--so-ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.trend {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.trend .trendNote {
+  color: var(--so-slate-400);
+  font-weight: 500;
+}
+
+.trendGood {
+  color: var(--so-green-fg);
+}
+.trendBad {
+  color: var(--so-red-fg);
+}
+.trendNeutral {
+  color: var(--so-slate-500);
+}
+
+/* MetricCard (Build/Ship/Run/Change) */
+.metricHead {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.metricBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: var(--so-radius-md);
+}
+
+.metricAxis {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.metricLabel {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--so-slate-400);
+  font-weight: 600;
+}
+
+.metricValue {
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin: 4px 0 14px;
+  font-family: var(--so-font-mono);
+}
+
+.subRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 6px 0;
+  font-size: 12.5px;
+  border-top: 1px solid var(--so-border-inner);
+}
+
+.subRow:first-of-type {
+  border-top: none;
+}
+
+.subLabel {
+  color: var(--so-slate-500);
+}
+.subValue {
+  font-family: var(--so-font-mono);
+  font-weight: 600;
+  color: var(--so-slate-700);
+}
+
+/* StatTile */
+.stat {
+  border: 1px solid var(--so-border-subtle);
+  border-radius: var(--so-radius-control);
+  padding: 12px 14px;
+}
+
+.statLabel {
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--so-slate-400);
+  font-weight: 600;
+}
+
+.statValue {
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1;
+  margin-top: 8px;
+  color: var(--so-ink);
+}
+
+.statValue .unit {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--so-slate-400);
+}
+
+.bar {
+  margin-top: 10px;
+  height: 6px;
+  border-radius: 4px;
+  background: var(--so-border-inner);
+  overflow: hidden;
+}
+
+.barFill {
+  height: 100%;
+  border-radius: 4px;
+}

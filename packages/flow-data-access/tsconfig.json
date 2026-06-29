@@ -1,0 +1,18 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "composite": true,
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "noEmit": false,
+    "outDir": "./dist-types",
+    "rootDir": "./src",
+    "tsBuildInfoFile": "./dist-types/.tsbuildinfo"
+  },
+  "include": ["src"],
+  "references": [
+    { "path": "../contracts" },
+    { "path": "../fixtures" },
+    { "path": "../flow-domain" }
+  ]
+}

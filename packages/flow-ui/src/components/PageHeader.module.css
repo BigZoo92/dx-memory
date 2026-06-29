@@ -1,0 +1,27 @@
+.header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 22px;
+}
+
+.title {
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--so-ink);
+  margin: 0;
+}
+
+.subtitle {
+  font-size: 13.5px;
+  color: var(--so-slate-500);
+  margin: 6px 0 0;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}

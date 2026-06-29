@@ -1,0 +1,48 @@
+{
+  "name": "@signalops/flow-app",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "SignalOps — Variant B (Flow). Full-stack TanStack Start app (UI + server API routes).",
+  "scripts": {
+    "dev": "vite dev --port 3000",
+    "build": "vite build",
+    "start": "node server.mjs",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "lint": "oxlint src",
+    "format": "prettier --check \"src/**/*.{ts,tsx}\"",
+    "docker:build": "docker build -f Dockerfile -t signalops-flow:local ../..",
+    "metrics:collect": "node scripts/collect-metrics.mjs"
+  },
+  "dependencies": {
+    "@signalops/contracts": "workspace:*",
+    "@signalops/flow-data-access": "workspace:*",
+    "@signalops/flow-domain": "workspace:*",
+    "@signalops/flow-ui": "workspace:*",
+    "@signalops/test-scenarios": "workspace:*",
+    "@signalops/ui-spec": "workspace:*",
+    "@tanstack/react-query": "catalog:",
+    "@tanstack/react-router": "catalog:",
+    "@tanstack/react-start": "catalog:",
+    "@tanstack/react-table": "catalog:",
+    "@tanstack/react-virtual": "catalog:",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "srvx": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@tanstack/router-plugin": "catalog:",
+    "@testing-library/react": "catalog:",
+    "@testing-library/user-event": "catalog:",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "@vitejs/plugin-react": "catalog:",
+    "happy-dom": "catalog:",
+    "oxlint": "catalog:",
+    "typescript": "catalog:",
+    "vite": "catalog:",
+    "vitest": "catalog:"
+  }
+}

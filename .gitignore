@@ -4,12 +4,25 @@ node_modules/
 
 # Build output
 dist/
+dist-types/
 build/
 *.tsbuildinfo
+
+# TanStack Start / Nitro / Vite build artifacts
+.output/
+.nitro/
+.tanstack/
+.vinxi/
 
 # Nx
 .nx/cache
 .nx/workspace-data
+
+# Nx graph export assets (regenerate with `pnpm nx graph --file=...`)
+docs/static/
+
+# Collected per-app metrics report (regenerate with `nx run flow-app:metrics`)
+apps/flow-app/metrics.flow.json
 
 # Generated fixtures (run `pnpm fixtures:generate` to recreate)
 packages/fixtures/data/*.json

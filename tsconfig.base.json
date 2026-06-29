@@ -21,7 +21,10 @@
       "@signalops/fixtures": ["packages/fixtures/src/index.ts"],
       "@signalops/metrics": ["packages/metrics/src/index.ts"],
       "@signalops/test-scenarios": ["packages/test-scenarios/src/index.ts"],
-      "@signalops/ui-spec": ["packages/ui-spec/src/index.ts"]
+      "@signalops/ui-spec": ["packages/ui-spec/src/index.ts"],
+      "@signalops/flow-domain": ["packages/flow-domain/src/index.ts"],
+      "@signalops/flow-data-access": ["packages/flow-data-access/src/index.ts"],
+      "@signalops/flow-ui": ["packages/flow-ui/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "dist"]

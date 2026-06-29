@@ -19,16 +19,30 @@
     "fixtures:generate": "pnpm --filter @signalops/fixtures generate",
     "metrics:collect": "pnpm --filter @signalops/metrics collect",
     "metrics:all": "pnpm fixtures:generate && pnpm metrics:collect",
+    "dev:flow": "nx run flow-app:dev",
+    "build:flow": "nx run flow-app:build",
+    "test:flow": "nx affected -t test --base=origin/main --head=HEAD",
+    "typecheck:flow": "nx affected -t typecheck --base=origin/main --head=HEAD",
+    "lint:flow": "nx affected -t lint --base=origin/main --head=HEAD",
+    "ci:flow": "nx affected -t lint,typecheck,test,build --base=origin/main --head=HEAD",
+    "docker:build:flow": "nx run flow-app:docker-build",
+    "metrics:flow": "nx run flow-app:metrics",
     "ci:friction": "echo \"Friction CI will be implemented in the variant pass\"",
-    "ci:flow": "echo \"Flow CI will be implemented in the variant pass\"",
     "ci:overfit": "echo \"Overfit CI will be implemented in the variant pass\""
   },
   "devDependencies": {
-    "@types/node": "^22.10.5",
-    "nx": "^20.3.0",
-    "prettier": "^3.4.2",
-    "tsx": "^4.19.2",
-    "typescript": "^5.7.3",
-    "vitest": "^2.1.8"
+    "@types/node": "catalog:",
+    "nx": "catalog:",
+    "oxlint": "catalog:",
+    "prettier": "catalog:",
+    "tsx": "catalog:",
+    "typescript": "catalog:",
+    "vite": "catalog:",
+    "vitest": "catalog:"
+  },
+  "pnpm": {
+    "overrides": {
+      "vite": "npm:rolldown-vite@7.3.1"
+    }
   }
 }

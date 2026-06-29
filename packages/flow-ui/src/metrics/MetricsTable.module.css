@@ -1,0 +1,68 @@
+.wrap {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12.5px;
+}
+
+.th {
+  padding: 10px 14px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--so-slate-400);
+  text-align: right;
+  border-bottom: 1px solid var(--so-border);
+}
+
+.thMetric {
+  text-align: left;
+}
+
+.thCurrent {
+  color: var(--so-accent-hover);
+  background: #fff7ee;
+}
+
+.tag {
+  display: block;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--so-slate-400);
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.metricName {
+  padding: 10px 14px;
+  border-top: 1px solid var(--so-border-inner);
+  color: var(--so-slate-700);
+  text-align: left;
+}
+
+.cell {
+  padding: 10px 14px;
+  border-top: 1px solid var(--so-border-inner);
+  text-align: right;
+  font-family: var(--so-font-mono);
+  color: var(--so-slate-700);
+}
+
+.cellCurrent {
+  background: #fff7ee;
+}
+
+.cellBest {
+  color: var(--so-green-fg);
+  font-weight: 700;
+}
+
+.bestCol {
+  text-align: left;
+  font-weight: 600;
+  color: var(--so-slate-700);
+}

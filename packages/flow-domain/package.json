@@ -1,0 +1,27 @@
+{
+  "name": "@signalops/flow-domain",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Flow variant — pure business logic (no React, no DOM, no TanStack).",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -b tsconfig.json",
+    "build": "tsc -b tsconfig.json",
+    "test": "vitest run",
+    "lint": "oxlint src"
+  },
+  "dependencies": {
+    "@signalops/contracts": "workspace:*"
+  },
+  "devDependencies": {
+    "oxlint": "catalog:",
+    "typescript": "catalog:",
+    "vite": "catalog:",
+    "vitest": "catalog:"
+  }
+}

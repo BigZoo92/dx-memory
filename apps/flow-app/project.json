@@ -1,0 +1,52 @@
+{
+  "name": "flow-app",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "sourceRoot": "apps/flow-app/src",
+  "tags": ["scope:flow", "type:app"],
+  "targets": {
+    "dev": {
+      "executor": "nx:run-commands",
+      "options": { "command": "vite dev --port 3000", "cwd": "apps/flow-app" }
+    },
+    "build": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["^build"],
+      "inputs": ["production", "^production"],
+      "outputs": ["{projectRoot}/dist"],
+      "cache": true,
+      "options": { "command": "vite build", "cwd": "apps/flow-app" }
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["^typecheck"],
+      "inputs": ["default", "^production"],
+      "cache": true,
+      "options": { "command": "tsc -p tsconfig.json --noEmit", "cwd": "apps/flow-app" }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "inputs": ["default", "^production"],
+      "cache": true,
+      "options": { "command": "vitest run", "cwd": "apps/flow-app" }
+    },
+    "lint": {
+      "executor": "nx:run-commands",
+      "inputs": ["default"],
+      "cache": true,
+      "options": { "command": "oxlint src", "cwd": "apps/flow-app" }
+    },
+    "docker-build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "docker build -f apps/flow-app/Dockerfile -t signalops-flow:local .",
+        "cwd": "{workspaceRoot}"
+      }
+    },
+    "metrics": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["build"],
+      "options": { "command": "node scripts/collect-metrics.mjs", "cwd": "apps/flow-app" }
+    }
+  }
+}
