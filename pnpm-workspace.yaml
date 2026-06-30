@@ -1,5 +1,6 @@
 packages:
   - 'packages/*'
+  - 'packages/flow/*'
   - 'apps/*'
 
 # pnpm catalogs — one source of truth per dependency version.
@@ -21,6 +22,10 @@ catalog:
   # Validation
   zod: 4.4.3
 
+  # Effect (typed errors, services/Layer DI, Schema validation, retry/timeout) — Flow's
+  # functional-effects layer. Pinned (no floating range) for reproducible builds.
+  effect: 3.21.4
+
   # Production server adapter (serves the TanStack Start fetch handler on a port)
   srvx: 0.11.17
 
@@ -41,8 +46,10 @@ catalog:
   '@testing-library/jest-dom': 6.9.1
   '@testing-library/user-event': 14.6.1
 
-  # Lint (Oxlint — stable 1.x; replaces ESLint)
+  # Lint + format (oxc) — the Flow variant's toolchain. Oxlint replaces ESLint,
+  # oxfmt replaces Prettier. Kept to the Flow ecosystem only; the socle stays on Prettier.
   oxlint: 1.71.0
+  oxfmt: 0.57.0
 
   # Types
   '@types/react': 19.2.17

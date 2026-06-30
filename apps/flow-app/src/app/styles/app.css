@@ -49,6 +49,13 @@
   flex-wrap: wrap;
 }
 
+/* Compact topbar search (320px on desktop, flexes down, hidden on mobile). */
+.so-topbar-search {
+  width: 320px;
+  max-width: 38vw;
+  min-width: 0;
+}
+
 @media (max-width: 1080px) {
   .so-grid-kpis {
     grid-template-columns: repeat(2, 1fr);
@@ -57,5 +64,14 @@
   .so-grid-overview,
   .so-grid-detail {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .so-grid-kpis {
+    grid-template-columns: 1fr;
+  }
+  .so-topbar-search {
+    display: none;
   }
 }

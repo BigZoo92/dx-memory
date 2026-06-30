@@ -1,5 +1,6 @@
+import '@tanstack/react-start/server-only'
 import { createFileRoute } from '@tanstack/react-router'
-import { simulatedError } from '@signalops/flow-data-access'
+import { simulatedError } from '@signalops/flow-server-data-access'
 
 export const Route = createFileRoute('/api/simulate-error')({
   server: {

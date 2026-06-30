@@ -1,0 +1,628 @@
+{
+  "apps/flow-app/src/app/config.ts": [
+    "packages/contracts/src/index.ts"
+  ],
+  "apps/flow-app/src/app/layout/AppLayout.tsx": [
+    "apps/flow-app/src/app/config.ts",
+    "apps/flow-app/src/shared/api/queries.ts",
+    "packages/flow-ui/src/index.ts",
+    "packages/ui-spec/src/index.ts"
+  ],
+  "apps/flow-app/src/app/styles/app.css": [],
+  "apps/flow-app/src/css-modules.d.ts": [],
+  "apps/flow-app/src/features/compare/CompareScreen.tsx": [
+    "apps/flow-app/src/shared/QueryState.tsx",
+    "apps/flow-app/src/shared/api/queries.ts",
+    "apps/flow-app/src/shared/formatting/date.ts",
+    "packages/flow-ui/src/index.ts"
+  ],
+  "apps/flow-app/src/features/dashboard/Dashboard.module.css": [],
+  "apps/flow-app/src/features/dashboard/DashboardScreen.tsx": [
+    "apps/flow-app/src/features/dashboard/Dashboard.module.css",
+    "apps/flow-app/src/shared/QueryState.tsx",
+    "apps/flow-app/src/shared/api/queries.ts",
+    "packages/contracts/src/index.ts",
+    "packages/flow-domain/src/index.ts",
+    "packages/flow-ui/src/index.ts"
+  ],
+  "apps/flow-app/src/features/dx-metrics/DxMetrics.module.css": [],
+  "apps/flow-app/src/features/dx-metrics/DxMetricsScreen.tsx": [
+    "apps/flow-app/src/features/dx-metrics/DxMetrics.module.css",
+    "apps/flow-app/src/shared/QueryState.tsx",
+    "apps/flow-app/src/shared/api/queries.ts",
+    "packages/contracts/src/index.ts",
+    "packages/flow-domain/src/index.ts",
+    "packages/flow-ui/src/index.ts"
+  ],
+  "apps/flow-app/src/features/incidents/IncidentsScreen.module.css": [],
+  "apps/flow-app/src/features/incidents/IncidentsScreen.tsx": [
+    "apps/flow-app/src/app/config.ts",
+    "apps/flow-app/src/features/incidents/IncidentsScreen.module.css",
+    "apps/flow-app/src/shared/QueryState.tsx",
+    "apps/flow-app/src/shared/api/queries.ts",
+    "packages/contracts/src/index.ts",
+    "packages/flow-domain/src/index.ts",
+    "packages/flow-ui/src/index.ts"
+  ],
+  "apps/flow-app/src/features/settings/SettingsScreen.module.css": [],
+  "apps/flow-app/src/features/settings/SettingsScreen.test.tsx": [
+    "apps/flow-app/src/features/settings/SettingsScreen.tsx"
+  ],
+  "apps/flow-app/src/features/settings/SettingsScreen.tsx": [
+    "apps/flow-app/src/app/config.ts",
+    "apps/flow-app/src/features/settings/SettingsScreen.module.css",
+    "apps/flow-app/src/shared/api/client.ts",
+    "apps/flow-app/src/shared/api/queries.ts",
+    "packages/flow-ui/src/index.ts"
+  ],
+  "apps/flow-app/src/features/signals/SignalDetail.module.css": [],
+  "apps/flow-app/src/features/signals/SignalDetailScreen.tsx": [
+    "apps/flow-app/src/features/signals/SignalDetail.module.css",
+    "apps/flow-app/src/shared/QueryState.tsx",
+    "apps/flow-app/src/shared/api/queries.ts",
+    "apps/flow-app/src/shared/formatting/date.ts",
+    "packages/contracts/src/index.ts",
+    "packages/flow-domain/src/index.ts",
+    "packages/flow-ui/src/index.ts"
+  ],
+  "apps/flow-app/src/features/signals/SignalsScreen.module.css": [],
+  "apps/flow-app/src/features/signals/SignalsScreen.tsx": [
+    "apps/flow-app/src/features/signals/SignalsScreen.module.css",
+    "apps/flow-app/src/features/signals/SignalsTable.tsx",
+    "apps/flow-app/src/shared/api/client.ts",
+    "apps/flow-app/src/shared/api/queries.ts",
+    "packages/contracts/src/index.ts",
+    "packages/flow-domain/src/index.ts",
+    "packages/flow-ui/src/index.ts"
+  ],
+  "apps/flow-app/src/features/signals/SignalsTable.module.css": [],
+  "apps/flow-app/src/features/signals/SignalsTable.tsx": [
+    "apps/flow-app/src/features/signals/SignalsTable.module.css",
+    "apps/flow-app/src/shared/formatting/date.ts",
+    "packages/contracts/src/index.ts",
+    "packages/flow-ui/src/index.ts"
+  ],
+  "apps/flow-app/src/routeTree.gen.ts": [
+    "apps/flow-app/src/router.tsx",
+    "apps/flow-app/src/routes/__root.tsx",
+    "apps/flow-app/src/routes/api/compare.$id.ts",
+    "apps/flow-app/src/routes/api/dashboard.summary.ts",
+    "apps/flow-app/src/routes/api/dx-metrics.ts",
+    "apps/flow-app/src/routes/api/health.ts",
+    "apps/flow-app/src/routes/api/incidents.ts",
+    "apps/flow-app/src/routes/api/signals.$id.events.ts",
+    "apps/flow-app/src/routes/api/signals.$id.ts",
+    "apps/flow-app/src/routes/api/signals.ts",
+    "apps/flow-app/src/routes/api/simulate-error.ts",
+    "apps/flow-app/src/routes/compare.tsx",
+    "apps/flow-app/src/routes/dx-metrics.tsx",
+    "apps/flow-app/src/routes/incidents.tsx",
+    "apps/flow-app/src/routes/index.tsx",
+    "apps/flow-app/src/routes/settings.tsx",
+    "apps/flow-app/src/routes/signals/$id.tsx",
+    "apps/flow-app/src/routes/signals/index.tsx"
+  ],
+  "apps/flow-app/src/router.tsx": [
+    "apps/flow-app/src/routeTree.gen.ts"
+  ],
+  "apps/flow-app/src/routes/__root.tsx": [
+    "apps/flow-app/src/app/layout/AppLayout.tsx",
+    "apps/flow-app/src/app/styles/app.css"
+  ],
+  "apps/flow-app/src/routes/api/compare.$id.ts": [
+    "apps/flow-app/src/server/respond.ts",
+    "packages/flow-data-access/src/index.ts"
+  ],
+  "apps/flow-app/src/routes/api/dashboard.summary.ts": [
+    "apps/flow-app/src/server/respond.ts",
+    "packages/flow-data-access/src/index.ts"
+  ],
+  "apps/flow-app/src/routes/api/dx-metrics.ts": [
+    "apps/flow-app/src/server/respond.ts",
+    "packages/flow-data-access/src/index.ts"
+  ],
+  "apps/flow-app/src/routes/api/health.ts": [
+    "apps/flow-app/src/server/respond.ts",
+    "packages/flow-data-access/src/index.ts"
+  ],
+  "apps/flow-app/src/routes/api/incidents.ts": [
+    "apps/flow-app/src/server/respond.ts",
+    "packages/flow-data-access/src/index.ts"
+  ],
+  "apps/flow-app/src/routes/api/signals.$id.events.ts": [
+    "apps/flow-app/src/server/respond.ts",
+    "packages/flow-data-access/src/index.ts"
+  ],
+  "apps/flow-app/src/routes/api/signals.$id.ts": [
+    "apps/flow-app/src/server/respond.ts",
+    "packages/flow-data-access/src/index.ts"
+  ],
+  "apps/flow-app/src/routes/api/signals.ts": [
+    "apps/flow-app/src/server/respond.ts",
+    "packages/flow-data-access/src/index.ts"
+  ],
+  "apps/flow-app/src/routes/api/simulate-error.ts": [
+    "packages/flow-data-access/src/index.ts"
+  ],
+  "apps/flow-app/src/routes/compare.tsx": [
+    "apps/flow-app/src/features/compare/CompareScreen.tsx"
+  ],
+  "apps/flow-app/src/routes/dx-metrics.tsx": [
+    "apps/flow-app/src/features/dx-metrics/DxMetricsScreen.tsx"
+  ],
+  "apps/flow-app/src/routes/incidents.tsx": [
+    "apps/flow-app/src/features/incidents/IncidentsScreen.tsx"
+  ],
+  "apps/flow-app/src/routes/index.tsx": [
+    "apps/flow-app/src/features/dashboard/DashboardScreen.tsx"
+  ],
+  "apps/flow-app/src/routes/settings.tsx": [
+    "apps/flow-app/src/features/settings/SettingsScreen.tsx"
+  ],
+  "apps/flow-app/src/routes/signals/$id.tsx": [
+    "apps/flow-app/src/features/signals/SignalDetailScreen.tsx"
+  ],
+  "apps/flow-app/src/routes/signals/index.tsx": [
+    "apps/flow-app/src/features/signals/SignalsScreen.tsx",
+    "packages/contracts/src/index.ts"
+  ],
+  "apps/flow-app/src/server/respond.test.ts": [
+    "apps/flow-app/src/server/respond.ts",
+    "packages/flow-data-access/src/index.ts"
+  ],
+  "apps/flow-app/src/server/respond.ts": [
+    "packages/flow-data-access/src/index.ts"
+  ],
+  "apps/flow-app/src/shared/QueryState.tsx": [
+    "apps/flow-app/src/shared/api/client.ts",
+    "packages/flow-ui/src/index.ts"
+  ],
+  "apps/flow-app/src/shared/api/client.ts": [
+    "packages/contracts/src/index.ts"
+  ],
+  "apps/flow-app/src/shared/api/queries.ts": [
+    "apps/flow-app/src/shared/api/client.ts",
+    "packages/contracts/src/index.ts"
+  ],
+  "apps/flow-app/src/shared/formatting/date.ts": [],
+  "apps/flow-app/src/test/scenarios.test.ts": [
+    "packages/test-scenarios/src/index.ts"
+  ],
+  "packages/contracts/src/api.ts": [
+    "packages/contracts/src/dx-metric.ts",
+    "packages/contracts/src/incident.ts",
+    "packages/contracts/src/signal.ts",
+    "packages/contracts/src/timeline.ts"
+  ],
+  "packages/contracts/src/dx-metric.ts": [],
+  "packages/contracts/src/entities.ts": [
+    "packages/contracts/src/signal.ts"
+  ],
+  "packages/contracts/src/filters.ts": [
+    "packages/contracts/src/incident.ts",
+    "packages/contracts/src/signal.ts"
+  ],
+  "packages/contracts/src/incident.ts": [
+    "packages/contracts/src/signal.ts"
+  ],
+  "packages/contracts/src/index.ts": [
+    "packages/contracts/src/api.ts",
+    "packages/contracts/src/dx-metric.ts",
+    "packages/contracts/src/entities.ts",
+    "packages/contracts/src/filters.ts",
+    "packages/contracts/src/incident.ts",
+    "packages/contracts/src/signal.ts",
+    "packages/contracts/src/timeline.ts"
+  ],
+  "packages/contracts/src/signal.ts": [],
+  "packages/contracts/src/timeline.ts": [],
+  "packages/fixtures/src/constants.ts": [
+    "packages/contracts/src/index.ts"
+  ],
+  "packages/fixtures/src/generate.ts": [
+    "packages/contracts/src/index.ts",
+    "packages/fixtures/src/constants.ts",
+    "packages/fixtures/src/random.ts"
+  ],
+  "packages/fixtures/src/index.ts": [
+    "packages/fixtures/src/constants.ts",
+    "packages/fixtures/src/generate.ts",
+    "packages/fixtures/src/random.ts"
+  ],
+  "packages/fixtures/src/random.ts": [],
+  "packages/flow-data-access/src/api-errors/api-error.ts": [
+    "packages/contracts/src/index.ts"
+  ],
+  "packages/flow-data-access/src/api-errors/index.ts": [
+    "packages/flow-data-access/src/api-errors/api-error.ts"
+  ],
+  "packages/flow-data-access/src/config.ts": [
+    "packages/contracts/src/index.ts"
+  ],
+  "packages/flow-data-access/src/fixtures/dataset.ts": [
+    "packages/contracts/src/index.ts",
+    "packages/fixtures/src/index.ts"
+  ],
+  "packages/flow-data-access/src/fixtures/index.ts": [
+    "packages/flow-data-access/src/fixtures/dataset.ts"
+  ],
+  "packages/flow-data-access/src/index.ts": [
+    "packages/flow-data-access/src/api-errors/index.ts",
+    "packages/flow-data-access/src/config.ts",
+    "packages/flow-data-access/src/fixtures/index.ts",
+    "packages/flow-data-access/src/query/parse.ts",
+    "packages/flow-data-access/src/repositories/index.ts",
+    "packages/flow-data-access/src/services/index.ts"
+  ],
+  "packages/flow-data-access/src/query/parse.test.ts": [
+    "packages/flow-data-access/src/api-errors/api-error.ts",
+    "packages/flow-data-access/src/query/parse.ts"
+  ],
+  "packages/flow-data-access/src/query/parse.ts": [
+    "packages/contracts/src/index.ts",
+    "packages/flow-data-access/src/api-errors/api-error.ts"
+  ],
+  "packages/flow-data-access/src/repositories/incidents-repository.test.ts": [
+    "packages/flow-data-access/src/repositories/incidents-repository.ts"
+  ],
+  "packages/flow-data-access/src/repositories/incidents-repository.ts": [
+    "packages/contracts/src/index.ts",
+    "packages/flow-data-access/src/fixtures/dataset.ts"
+  ],
+  "packages/flow-data-access/src/repositories/index.ts": [
+    "packages/flow-data-access/src/repositories/incidents-repository.ts",
+    "packages/flow-data-access/src/repositories/signals-repository.ts"
+  ],
+  "packages/flow-data-access/src/repositories/signals-repository.test.ts": [
+    "packages/contracts/src/index.ts",
+    "packages/flow-data-access/src/api-errors/api-error.ts",
+    "packages/flow-data-access/src/fixtures/dataset.ts",
+    "packages/flow-data-access/src/repositories/signals-repository.ts"
+  ],
+  "packages/flow-data-access/src/repositories/signals-repository.ts": [
+    "packages/contracts/src/index.ts",
+    "packages/flow-data-access/src/api-errors/api-error.ts",
+    "packages/flow-data-access/src/fixtures/dataset.ts",
+    "packages/flow-domain/src/index.ts"
+  ],
+  "packages/flow-data-access/src/services/compare-service.ts": [
+    "packages/contracts/src/index.ts",
+    "packages/flow-data-access/src/api-errors/api-error.ts",
+    "packages/flow-data-access/src/fixtures/dataset.ts",
+    "packages/flow-domain/src/index.ts"
+  ],
+  "packages/flow-data-access/src/services/dashboard-service.ts": [
+    "packages/contracts/src/index.ts",
+    "packages/fixtures/src/index.ts",
+    "packages/flow-data-access/src/fixtures/dataset.ts",
+    "packages/flow-domain/src/index.ts"
+  ],
+  "packages/flow-data-access/src/services/health-service.ts": [
+    "packages/contracts/src/index.ts",
+    "packages/flow-data-access/src/config.ts"
+  ],
+  "packages/flow-data-access/src/services/index.ts": [
+    "packages/flow-data-access/src/services/compare-service.ts",
+    "packages/flow-data-access/src/services/dashboard-service.ts",
+    "packages/flow-data-access/src/services/health-service.ts",
+    "packages/flow-data-access/src/services/metrics-service.ts",
+    "packages/flow-data-access/src/services/simulation.ts"
+  ],
+  "packages/flow-data-access/src/services/metrics-service.ts": [
+    "packages/contracts/src/index.ts",
+    "packages/fixtures/src/index.ts",
+    "packages/flow-data-access/src/config.ts"
+  ],
+  "packages/flow-data-access/src/services/services.test.ts": [
+    "packages/flow-data-access/src/fixtures/dataset.ts",
+    "packages/flow-data-access/src/services/compare-service.ts",
+    "packages/flow-data-access/src/services/dashboard-service.ts",
+    "packages/flow-data-access/src/services/health-service.ts",
+    "packages/flow-data-access/src/services/metrics-service.ts"
+  ],
+  "packages/flow-data-access/src/services/simulation.ts": [
+    "packages/contracts/src/index.ts",
+    "packages/flow-data-access/src/api-errors/api-error.ts"
+  ],
+  "packages/flow-domain/src/compare/compare.test.ts": [
+    "packages/flow-domain/src/compare/compare.ts"
+  ],
+  "packages/flow-domain/src/compare/compare.ts": [
+    "packages/contracts/src/index.ts",
+    "packages/flow-domain/src/signals/confidence.ts",
+    "packages/flow-domain/src/signals/severity.ts"
+  ],
+  "packages/flow-domain/src/compare/index.ts": [
+    "packages/flow-domain/src/compare/compare.ts"
+  ],
+  "packages/flow-domain/src/dashboard/dashboard.test.ts": [
+    "packages/flow-domain/src/dashboard/kpis.ts",
+    "packages/flow-domain/src/test-utils.ts"
+  ],
+  "packages/flow-domain/src/dashboard/index.ts": [
+    "packages/flow-domain/src/dashboard/kpis.ts"
+  ],
+  "packages/flow-domain/src/dashboard/kpis.ts": [
+    "packages/contracts/src/index.ts",
+    "packages/flow-domain/src/signals/severity.ts",
+    "packages/flow-domain/src/signals/status.ts"
+  ],
+  "packages/flow-domain/src/format/duration.ts": [],
+  "packages/flow-domain/src/format/index.ts": [
+    "packages/flow-domain/src/format/duration.ts"
+  ],
+  "packages/flow-domain/src/incidents/incidents.test.ts": [
+    "packages/flow-domain/src/incidents/incidents.ts",
+    "packages/flow-domain/src/test-utils.ts"
+  ],
+  "packages/flow-domain/src/incidents/incidents.ts": [
+    "packages/contracts/src/index.ts"
+  ],
+  "packages/flow-domain/src/incidents/index.ts": [
+    "packages/flow-domain/src/incidents/incidents.ts"
+  ],
+  "packages/flow-domain/src/index.ts": [
+    "packages/flow-domain/src/compare/index.ts",
+    "packages/flow-domain/src/dashboard/index.ts",
+    "packages/flow-domain/src/format/index.ts",
+    "packages/flow-domain/src/incidents/index.ts",
+    "packages/flow-domain/src/metrics/index.ts",
+    "packages/flow-domain/src/signals/index.ts"
+  ],
+  "packages/flow-domain/src/metrics/axes.ts": [
+    "packages/contracts/src/index.ts"
+  ],
+  "packages/flow-domain/src/metrics/index.ts": [
+    "packages/flow-domain/src/metrics/axes.ts"
+  ],
+  "packages/flow-domain/src/metrics/metrics.test.ts": [
+    "packages/contracts/src/index.ts",
+    "packages/flow-domain/src/metrics/axes.ts"
+  ],
+  "packages/flow-domain/src/signals/confidence.ts": [
+    "packages/contracts/src/index.ts"
+  ],
+  "packages/flow-domain/src/signals/filter.ts": [
+    "packages/contracts/src/index.ts"
+  ],
+  "packages/flow-domain/src/signals/index.ts": [
+    "packages/flow-domain/src/signals/confidence.ts",
+    "packages/flow-domain/src/signals/filter.ts",
+    "packages/flow-domain/src/signals/risk.ts",
+    "packages/flow-domain/src/signals/severity.ts",
+    "packages/flow-domain/src/signals/sort.ts",
+    "packages/flow-domain/src/signals/status.ts"
+  ],
+  "packages/flow-domain/src/signals/risk.ts": [],
+  "packages/flow-domain/src/signals/severity.ts": [
+    "packages/contracts/src/index.ts"
+  ],
+  "packages/flow-domain/src/signals/signals.test.ts": [
+    "packages/flow-domain/src/signals/confidence.ts",
+    "packages/flow-domain/src/signals/filter.ts",
+    "packages/flow-domain/src/signals/risk.ts",
+    "packages/flow-domain/src/signals/severity.ts",
+    "packages/flow-domain/src/signals/sort.ts",
+    "packages/flow-domain/src/test-utils.ts"
+  ],
+  "packages/flow-domain/src/signals/sort.ts": [
+    "packages/contracts/src/index.ts",
+    "packages/flow-domain/src/signals/severity.ts"
+  ],
+  "packages/flow-domain/src/signals/status.ts": [
+    "packages/contracts/src/index.ts"
+  ],
+  "packages/flow-domain/src/test-utils.ts": [
+    "packages/contracts/src/index.ts"
+  ],
+  "packages/flow-ui/src/badges/Badge.module.css": [],
+  "packages/flow-ui/src/badges/Badge.tsx": [
+    "packages/flow-ui/src/badges/Badge.module.css",
+    "packages/ui-spec/src/index.ts"
+  ],
+  "packages/flow-ui/src/badges/ConfidenceDisplay.module.css": [],
+  "packages/flow-ui/src/badges/ConfidenceDisplay.tsx": [
+    "packages/flow-ui/src/badges/ConfidenceDisplay.module.css"
+  ],
+  "packages/flow-ui/src/badges/ImpactBadge.tsx": [
+    "packages/contracts/src/index.ts",
+    "packages/flow-ui/src/badges/Badge.tsx",
+    "packages/ui-spec/src/index.ts"
+  ],
+  "packages/flow-ui/src/badges/SeverityBadge.tsx": [
+    "packages/contracts/src/index.ts",
+    "packages/flow-ui/src/badges/Badge.tsx",
+    "packages/ui-spec/src/index.ts"
+  ],
+  "packages/flow-ui/src/badges/StatusBadge.tsx": [
+    "packages/contracts/src/index.ts",
+    "packages/flow-ui/src/badges/Badge.tsx",
+    "packages/ui-spec/src/index.ts"
+  ],
+  "packages/flow-ui/src/badges/VariantBadge.module.css": [],
+  "packages/flow-ui/src/badges/VariantBadge.tsx": [
+    "packages/flow-ui/src/badges/VariantBadge.module.css"
+  ],
+  "packages/flow-ui/src/badges/badges.test.tsx": [
+    "packages/flow-ui/src/badges/ConfidenceDisplay.tsx",
+    "packages/flow-ui/src/badges/ImpactBadge.tsx",
+    "packages/flow-ui/src/badges/SeverityBadge.tsx",
+    "packages/flow-ui/src/badges/StatusBadge.tsx",
+    "packages/flow-ui/src/badges/VariantBadge.tsx"
+  ],
+  "packages/flow-ui/src/badges/index.ts": [
+    "packages/flow-ui/src/badges/Badge.tsx",
+    "packages/flow-ui/src/badges/ConfidenceDisplay.tsx",
+    "packages/flow-ui/src/badges/ImpactBadge.tsx",
+    "packages/flow-ui/src/badges/SeverityBadge.tsx",
+    "packages/flow-ui/src/badges/StatusBadge.tsx",
+    "packages/flow-ui/src/badges/VariantBadge.tsx"
+  ],
+  "packages/flow-ui/src/charts/Charts.module.css": [],
+  "packages/flow-ui/src/charts/SeverityBars.tsx": [
+    "packages/contracts/src/index.ts",
+    "packages/flow-ui/src/charts/Charts.module.css"
+  ],
+  "packages/flow-ui/src/charts/StatusList.tsx": [
+    "packages/contracts/src/index.ts",
+    "packages/flow-ui/src/badges/Badge.tsx",
+    "packages/flow-ui/src/charts/Charts.module.css",
+    "packages/ui-spec/src/index.ts"
+  ],
+  "packages/flow-ui/src/charts/Timeline.tsx": [
+    "packages/flow-ui/src/charts/Charts.module.css"
+  ],
+  "packages/flow-ui/src/charts/TrendChart.tsx": [
+    "packages/contracts/src/index.ts"
+  ],
+  "packages/flow-ui/src/charts/VariantBars.tsx": [
+    "packages/flow-ui/src/charts/Charts.module.css"
+  ],
+  "packages/flow-ui/src/charts/index.ts": [
+    "packages/flow-ui/src/charts/SeverityBars.tsx",
+    "packages/flow-ui/src/charts/StatusList.tsx",
+    "packages/flow-ui/src/charts/Timeline.tsx",
+    "packages/flow-ui/src/charts/TrendChart.tsx",
+    "packages/flow-ui/src/charts/VariantBars.tsx"
+  ],
+  "packages/flow-ui/src/compare/Compare.module.css": [],
+  "packages/flow-ui/src/compare/ComparePanel.tsx": [
+    "packages/contracts/src/index.ts",
+    "packages/flow-ui/src/badges/SeverityBadge.tsx",
+    "packages/flow-ui/src/badges/StatusBadge.tsx",
+    "packages/flow-ui/src/compare/Compare.module.css"
+  ],
+  "packages/flow-ui/src/compare/compare.test.tsx": [
+    "packages/contracts/src/index.ts",
+    "packages/flow-ui/src/compare/ComparePanel.tsx"
+  ],
+  "packages/flow-ui/src/compare/index.ts": [
+    "packages/flow-ui/src/compare/ComparePanel.tsx"
+  ],
+  "packages/flow-ui/src/components/Ai.module.css": [],
+  "packages/flow-ui/src/components/Ai.tsx": [
+    "packages/flow-ui/src/components/Ai.module.css"
+  ],
+  "packages/flow-ui/src/components/Button.module.css": [],
+  "packages/flow-ui/src/components/Button.tsx": [
+    "packages/flow-ui/src/components/Button.module.css"
+  ],
+  "packages/flow-ui/src/components/Card.module.css": [],
+  "packages/flow-ui/src/components/Card.tsx": [
+    "packages/flow-ui/src/components/Card.module.css"
+  ],
+  "packages/flow-ui/src/components/Cards.module.css": [],
+  "packages/flow-ui/src/components/Cards.tsx": [
+    "packages/flow-ui/src/components/Card.tsx",
+    "packages/flow-ui/src/components/Cards.module.css"
+  ],
+  "packages/flow-ui/src/components/Icon.tsx": [],
+  "packages/flow-ui/src/components/Inputs.module.css": [],
+  "packages/flow-ui/src/components/Inputs.tsx": [
+    "packages/flow-ui/src/components/Icon.tsx",
+    "packages/flow-ui/src/components/Inputs.module.css"
+  ],
+  "packages/flow-ui/src/components/PageHeader.module.css": [],
+  "packages/flow-ui/src/components/PageHeader.tsx": [
+    "packages/flow-ui/src/components/PageHeader.module.css"
+  ],
+  "packages/flow-ui/src/components/index.ts": [
+    "packages/flow-ui/src/components/Ai.tsx",
+    "packages/flow-ui/src/components/Button.tsx",
+    "packages/flow-ui/src/components/Card.tsx",
+    "packages/flow-ui/src/components/Cards.tsx",
+    "packages/flow-ui/src/components/Icon.tsx",
+    "packages/flow-ui/src/components/Inputs.tsx",
+    "packages/flow-ui/src/components/PageHeader.tsx"
+  ],
+  "packages/flow-ui/src/css-modules.d.ts": [],
+  "packages/flow-ui/src/index.ts": [
+    "packages/flow-ui/src/badges/index.ts",
+    "packages/flow-ui/src/charts/index.ts",
+    "packages/flow-ui/src/compare/index.ts",
+    "packages/flow-ui/src/components/index.ts",
+    "packages/flow-ui/src/layout/index.ts",
+    "packages/flow-ui/src/metrics/index.ts",
+    "packages/flow-ui/src/states/index.ts",
+    "packages/flow-ui/src/table/index.ts"
+  ],
+  "packages/flow-ui/src/layout/AppShell.tsx": [
+    "packages/flow-ui/src/layout/Layout.module.css"
+  ],
+  "packages/flow-ui/src/layout/Breadcrumb.tsx": [
+    "packages/flow-ui/src/layout/Layout.module.css"
+  ],
+  "packages/flow-ui/src/layout/Layout.module.css": [],
+  "packages/flow-ui/src/layout/Sidebar.tsx": [
+    "packages/flow-ui/src/badges/VariantBadge.tsx",
+    "packages/flow-ui/src/components/Icon.tsx",
+    "packages/flow-ui/src/layout/Layout.module.css"
+  ],
+  "packages/flow-ui/src/layout/index.ts": [
+    "packages/flow-ui/src/layout/AppShell.tsx",
+    "packages/flow-ui/src/layout/Breadcrumb.tsx",
+    "packages/flow-ui/src/layout/Sidebar.tsx"
+  ],
+  "packages/flow-ui/src/metrics/MetricsTable.module.css": [],
+  "packages/flow-ui/src/metrics/MetricsTable.tsx": [
+    "packages/flow-ui/src/metrics/MetricsTable.module.css"
+  ],
+  "packages/flow-ui/src/metrics/index.ts": [
+    "packages/flow-ui/src/metrics/MetricsTable.tsx"
+  ],
+  "packages/flow-ui/src/states/Banner.tsx": [
+    "packages/flow-ui/src/components/Button.tsx",
+    "packages/flow-ui/src/states/States.module.css"
+  ],
+  "packages/flow-ui/src/states/EmptyState.tsx": [
+    "packages/flow-ui/src/states/States.module.css"
+  ],
+  "packages/flow-ui/src/states/ErrorState.tsx": [
+    "packages/flow-ui/src/components/Button.tsx",
+    "packages/flow-ui/src/states/States.module.css"
+  ],
+  "packages/flow-ui/src/states/Loading.tsx": [
+    "packages/flow-ui/src/states/States.module.css"
+  ],
+  "packages/flow-ui/src/states/States.module.css": [],
+  "packages/flow-ui/src/states/index.ts": [
+    "packages/flow-ui/src/states/Banner.tsx",
+    "packages/flow-ui/src/states/EmptyState.tsx",
+    "packages/flow-ui/src/states/ErrorState.tsx",
+    "packages/flow-ui/src/states/Loading.tsx"
+  ],
+  "packages/flow-ui/src/states/states.test.tsx": [
+    "packages/flow-ui/src/states/Banner.tsx",
+    "packages/flow-ui/src/states/EmptyState.tsx",
+    "packages/flow-ui/src/states/ErrorState.tsx"
+  ],
+  "packages/flow-ui/src/table/Table.module.css": [],
+  "packages/flow-ui/src/table/Table.tsx": [
+    "packages/flow-ui/src/components/Button.tsx",
+    "packages/flow-ui/src/components/Card.tsx",
+    "packages/flow-ui/src/table/Table.module.css"
+  ],
+  "packages/flow-ui/src/table/index.ts": [
+    "packages/flow-ui/src/table/Table.tsx"
+  ],
+  "packages/test-scenarios/src/index.ts": [
+    "packages/test-scenarios/src/scenarios.ts"
+  ],
+  "packages/test-scenarios/src/scenarios.ts": [
+    "packages/contracts/src/index.ts"
+  ],
+  "packages/ui-spec/src/components.ts": [],
+  "packages/ui-spec/src/index.ts": [
+    "packages/ui-spec/src/components.ts",
+    "packages/ui-spec/src/routes.ts",
+    "packages/ui-spec/src/screens.ts",
+    "packages/ui-spec/src/tokens.ts"
+  ],
+  "packages/ui-spec/src/routes.ts": [],
+  "packages/ui-spec/src/screens.ts": [
+    "packages/ui-spec/src/routes.ts"
+  ],
+  "packages/ui-spec/src/tokens.ts": [
+    "packages/contracts/src/index.ts"
+  ]
+}

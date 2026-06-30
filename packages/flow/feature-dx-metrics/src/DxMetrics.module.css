@@ -1,0 +1,102 @@
+.exportBar {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.axisGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.comparisonGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.aiTiles,
+.perfTiles {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.outcome {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 14px;
+  font-size: 13px;
+  color: var(--so-slate-700);
+}
+.outcomeChip {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 9px;
+  border-radius: var(--so-radius-pill);
+}
+.good {
+  color: var(--so-green-fg);
+  background: var(--so-green-bg);
+}
+.bad {
+  color: var(--so-red-fg);
+  background: var(--so-red-bg);
+}
+
+.tableScroll {
+  overflow-x: auto;
+}
+.ciTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12.5px;
+}
+.ciTable th {
+  text-align: left;
+  padding: 8px 12px;
+  font-size: 10.5px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--so-slate-400);
+  border-bottom: 1px solid var(--so-border);
+}
+.ciTable td {
+  padding: 10px 12px;
+  border-top: 1px solid var(--so-border-inner);
+  color: var(--so-slate-700);
+}
+.sha {
+  font-family: var(--so-font-mono);
+  font-size: 11px;
+  color: var(--so-slate-400);
+}
+.lowerNote {
+  font-size: 11px;
+  color: var(--so-slate-400);
+}
+
+@media (max-width: 1080px) {
+  .axisGrid,
+  .aiTiles,
+  .perfTiles {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .comparisonGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .axisGrid,
+  .aiTiles,
+  .perfTiles {
+    grid-template-columns: 1fr;
+  }
+  .exportBar {
+    flex-wrap: wrap;
+  }
+}

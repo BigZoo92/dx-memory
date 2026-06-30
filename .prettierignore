@@ -9,6 +9,11 @@ packages/metrics/results
 maquettes
 docs/product
 docs/static
+# Generated audit artifacts (graphs, bundle stats, vitest json) — not hand-edited.
+docs/audit/**/*.html
+docs/audit/**/*.json
+docs/audit/**/*.svg
+docs/audit/**/static
 docs/results-log-flow-graph.html
 **/routeTree.gen.ts
 apps/flow-app/metrics.flow.json

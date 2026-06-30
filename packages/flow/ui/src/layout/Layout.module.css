@@ -1,0 +1,265 @@
+.shell {
+  display: grid;
+  grid-template-columns: var(--so-sidebar-width) 1fr;
+  min-height: 100vh;
+  background: var(--so-surface);
+}
+
+/* Sidebar */
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 16px 14px;
+  background: var(--so-card);
+  border-right: 1px solid var(--so-border);
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 4px 6px;
+}
+
+.logoMark {
+  width: 34px;
+  height: 34px;
+  border-radius: var(--so-radius-md);
+  background: var(--so-accent);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 700;
+  flex: 0 0 auto;
+}
+
+.brandName {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--so-ink);
+  line-height: 1.1;
+}
+
+.brandSub {
+  font-size: 11.5px;
+  color: var(--so-slate-400);
+}
+
+.navGroupLabel {
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--so-slate-400);
+  padding: 0 8px;
+  margin-bottom: 6px;
+}
+
+.navList {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.navItem {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 8px 10px;
+  border-radius: var(--so-radius-md);
+  font-size: 13px;
+  font-weight: 500;
+  color: #4a515b;
+  cursor: pointer;
+}
+
+.navItem:hover {
+  background: var(--so-border-inner);
+}
+
+.navItemActive {
+  color: var(--so-accent-hover);
+  background: var(--so-nav-active-bg);
+  font-weight: 600;
+}
+
+.navItemActive .navIcon {
+  color: var(--so-accent);
+}
+
+.navIcon {
+  color: #7a828d;
+  flex: 0 0 auto;
+}
+
+.navLabel {
+  flex: 1 1 auto;
+}
+
+.navCount {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 1px 7px;
+  border-radius: var(--so-radius-pill);
+  background: #eef0f2;
+  color: var(--so-slate-400);
+}
+
+.navItemActive .navCount {
+  background: #ffe3c2;
+  color: var(--so-accent-hover);
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+/* Main column */
+.main {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: var(--so-topbar-height);
+  padding: 0 24px;
+  background: var(--so-card);
+  border-bottom: 1px solid var(--so-border);
+  position: sticky;
+  top: 0;
+  /* Above the page content and the sticky table header (z-index: 2). */
+  z-index: 20;
+}
+
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.content {
+  flex: 1 1 auto;
+  padding: 28px 24px;
+  width: 100%;
+  max-width: calc(var(--so-content-max) + 48px);
+  margin: 0 auto;
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 24px;
+  border-top: 1px solid var(--so-border);
+  font-size: 12px;
+  color: var(--so-slate-400);
+}
+
+.statusDot {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.statusDot .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+/* Breadcrumb */
+.crumbs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+}
+
+.crumb {
+  color: var(--so-slate-400);
+  font-weight: 500;
+}
+
+.crumbCurrent {
+  color: var(--so-ink);
+  font-weight: 600;
+}
+
+.crumbSep {
+  color: var(--so-slate-300);
+}
+
+/* ≤1024px — laptop-portrait / tablet / mobile: the sidebar becomes a compact, horizontally
+   scrollable top nav and the content takes the full width. The header stays sticky. */
+@media (max-width: 1024px) {
+  .shell {
+    grid-template-columns: 1fr;
+  }
+  .sidebar {
+    position: static;
+    height: auto;
+    flex-direction: row;
+    align-items: center;
+    gap: 14px;
+    padding: 8px 16px;
+    border-right: none;
+    border-bottom: 1px solid var(--so-border);
+    overflow-x: auto;
+  }
+  .brand {
+    flex: 0 0 auto;
+  }
+  .sidebar > div {
+    display: flex;
+    align-items: center;
+  }
+  .navGroupLabel {
+    display: none;
+  }
+  .navList {
+    flex-direction: row;
+    gap: 4px;
+  }
+  .navItem {
+    white-space: nowrap;
+    min-height: 40px;
+  }
+  .content {
+    padding: 24px 20px;
+  }
+}
+
+@media (max-width: 640px) {
+  .header {
+    padding: 0 16px;
+    gap: 10px;
+  }
+  .content {
+    padding: 18px 14px;
+  }
+  .footer {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    padding: 14px 16px;
+  }
+  .brandSub {
+    display: none;
+  }
+}

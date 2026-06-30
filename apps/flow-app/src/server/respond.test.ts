@@ -1,38 +1,44 @@
 import { describe, expect, it } from 'vitest'
-import { badRequest, notFound } from '@signalops/flow-data-access'
-import { handle } from './respond'
+import { Effect } from 'effect'
+import {
+  getHealthEffect,
+  getSignalByIdEffect,
+  getSignalsEffect,
+  type ApiEffect
+} from '@signalops/flow-server-data-access'
+import { handleEffect } from './respond'
 
-describe('handle (server route wrapper)', () => {
-  it('returns JSON for a successful handler', async () => {
-    const response = await handle(() => ({ ok: true }))
+describe('handleEffect (server route boundary)', () => {
+  it('returns 200 JSON for a successful effect', async () => {
+    const response = await handleEffect(getHealthEffect())
     expect(response.status).toBe(200)
-    await expect(response.json()).resolves.toEqual({ ok: true })
-  })
-
-  it('serializes an ApiErrorException to its envelope + status', async () => {
-    const response = await handle(() => {
-      throw notFound('Signal not found: sig_x')
-    })
-    expect(response.status).toBe(404)
     const body = await response.json()
-    expect(body).toMatchObject({ code: 'not_found', message: 'Signal not found: sig_x' })
-    expect(body.requestId).toMatch(/^req_/)
+    expect(body.status).toBe('ok')
+    expect(body.variant).toBe('Variant B — Flow')
   })
 
-  it('maps a bad request to a 400 envelope', async () => {
-    const response = await handle(() => {
-      throw badRequest('Invalid query', { issue: 'x' })
-    })
+  it('maps a validation failure to a 400 bad_request envelope', async () => {
+    const response = await handleEffect(getSignalsEffect({ severity: 'nuclear' }))
     expect(response.status).toBe(400)
     const body = await response.json()
     expect(body.code).toBe('bad_request')
-    expect(body.details).toEqual({ issue: 'x' })
+    expect(body.requestId).toMatch(/^req_/)
+    // The Schema parse error is surfaced as structured details, never a stack trace.
+    expect(body.details).toBeTruthy()
   })
 
-  it('coerces an unexpected error to a 500 envelope', async () => {
-    const response = await handle(() => {
-      throw new Error('boom')
-    })
+  it('maps a not-found failure to a 404 not_found envelope', async () => {
+    const response = await handleEffect(getSignalByIdEffect('sig_does_not_exist'))
+    expect(response.status).toBe(404)
+    const body = await response.json()
+    expect(body.code).toBe('not_found')
+    expect(body.message).toContain('sig_does_not_exist')
+    expect(body.requestId).toMatch(/^req_/)
+  })
+
+  it('coerces an unexpected defect to an opaque 500 (no stack leak)', async () => {
+    const boom = Effect.die(new Error('boom')) as ApiEffect<never>
+    const response = await handleEffect(boom)
     expect(response.status).toBe(500)
     const body = await response.json()
     expect(body.code).toBe('internal_error')

@@ -1,0 +1,49 @@
+{
+  "name": "flow-feature-signals",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "library",
+  "sourceRoot": "packages/flow/feature-signals/src",
+  "tags": ["scope:flow", "type:feature"],
+  "targets": {
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["^typecheck"],
+      "inputs": ["default", "^production"],
+      "outputs": ["{projectRoot}/dist-types"],
+      "cache": true,
+      "options": {
+        "command": "tsc -b tsconfig.json",
+        "cwd": "packages/flow/feature-signals"
+      }
+    },
+    "build": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["^build"],
+      "inputs": ["production", "^production"],
+      "outputs": ["{projectRoot}/dist-types"],
+      "cache": true,
+      "options": {
+        "command": "tsc -b tsconfig.json",
+        "cwd": "packages/flow/feature-signals"
+      }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "inputs": ["default", "^production"],
+      "cache": true,
+      "options": {
+        "command": "vitest run",
+        "cwd": "packages/flow/feature-signals"
+      }
+    },
+    "lint": {
+      "executor": "nx:run-commands",
+      "inputs": ["default"],
+      "cache": true,
+      "options": {
+        "command": "oxlint src",
+        "cwd": "packages/flow/feature-signals"
+      }
+    }
+  }
+}

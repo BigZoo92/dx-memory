@@ -1,0 +1,30 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash|apply_patch",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$(git rev-parse --show-toplevel)/.codex/hooks/signalops-scope-guard.py\"",
+            "timeout": 10,
+            "statusMessage": "Checking SignalOps app scope"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Bash|apply_patch",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$(git rev-parse --show-toplevel)/.codex/hooks/signalops-post-edit-dispatch.py\"",
+            "timeout": 30,
+            "statusMessage": "Checking SignalOps boundaries"
+          }
+        ]
+      }
+    ]
+  }
+}

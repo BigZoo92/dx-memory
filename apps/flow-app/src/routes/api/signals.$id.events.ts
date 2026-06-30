@@ -1,11 +1,12 @@
+import '@tanstack/react-start/server-only'
 import { createFileRoute } from '@tanstack/react-router'
-import { getSignalEvents } from '@signalops/flow-data-access'
-import { handle } from '../../server/respond'
+import { getSignalEventsEffect } from '@signalops/flow-server-data-access'
+import { handleEffect } from '../../server/respond'
 
 export const Route = createFileRoute('/api/signals/$id/events')({
   server: {
     handlers: {
-      GET: ({ params }) => handle(() => getSignalEvents(params.id))
+      GET: ({ params }) => handleEffect(getSignalEventsEffect(params.id))
     }
   }
 })

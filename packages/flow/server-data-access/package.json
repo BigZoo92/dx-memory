@@ -1,0 +1,31 @@
+{
+  "name": "@signalops/flow-server-data-access",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Flow variant — SERVER-ONLY data access & API logic (repositories, parsing, typed errors, services).",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -b tsconfig.json",
+    "build": "tsc -b tsconfig.json",
+    "test": "vitest run",
+    "lint": "oxlint src"
+  },
+  "dependencies": {
+    "@signalops/contracts": "workspace:*",
+    "@signalops/fixtures": "workspace:*",
+    "@signalops/flow-domain": "workspace:*",
+    "@signalops/flow-effect": "workspace:*",
+    "effect": "catalog:"
+  },
+  "devDependencies": {
+    "oxlint": "catalog:",
+    "typescript": "catalog:",
+    "vite": "catalog:",
+    "vitest": "catalog:"
+  }
+}

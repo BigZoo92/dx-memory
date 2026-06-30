@@ -25,6 +25,7 @@
     "typescript/no-explicit-any": "warn",
     "import/no-cycle": "error",
     "no-console": "off",
+    "no-underscore-dangle": "off",
     "react/react-in-jsx-scope": "off",
     "import/no-unassigned-import": "off",
     "jsx-a11y/prefer-tag-over-role": "off",

@@ -1,7 +1,8 @@
+import '@tanstack/react-start/server-only'
 import { join } from 'node:path'
 import { createFileRoute } from '@tanstack/react-router'
-import { buildDxMetricsResponse } from '@signalops/flow-data-access'
-import { handle } from '../../server/respond'
+import { getDxMetricsEffect } from '@signalops/flow-server-data-access'
+import { handleEffect } from '../../server/respond'
 
 // Collected metrics live in the metrics package's results dir (written by `pnpm metrics:collect`).
 // Overridable via env; when the file is absent (e.g. in the container) the service falls back to
@@ -13,7 +14,7 @@ const resultsPath =
 export const Route = createFileRoute('/api/dx-metrics')({
   server: {
     handlers: {
-      GET: () => handle(() => buildDxMetricsResponse({ resultsPath }))
+      GET: () => handleEffect(getDxMetricsEffect({ resultsPath }))
     }
   }
 })

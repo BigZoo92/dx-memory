@@ -1,0 +1,32 @@
+{
+  "extends": "../../../tsconfig.base.json",
+  "compilerOptions": {
+    "composite": true,
+    "declaration": true,
+    "declarationMap": true,
+    "emitDeclarationOnly": true,
+    "noEmit": false,
+    "outDir": "./dist-types",
+    "rootDir": "./src",
+    "tsBuildInfoFile": "./dist-types/.tsbuildinfo",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "jsx": "react-jsx",
+    "types": ["node"]
+  },
+  "include": ["src"],
+  "references": [
+    {
+      "path": "../ui"
+    },
+    {
+      "path": "../api-client"
+    },
+    {
+      "path": "../domain"
+    },
+    {
+      "path": "../../contracts"
+    }
+  ],
+  "exclude": ["src/**/*.test.ts", "src/**/*.test.tsx", "src/**/test/**"]
+}

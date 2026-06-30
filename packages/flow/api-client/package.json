@@ -1,0 +1,36 @@
+{
+  "name": "@signalops/flow-api-client",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Flow variant — typed browser API client + TanStack Query hooks. Client-side only; talks to /api over fetch. No server logic, no fixtures.",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -b tsconfig.json",
+    "build": "tsc -b tsconfig.json",
+    "test": "vitest run",
+    "lint": "oxlint src"
+  },
+  "dependencies": {
+    "@signalops/contracts": "workspace:*",
+    "@signalops/flow-effect": "workspace:*",
+    "@tanstack/react-query": "catalog:",
+    "effect": "catalog:",
+    "react": "catalog:"
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "catalog:",
+    "@testing-library/react": "catalog:",
+    "@types/react": "catalog:",
+    "@vitejs/plugin-react": "catalog:",
+    "happy-dom": "catalog:",
+    "oxlint": "catalog:",
+    "typescript": "catalog:",
+    "vite": "catalog:",
+    "vitest": "catalog:"
+  }
+}

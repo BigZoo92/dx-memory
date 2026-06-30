@@ -1,6 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { SettingsScreen } from '../features/settings/SettingsScreen'
+import { SettingsScreen } from '@signalops/flow-feature-settings'
+import { VARIANT } from '../app/config'
 
 export const Route = createFileRoute('/settings')({
-  component: SettingsScreen
+  component: () => <SettingsScreen variant={VARIANT} />
 })

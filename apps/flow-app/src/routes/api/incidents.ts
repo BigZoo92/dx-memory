@@ -1,15 +1,12 @@
+import '@tanstack/react-start/server-only'
 import { createFileRoute } from '@tanstack/react-router'
-import { parseIncidentsQuery, queryIncidents } from '@signalops/flow-data-access'
-import { handle } from '../../server/respond'
+import { getIncidentsEffect } from '@signalops/flow-server-data-access'
+import { handleEffect } from '../../server/respond'
 
 export const Route = createFileRoute('/api/incidents')({
   server: {
     handlers: {
-      GET: ({ request }) =>
-        handle(() => {
-          const query = parseIncidentsQuery(new URL(request.url).searchParams)
-          return queryIncidents(query)
-        })
+      GET: ({ request }) => handleEffect(getIncidentsEffect(new URL(request.url).searchParams))
     }
   }
 })

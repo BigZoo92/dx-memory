@@ -18,10 +18,3 @@ export const VARIANT: {
 }
 
 export const BUILD_INFO = 'SignalOps · flow · build local · v1.0.0'
-
-/**
- * Reference "now" for client-side relative-time math (incident ages, resolved-this-week).
- * Mirrors the fixtures' deterministic anchor so the UI matches the dataset window without
- * adding a dependency on `@signalops/fixtures`.
- */
-export const REFERENCE_NOW_MS = Date.parse('2026-06-29T12:00:00.000Z')
