@@ -11,7 +11,8 @@
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run",
     "lint": "oxlint src",
-    "format": "prettier --check \"src/**/*.{ts,tsx}\"",
+    "format": "oxfmt -c ../../.oxfmtrc.json --ignore-path ../../.oxfmtignore src",
+    "format:check": "oxfmt -c ../../.oxfmtrc.json --ignore-path ../../.oxfmtignore --check src",
     "docker:build": "docker build -f Dockerfile -t signalops-flow:local ../..",
     "metrics:collect": "node scripts/collect-metrics.mjs"
   },
@@ -46,6 +47,7 @@
     "@types/react-dom": "catalog:",
     "@vitejs/plugin-react": "catalog:",
     "happy-dom": "catalog:",
+    "oxfmt": "catalog:",
     "oxlint": "catalog:",
     "rollup-plugin-visualizer": "^7.0.1",
     "typescript": "catalog:",

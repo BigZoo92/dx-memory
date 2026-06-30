@@ -26,7 +26,6 @@ concurrency:
 
 env:
   NODE_VERSION: '22'
-  PNPM_VERSION: '9'
 
 jobs:
   # ---- Pull requests: only what the diff affects -------------------------------------------
@@ -39,10 +38,9 @@ jobs:
           # Full history so Nx can diff base→head accurately.
           fetch-depth: 0
 
+      # Version is inferred from the "packageManager" field in package.json.
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
-        with:
-          version: ${{ env.PNPM_VERSION }}
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -90,10 +88,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # Version is inferred from the "packageManager" field in package.json.
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
-        with:
-          version: ${{ env.PNPM_VERSION }}
 
       - name: Setup Node
         uses: actions/setup-node@v4

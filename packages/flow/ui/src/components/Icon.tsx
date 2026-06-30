@@ -80,8 +80,12 @@ export function Icon({ name, size = 18, className, style }: IconProps) {
       {spec.rect?.map((r, i) => (
         <rect key={`r${i}`} x={r[0]} y={r[1]} width={r[2]} height={r[3]} rx={1.5} />
       ))}
-      {spec.circle?.map((c, i) => <circle key={`c${i}`} cx={c[0]} cy={c[1]} r={c[2]} />)}
-      {spec.d?.map((d, i) => <path key={`p${i}`} d={d} />)}
+      {spec.circle?.map((c, i) => (
+        <circle key={`c${i}`} cx={c[0]} cy={c[1]} r={c[2]} />
+      ))}
+      {spec.d?.map((d, i) => (
+        <path key={`p${i}`} d={d} />
+      ))}
     </svg>
   )
 }

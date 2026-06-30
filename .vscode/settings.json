@@ -1,0 +1,27 @@
+{
+  // ─────────────────────────────────────────────────────────────────────────
+  // oxc (oxlint + oxfmt) is the Flow variant's toolchain ONLY.
+  //
+  // The guarantee that oxc never touches non-Flow code does NOT rely on these
+  // editor settings: it comes from `ignorePatterns` in .oxlintrc.json and
+  // .oxfmtrc.json, which exclude everything outside apps/flow-app + packages/flow.
+  // So even though VS Code applies a formatter per-language across the whole
+  // single-root workspace, oxfmt/oxlint are a no-op on the socle and other variants.
+  //
+  // Note (VS Code single-root limitation): a formatter cannot be scoped by folder,
+  // only by language. We make oxfmt the default for the file types it owns; on
+  // non-Flow files it simply does nothing. Socle/root files are formatted by
+  // Prettier via `pnpm format` (Prettier skips Flow via .prettierignore).
+  // ─────────────────────────────────────────────────────────────────────────
+
+  // oxlint auto-discovers .oxlintrc.json at the workspace root.
+  // oxfmt needs to be pointed at its config explicitly:
+  "oxc.fmt.configPath": ".oxfmtrc.json",
+
+  "editor.formatOnSave": true,
+  "[javascript]": { "editor.defaultFormatter": "oxc.oxc-vscode" },
+  "[javascriptreact]": { "editor.defaultFormatter": "oxc.oxc-vscode" },
+  "[typescript]": { "editor.defaultFormatter": "oxc.oxc-vscode" },
+  "[typescriptreact]": { "editor.defaultFormatter": "oxc.oxc-vscode" },
+  "[css]": { "editor.defaultFormatter": "oxc.oxc-vscode" }
+}

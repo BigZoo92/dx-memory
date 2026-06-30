@@ -1,3 +1,7 @@
+# The Flow variant is formatted by oxfmt (oxc ecosystem), not Prettier.
+apps/flow-app
+packages/flow
+
 node_modules
 dist
 dist-types

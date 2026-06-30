@@ -86,9 +86,22 @@ Other useful scripts:
 
 ```bash
 pnpm build          # nx run-many -t build  (type-only build for source packages)
-pnpm lint           # nx run-many -t lint   (prettier check per package)
-pnpm format         # prettier --write .
+pnpm lint           # nx run-many -t lint   (oxlint for Flow, prettier --check for the socle)
+pnpm format         # oxfmt for the Flow tree, prettier --write for the rest
+pnpm format:check   # same split, check-only (no writes)
 ```
+
+> The toolchain is split by ecosystem: the **oxc** tools (oxlint + oxfmt) are the Flow
+> variant's linter/formatter (`apps/flow-app` + `packages/flow/*`); everything else uses
+> **Prettier**. The two never overlap:
+>
+> - Prettier skips the Flow tree via `.prettierignore`; oxfmt is pointed at the Flow tree
+>   explicitly (with `--ignore-path .oxfmtignore`, since oxfmt would otherwise also read
+>   `.prettierignore` and skip Flow).
+> - oxc is confined to Flow even when run bare (`oxlint` / `oxfmt` at the root) or by the
+>   VS Code extension: `ignorePatterns` in `.oxlintrc.json` and `.oxfmtrc.json` exclude
+>   everything outside Flow, so the socle and the other variants are never linted or
+>   formatted by oxc. See `.vscode/settings.json` for the editor setup.
 
 ## Generated artifacts
 

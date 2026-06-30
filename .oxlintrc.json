@@ -40,8 +40,25 @@
     "**/.tanstack/**",
     "**/routeTree.gen.ts",
     "**/node_modules/**",
-    "packages/fixtures/data/**",
-    "packages/metrics/results/**",
-    "maquettes/**"
+    "maquettes/**",
+    "docs/**",
+    "docker/**",
+    "coverage/**",
+    ".vscode/**",
+    "apps/friction-api/**",
+    "apps/friction-web/**",
+    "apps/overfit-api/**",
+    "apps/overfit-web/**",
+    "packages/contracts/**",
+    "packages/fixtures/**",
+    "packages/metrics/**",
+    "packages/test-scenarios/**",
+    "packages/ui-spec/**",
+    "packages/overfit/**",
+    "packages/flow-domain/**",
+    "packages/flow-ui/**",
+    "packages/flow-data-access/**",
+    "/vitest.config.ts",
+    "/.dependency-cruiser.cjs"
   ]
 }
