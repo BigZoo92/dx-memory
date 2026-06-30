@@ -11,8 +11,8 @@
   },
   "scripts": {
     "generate": "tsx src/write-fixtures.ts",
-    "build": "tsc --noEmit",
-    "typecheck": "tsc --noEmit",
+    "build": "tsc -b tsconfig.json",
+    "typecheck": "tsc -b tsconfig.json",
     "test": "vitest run --passWithNoTests",
     "lint": "prettier --check \"src/**/*.ts\""
   },
