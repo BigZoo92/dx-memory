@@ -1,7 +1,7 @@
 name: friction-ci
 
-# Variant A — Friction. SKELETON: the build/test/ship steps are added in the Variant A pass.
-# The job below validates the shared foundation the variant depends on.
+# Variant A - Friction. One job, runs everything every time: no affected, no targeting,
+# no caching beyond the pnpm store, no a11y / Lighthouse / dependency-graph checks.
 
 on:
   push:
@@ -22,7 +22,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # Version is inferred from the "packageManager" field in package.json.
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
 
@@ -32,16 +31,38 @@ jobs:
           node-version: 22
           cache: pnpm
 
-      - name: Install
+      - name: Install (whole workspace)
         run: pnpm install --frozen-lockfile
 
-      - name: Generate fixtures
-        run: pnpm fixtures:generate
+      - name: Prettier check
+        run: |
+          pnpm --filter @signalops/friction-api format:check
+          pnpm --filter @signalops/friction-web format:check
 
-      # TODO(variant-a): typecheck/lint/test friction-web + friction-api
-      # TODO(variant-a): build the apps and measure build time
-      # TODO(variant-a): docker build (single-stage) and measure docker build time
-      # TODO(variant-a): run the @signalops/test-scenarios suite for this variant
-      # TODO(variant-a): collect per-variant metrics and upload as artifact
-      - name: Placeholder
-        run: pnpm ci:friction
+      - name: ESLint
+        run: |
+          pnpm --filter @signalops/friction-api lint
+          pnpm --filter @signalops/friction-web lint
+
+      - name: Typecheck
+        run: |
+          pnpm --filter @signalops/friction-api typecheck
+          pnpm --filter @signalops/friction-web typecheck
+
+      - name: Test (backend)
+        run: pnpm --filter @signalops/friction-api test
+
+      - name: Test (frontend)
+        run: pnpm --filter @signalops/friction-web test
+
+      - name: Build (backend)
+        run: pnpm --filter @signalops/friction-api build
+
+      - name: Build (frontend)
+        run: pnpm --filter @signalops/friction-web build
+
+      - name: Docker build (api)
+        run: docker build -f apps/friction-api/Dockerfile -t signalops-friction-api:ci .
+
+      - name: Docker build (web)
+        run: docker build -f apps/friction-web/Dockerfile -t signalops-friction-web:ci .

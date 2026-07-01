@@ -1,0 +1,29 @@
+{
+  "name": "friction-api",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "sourceRoot": "apps/friction-api/src",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "options": { "command": "tsc -p tsconfig.json", "cwd": "apps/friction-api" }
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": { "command": "tsc -p tsconfig.json --noEmit", "cwd": "apps/friction-api" }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": { "command": "vitest run", "cwd": "apps/friction-api" }
+    },
+    "lint": {
+      "executor": "nx:run-commands",
+      "options": { "command": "eslint src --ext .ts", "cwd": "apps/friction-api" }
+    },
+    "start": {
+      "executor": "nx:run-commands",
+      "options": { "command": "node dist/main.js", "cwd": "apps/friction-api" }
+    }
+  }
+}

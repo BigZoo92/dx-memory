@@ -1,25 +1,15 @@
-# friction-web — Variant A (Friction) · frontend
+# friction-web
 
-> ⏳ **Placeholder.** Not implemented in the socle pass. The application is built in the
-> dedicated Variant A pass.
+Frontend for the Friction variant. React + Vite.
 
-The **Friction** variant is a functional product with deliberately neglected DX, to show the cost
-of low Developer Experience. It must still implement the exact same product as the other variants
-(see [`docs/product/00-product-contract.md`](../../docs/product/00-product-contract.md)).
+## Commands
 
-## Planned stack
+```
+pnpm --filter @signalops/friction-web dev
+pnpm --filter @signalops/friction-web build
+pnpm --filter @signalops/friction-web test
+```
 
-- React (plain) + Vite
-- React Router
-- Data fetching via SWR or scattered `fetch` calls
-- A heavy table library
-- Classic lodash usage
-- Vitest
-- Simple (single-stage) Docker
-- Nx present but under-exploited (on purpose)
+Dev server runs on port 3100 and proxies `/api` to the backend on 3101, so start friction-api too.
 
-## When implemented, it must
-
-- consume `@signalops/contracts`, `@signalops/fixtures`, `@signalops/ui-spec`;
-- satisfy every scenario in `@signalops/test-scenarios`;
-- expose `build`, `test`, `typecheck`, `lint` and `ci` targets for metrics collection.
+Pages are in `src/pages`. Shared bits are in `src/components.tsx`, `src/helpers.ts`, `src/types.ts`.

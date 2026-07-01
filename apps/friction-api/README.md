@@ -1,22 +1,17 @@
-# friction-api — Variant A (Friction) · backend
+# friction-api
 
-> ⏳ **Placeholder.** Not implemented in the socle pass. Built in the dedicated Variant A pass.
+Backend for the Friction variant. NestJS.
 
-Backend for the Friction variant. Must serve the API contract in
-[`docs/product/00-product-contract.md`](../../docs/product/00-product-contract.md) from the shared
-fixtures.
+## Commands
 
-## Planned stack
+```
+pnpm --filter @signalops/friction-api build
+pnpm --filter @signalops/friction-api start
+pnpm --filter @signalops/friction-api dev
+pnpm --filter @signalops/friction-api test
+```
 
-- Fastify
-- Data loaded from `@signalops/fixtures`
-- Loose/ad-hoc validation and error handling (intentional friction)
-- Vitest
-- Simple (single-stage) Docker
+Runs on port 3101.
 
-## Required endpoints
-
-`GET /api/health`, `GET /api/signals`, `GET /api/signals/:id`, `GET /api/signals/:id/events`,
-`GET /api/incidents`, `GET /api/dashboard/summary`, `GET /api/compare/:id`, `GET /api/dx-metrics`,
-`POST /api/simulate-error`. Errors must use the canonical `ApiError` envelope from
-`@signalops/contracts`.
+The data is generated in memory (see `src/dataset.ts`). Types are in `src/types.ts`. The rest is
+in the controllers and `src/helpers.ts`.

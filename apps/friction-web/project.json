@@ -1,0 +1,29 @@
+{
+  "name": "friction-web",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "sourceRoot": "apps/friction-web/src",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "options": { "command": "tsc -p tsconfig.json --noEmit && vite build", "cwd": "apps/friction-web" }
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": { "command": "tsc -p tsconfig.json --noEmit", "cwd": "apps/friction-web" }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": { "command": "vitest run", "cwd": "apps/friction-web" }
+    },
+    "lint": {
+      "executor": "nx:run-commands",
+      "options": { "command": "eslint src --ext .ts,.tsx", "cwd": "apps/friction-web" }
+    },
+    "dev": {
+      "executor": "nx:run-commands",
+      "options": { "command": "vite --port 3100", "cwd": "apps/friction-web" }
+    }
+  }
+}

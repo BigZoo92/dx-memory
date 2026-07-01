@@ -1,0 +1,21 @@
+# Friction - basic two-service compose. Run from the repo root:
+#   docker compose -f docker/friction/docker-compose.yml up --build
+# Then open http://localhost:3100 (the browser calls the API on http://localhost:3101).
+services:
+  friction-api:
+    build:
+      context: ../..
+      dockerfile: apps/friction-api/Dockerfile
+    ports:
+      - '3101:3101'
+
+  friction-web:
+    build:
+      context: ../..
+      dockerfile: apps/friction-web/Dockerfile
+      args:
+        VITE_API_BASE: http://localhost:3101/api
+    ports:
+      - '3100:3100'
+    depends_on:
+      - friction-api

@@ -1,10 +1,10 @@
-# docker/friction — Variant A (Friction)
+# docker/friction
 
-> ⏳ **Placeholder.** No Dockerfile is shipped in the socle pass.
+Single-stage Docker for the Friction variant. The Dockerfiles live next to each app
+(`apps/friction-api/Dockerfile`, `apps/friction-web/Dockerfile`); build context is the repo root.
 
-Planned for the Variant A pass: a deliberately **simple, single-stage** Docker setup (large image,
-no layer optimization, slow rebuilds) — part of the Friction cost story measured as
-`dockerBuildTimeMs` in `@signalops/metrics`.
+```
+docker compose -f docker/friction/docker-compose.yml up --build
+```
 
-Expected files (later): `Dockerfile`, optional `docker-compose.yml` for `friction-web` +
-`friction-api`.
+Web on http://localhost:3100, API on http://localhost:3101.
