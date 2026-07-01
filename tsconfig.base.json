@@ -15,7 +15,6 @@
     "isolatedModules": true,
     "declaration": false,
     "noEmit": true,
-    "baseUrl": ".",
     "paths": {
       "@signalops/contracts": ["packages/contracts/src/index.ts"],
       "@signalops/fixtures": ["packages/fixtures/src/index.ts"],
