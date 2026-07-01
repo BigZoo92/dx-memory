@@ -24,6 +24,8 @@
       "@signalops/ui-spec": ["packages/ui-spec/src/index.ts"],
       "@signalops/flow-domain": ["packages/flow/domain/src/index.ts"],
       "@signalops/flow-effect": ["packages/flow/effect/src/index.ts"],
+      "@signalops/flow-observability": ["packages/flow/observability/src/index.ts"],
+      "@signalops/flow-observability/effect": ["packages/flow/observability/src/effect.ts"],
       "@signalops/flow-server-data-access": ["packages/flow/server-data-access/src/index.ts"],
       "@signalops/flow-api-client": ["packages/flow/api-client/src/index.ts"],
       "@signalops/flow-ui": ["packages/flow/ui/src/index.ts"],
@@ -33,7 +35,8 @@
       "@signalops/flow-feature-incidents": ["packages/flow/feature-incidents/src/index.ts"],
       "@signalops/flow-feature-compare": ["packages/flow/feature-compare/src/index.ts"],
       "@signalops/flow-feature-dx-metrics": ["packages/flow/feature-dx-metrics/src/index.ts"],
-      "@signalops/flow-feature-settings": ["packages/flow/feature-settings/src/index.ts"]
+      "@signalops/flow-feature-settings": ["packages/flow/feature-settings/src/index.ts"],
+      "@signalops/flow-feature-ops": ["packages/flow/feature-ops/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "dist"]

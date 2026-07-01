@@ -15,3 +15,19 @@ export function makeRequestId(): string {
         })
   return `req_${uuid}`
 }
+
+/** The shape `makeRequestId` produces: `req_` + a uuid-ish body. Used to validate an incoming header. */
+const REQUEST_ID_PATTERN = /^req_[A-Za-z0-9-]{8,64}$/
+
+/** True when `value` looks like one of our request ids. Guards against trusting a raw client header. */
+export function isValidRequestId(value: unknown): value is string {
+  return typeof value === 'string' && REQUEST_ID_PATTERN.test(value)
+}
+
+/**
+ * Resolve the request id for a request: reuse a client-sent id ONLY if it is well-formed, otherwise
+ * mint a fresh one. The server never trusts a raw `X-Request-Id` header verbatim.
+ */
+export function resolveRequestId(incoming?: string | null): string {
+  return isValidRequestId(incoming) ? incoming : makeRequestId()
+}

@@ -62,7 +62,9 @@ export function AppShell({ sidebar, header, footer, children }: AppShellProps) {
       {sidebar}
       <div className={styles.main}>
         {header}
-        <main className={styles.content}>{children}</main>
+        <main id="main-content" className={styles.content} tabIndex={-1}>
+          {children}
+        </main>
         {footer}
       </div>
     </div>

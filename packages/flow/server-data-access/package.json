@@ -20,6 +20,7 @@
     "@signalops/fixtures": "workspace:*",
     "@signalops/flow-domain": "workspace:*",
     "@signalops/flow-effect": "workspace:*",
+    "@signalops/flow-observability": "workspace:*",
     "effect": "catalog:"
   },
   "devDependencies": {

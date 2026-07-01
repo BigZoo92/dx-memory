@@ -26,6 +26,8 @@
     "@signalops/flow-feature-settings": "workspace:*",
     "@signalops/flow-feature-signal-detail": "workspace:*",
     "@signalops/flow-feature-signals": "workspace:*",
+    "@signalops/flow-feature-ops": "workspace:*",
+    "@signalops/flow-observability": "workspace:*",
     "@signalops/flow-server-data-access": "workspace:*",
     "@signalops/flow-ui": "workspace:*",
     "@signalops/test-scenarios": "workspace:*",

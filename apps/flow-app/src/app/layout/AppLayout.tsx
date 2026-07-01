@@ -84,6 +84,10 @@ function HeaderSearch() {
         placeholder="Search signals…"
         hideLabel
       />
+      {/* Keyboard users need a submit control; visually hidden since Enter already submits. */}
+      <button type="submit" className="so-visually-hidden">
+        Search
+      </button>
     </form>
   )
 }
@@ -311,8 +315,8 @@ export function AppLayout({ children }: { children: ReactNode }) {
           variantLabel={VARIANT.label}
           items={items}
           activeId={activeId}
-          renderLink={(item, content, className) => (
-            <Link to={item.href} className={className}>
+          renderLink={(item, content, className, active) => (
+            <Link to={item.href} className={className} aria-current={active ? 'page' : undefined}>
               {content}
             </Link>
           )}

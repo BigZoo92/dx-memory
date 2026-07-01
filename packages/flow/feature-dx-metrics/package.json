@@ -19,6 +19,7 @@
     "@signalops/contracts": "workspace:*",
     "@signalops/flow-api-client": "workspace:*",
     "@signalops/flow-domain": "workspace:*",
+    "@signalops/flow-observability": "workspace:*",
     "@signalops/flow-ui": "workspace:*",
     "react": "catalog:"
   },

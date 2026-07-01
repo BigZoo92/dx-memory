@@ -1,3 +1,4 @@
+import { useSyncExternalStore } from 'react'
 import {
   METRIC_LOWER_IS_BETTER,
   type DxMetric,
@@ -9,6 +10,7 @@ import {
 import {
   METRIC_LABELS,
   METRIC_ORDER,
+  RUN_READINESS_SEED,
   aiTaskOutcome,
   buildAxisCards,
   formatMetricValue
@@ -22,6 +24,7 @@ import {
   MetricCard,
   MetricsTable,
   PageHeader,
+  RunHealthSummary,
   StatTile,
   VariantBars,
   QueryState,
@@ -30,14 +33,15 @@ import {
   type MetricsTableRow
 } from '@signalops/flow-ui'
 import { useDxMetrics } from '@signalops/flow-api-client'
+import { computeRunCounters, evaluateAlerts, getDefaultStore } from '@signalops/flow-observability'
 import { dxMetricsToCsv, dxMetricsToJson } from './export'
 import styles from './DxMetrics.module.css'
 
 const AXIS_ACCENT: Record<MetricAxis, { color: string; bg: string; icon: IconName }> = {
-  Build: { color: '#ef7e00', bg: '#fff1e3', icon: 'dx-metrics' },
+  Build: { color: '#ad5a00', bg: '#fff1e3', icon: 'dx-metrics' },
   Ship: { color: '#175cd3', bg: '#eff4ff', icon: 'compare' },
   Run: { color: '#067647', bg: '#ecfdf3', icon: 'signals' },
-  Change: { color: '#7c5cff', bg: '#f1edff', icon: 'overview' }
+  Change: { color: '#6a4bdb', bg: '#f1edff', icon: 'overview' }
 }
 
 const VARIANT_COL: Record<VariantId, { label: string; tag: string; letter: 'A' | 'B' | 'C' }> = {
@@ -81,6 +85,45 @@ const COMPARISON_METRICS: DxMetricNumericKey[] = [
   'bundleSizeKb',
   'filesTouchedForAiTask'
 ]
+
+function useLiveRunCounters() {
+  const store = getDefaultStore()
+  const logs = useSyncExternalStore(store.subscribe, store.getSnapshot, store.getSnapshot)
+  const alerts = evaluateAlerts(logs, Date.now())
+  return computeRunCounters(logs, alerts.length)
+}
+
+/** Run readiness: seed detect/diagnose/repair times plus the live operational counters. */
+function RunReadinessCard() {
+  const counters = useLiveRunCounters()
+  return (
+    <Card>
+      <CardHeader
+        title="Run readiness"
+        subtitle="Counts are live from the in-memory observability store; detect/diagnose/repair are seed values."
+      />
+      <div className={styles.perfTiles}>
+        <StatTile label="MTTD (seed)" value={RUN_READINESS_SEED.mttdSeconds} unit="s" />
+        <StatTile
+          label="Time to diagnose (seed)"
+          value={RUN_READINESS_SEED.timeToDiagnoseSeconds}
+          unit="s"
+        />
+        <StatTile label="MTTR (seed)" value={RUN_READINESS_SEED.mttrSeconds} unit="s" />
+      </div>
+      <div style={{ marginTop: 16 }}>
+        <RunHealthSummary counters={counters} />
+      </div>
+      <p className={styles.outcome}>
+        Diagnostic pack available —{' '}
+        <a href="/ops" style={{ color: 'var(--so-accent-hover, #9a5100)', fontWeight: 600 }}>
+          open Operational health
+        </a>
+        .
+      </p>
+    </Card>
+  )
+}
 
 function MetricsBody({ data }: { data: DxMetricsResponse }) {
   const byVariant = new Map<VariantId, DxMetric>(data.metrics.map((m) => [m.variant, m]))
@@ -198,6 +241,8 @@ function MetricsBody({ data }: { data: DxMetricsResponse }) {
           <StatTile label="Table render" value={current.tableRenderTimeMs} unit="ms" />
         </div>
       </Card>
+
+      <RunReadinessCard />
 
       <Card padded={false}>
         <CardHeader title="Full metrics" subtitle={`source: ${data.source}`} />

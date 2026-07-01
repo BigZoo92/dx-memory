@@ -14,7 +14,7 @@ const resultsPath =
 export const Route = createFileRoute('/api/dx-metrics')({
   server: {
     handlers: {
-      GET: () => handleEffect(getDxMetricsEffect({ resultsPath }))
+      GET: ({ request }) => handleEffect(getDxMetricsEffect({ resultsPath }), request)
     }
   }
 })

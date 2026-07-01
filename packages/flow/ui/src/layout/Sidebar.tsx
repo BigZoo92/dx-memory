@@ -15,8 +15,9 @@ export type SidebarProps = {
   variantLabel: string
   items: NavItem[]
   activeId: string
-  /** The app wraps each item in its router Link; flow-ui stays router-agnostic. */
-  renderLink: (item: NavItem, content: ReactNode, className: string) => ReactNode
+  /** The app wraps each item in its router Link; flow-ui stays router-agnostic.
+   *  `active` lets the app mark the current link with aria-current="page". */
+  renderLink: (item: NavItem, content: ReactNode, className: string, active: boolean) => ReactNode
 }
 
 /** Left sidebar: brand, variant pill and the PRODUCT nav group. */
@@ -49,7 +50,7 @@ export function Sidebar({ variantLabel, items, activeId, renderLink }: SidebarPr
               </>
             )
             const className = `${styles.navItem} ${active ? styles.navItemActive : ''}`
-            return <li key={item.id}>{renderLink(item, content, className)}</li>
+            return <li key={item.id}>{renderLink(item, content, className, active)}</li>
           })}
         </ul>
       </div>

@@ -20,6 +20,9 @@
     },
     {
       "path": "../effect"
+    },
+    {
+      "path": "../observability"
     }
   ],
   "exclude": ["src/**/*.test.ts", "src/**/*.test.tsx", "src/**/test/**"]

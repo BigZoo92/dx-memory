@@ -1,0 +1,15 @@
+{
+  "total": 8,
+  "passes": 8,
+  "errors": 0,
+  "results": {
+    "http://localhost:3000/": [],
+    "http://localhost:3000/signals": [],
+    "http://localhost:3000/signals/sig_00326": [],
+    "http://localhost:3000/incidents": [],
+    "http://localhost:3000/compare": [],
+    "http://localhost:3000/dx-metrics": [],
+    "http://localhost:3000/settings": [],
+    "http://localhost:3000/ops": []
+  }
+}

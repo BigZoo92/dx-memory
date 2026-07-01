@@ -8,6 +8,7 @@
   },
   "include": ["src", "src/routeTree.gen.ts", "vite.config.ts"],
   "references": [
+    { "path": "../../packages/flow/observability" },
     { "path": "../../packages/flow/server-data-access" },
     { "path": "../../packages/flow/api-client" },
     { "path": "../../packages/flow/ui" },
@@ -17,6 +18,7 @@
     { "path": "../../packages/flow/feature-incidents" },
     { "path": "../../packages/flow/feature-compare" },
     { "path": "../../packages/flow/feature-dx-metrics" },
-    { "path": "../../packages/flow/feature-settings" }
+    { "path": "../../packages/flow/feature-settings" },
+    { "path": "../../packages/flow/feature-ops" }
   ]
 }

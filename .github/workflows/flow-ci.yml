@@ -68,6 +68,11 @@ jobs:
       - name: Circular dependencies (madge, generated route tree excluded)
         run: pnpm audit:flow:cycles
 
+      # AI governance gate: secrets / cross-variant / boundaries are blocking (diffs base->head via
+      # the NX_BASE/NX_HEAD set above); dependency/docs/TODO findings are advisory.
+      - name: AI governance check
+        run: pnpm flow:ai-pr-check
+
       - name: Collect Flow metrics (builds flow-app if affected)
         run: pnpm exec nx run flow-app:metrics
 
@@ -140,4 +145,46 @@ jobs:
         with:
           name: flow-nx-graph
           path: flow-graph.html
+          if-no-files-found: ignore
+
+  # ---- Accessibility: SEPARATE job so Chromium never slows the fast lint/typecheck/test loop -------
+  # Runs in parallel on PRs. Pa11y (axe + HTML_CodeSniffer) is the gate; Lighthouse perf budgets start
+  # advisory (the flow:a11y script treats lhci as non-blocking). Flip continue-on-error to false once
+  # the a11y results are stable to make accessibility violations block the merge.
+  a11y:
+    if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+
+      - name: Install (frozen lockfile)
+        run: pnpm install --frozen-lockfile
+
+      - name: Install accessibility tooling (dev/CI-only, Chromium)
+        run: pnpm add -Dw --no-frozen-lockfile pa11y-ci @lhci/cli
+
+      - name: Generate fixtures
+        run: pnpm fixtures:generate
+
+      - name: Accessibility audit (Pa11y + Lighthouse)
+        run: pnpm flow:a11y
+
+      - name: Upload accessibility report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: flow-a11y-report
+          path: |
+            .pa11yci.runtime.json
+            .lighthouseci/**
           if-no-files-found: ignore

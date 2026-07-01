@@ -80,3 +80,22 @@ This is exactly what `pnpm nx graph` renders (see `nx-project-graph.clean.html`)
 All boundaries hold. Notably, the **server is reachable only from `apps/flow-app/src/routes/api/`
 and `apps/flow-app/src/server/`** — never from a feature, the UI, or the API client — which is what
 keeps server logic and fixtures out of the client bundle.
+
+## Run / observability pass (addendum)
+
+Two packages were added — `@signalops/flow-observability` (framework-free core + an isolated `./effect`
+adapter) and `@signalops/flow-feature-ops` (the `/ops` screen) — with new enforced edges:
+
+| Rule                             | Forbids                                                            |
+| -------------------------------- | ----------------------------------------------------------------- |
+| `no-observability-to-framework`  | observability → react / react-dom / `@tanstack/*`                 |
+| `no-observability-to-siblings`   | observability → fixtures / ui / server / api-client / feature     |
+| `no-observability-to-app`        | observability → the app                                           |
+| `no-observability-core-to-effect`| observability core (all but `effect.ts` + tests) → Effect runtime |
+| `no-ui-to-observability`         | ui → `flow-observability` (UI stays data-agnostic)                |
+
+Allowed: observability → `contracts` (+ `effect` only in `effect.ts`); server-data-access, api-client,
+features and the app → observability; feature-ops → ui · api-client · observability · contracts.
+
+This keeps the Effect logger adapter server-only (out of the client bundle) and the observability core
+framework-free. `pnpm audit:flow:boundaries` → 0 violations (446 modules, 1027 dependencies); cycles clean.

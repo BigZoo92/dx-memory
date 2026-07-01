@@ -18,6 +18,7 @@
   "dependencies": {
     "@signalops/contracts": "workspace:*",
     "@signalops/flow-effect": "workspace:*",
+    "@signalops/flow-observability": "workspace:*",
     "@tanstack/react-query": "catalog:",
     "effect": "catalog:",
     "react": "catalog:"

@@ -1,0 +1,36 @@
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Skip link: off-screen until focused, then pinned top-left and fully visible. */
+.skipLink {
+  position: absolute;
+  left: 8px;
+  top: -48px;
+  z-index: 1000;
+  background: var(--so-card, #fff);
+  color: var(--so-accent-hover, #c2630a);
+  border: 1px solid var(--so-accent-border, #ffd9ad);
+  border-radius: var(--so-radius-md, 8px);
+  padding: 8px 14px;
+  font-weight: 600;
+  box-shadow: var(--so-shadow-raised, 0 8px 24px rgba(16, 24, 40, 0.12));
+  transition: top 0.15s ease;
+}
+.skipLink:focus {
+  top: 8px;
+}
+
+.errorMessage {
+  margin: 4px 0 0;
+  color: var(--so-red-fg, #d92d20);
+  font-size: 12.5px;
+}

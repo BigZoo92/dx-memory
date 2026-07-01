@@ -6,7 +6,8 @@ import { handleEffect } from '../../server/respond'
 export const Route = createFileRoute('/api/signals')({
   server: {
     handlers: {
-      GET: ({ request }) => handleEffect(getSignalsEffect(new URL(request.url).searchParams))
+      GET: ({ request }) =>
+        handleEffect(getSignalsEffect(new URL(request.url).searchParams), request)
     }
   }
 })

@@ -39,5 +39,7 @@ export {
   FlowNetworkError,
   FlowTimeoutError,
   FlowUnexpectedError,
+  isValidRequestId,
+  resolveRequestId,
   type FlowError
 } from '@signalops/flow-effect'

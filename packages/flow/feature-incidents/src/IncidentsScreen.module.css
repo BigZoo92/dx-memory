@@ -11,7 +11,7 @@
 }
 
 .linkedLink {
-  color: var(--so-accent, #ef7e00);
+  color: var(--so-accent-hover, #9a5100);
   text-decoration: none;
 }
 .linkedLink:hover {

@@ -6,7 +6,7 @@ import { handleEffect } from '../../server/respond'
 export const Route = createFileRoute('/api/dashboard/summary')({
   server: {
     handlers: {
-      GET: () => handleEffect(getDashboardSummaryEffect())
+      GET: ({ request }) => handleEffect(getDashboardSummaryEffect(), request)
     }
   }
 })

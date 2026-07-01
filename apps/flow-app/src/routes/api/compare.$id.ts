@@ -6,7 +6,7 @@ import { handleEffect } from '../../server/respond'
 export const Route = createFileRoute('/api/compare/$id')({
   server: {
     handlers: {
-      GET: ({ params }) => handleEffect(getCompareEffect(params.id))
+      GET: ({ params, request }) => handleEffect(getCompareEffect(params.id), request)
     }
   }
 })

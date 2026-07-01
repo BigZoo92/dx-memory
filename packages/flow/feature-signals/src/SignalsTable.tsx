@@ -201,14 +201,34 @@ export function SignalsTable({
     // Single scroll container for BOTH axes: the sticky header + virtualized rows live inside it,
     // so there is exactly one horizontal and one vertical scrollbar (no nested double scrollbar).
     <div ref={parentRef} className={styles.viewport}>
-      <div className={styles.grid}>
-        <div className={styles.headerRow}>
-          {table.getHeaderGroups()[0].headers.map((header) => {
+      <div
+        className={styles.grid}
+        role="grid"
+        aria-label="Signals"
+        aria-rowcount={rows.length + 1}
+        aria-colcount={columns.length}
+      >
+        <div className={styles.headerRow} role="row" aria-rowindex={1}>
+          {table.getHeaderGroups()[0].headers.map((header, columnIndex) => {
             const canSort = header.column.getCanSort()
             const sorted = header.column.getIsSorted()
             const indicator = sorted === 'asc' ? ' ▲' : sorted === 'desc' ? ' ▼' : ''
             return (
-              <div key={header.id} className={styles.headerCell}>
+              <div
+                key={header.id}
+                className={styles.headerCell}
+                role="columnheader"
+                aria-colindex={columnIndex + 1}
+                aria-sort={
+                  canSort
+                    ? sorted === 'asc'
+                      ? 'ascending'
+                      : sorted === 'desc'
+                        ? 'descending'
+                        : 'none'
+                    : undefined
+                }
+              >
                 {canSort ? (
                   <button
                     type="button"
@@ -232,6 +252,9 @@ export function SignalsTable({
             return (
               <div
                 key={row.id}
+                role="row"
+                aria-rowindex={virtualRow.index + 2}
+                aria-selected={row.getIsSelected()}
                 className={`${styles.row} ${row.getIsSelected() ? styles.rowSelected : ''}`}
                 style={{
                   position: 'absolute',
@@ -242,8 +265,13 @@ export function SignalsTable({
                   transform: `translateY(${virtualRow.start}px)`
                 }}
               >
-                {row.getVisibleCells().map((cell) => (
-                  <div key={cell.id} className={styles.cell}>
+                {row.getVisibleCells().map((cell, cellIndex) => (
+                  <div
+                    key={cell.id}
+                    role="gridcell"
+                    aria-colindex={cellIndex + 1}
+                    className={styles.cell}
+                  >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </div>
                 ))}

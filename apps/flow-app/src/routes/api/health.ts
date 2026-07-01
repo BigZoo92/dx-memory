@@ -6,7 +6,7 @@ import { handleEffect } from '../../server/respond'
 export const Route = createFileRoute('/api/health')({
   server: {
     handlers: {
-      GET: () => handleEffect(getHealthEffect())
+      GET: ({ request }) => handleEffect(getHealthEffect(), request)
     }
   }
 })

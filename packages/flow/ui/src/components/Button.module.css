@@ -24,7 +24,7 @@
 }
 
 .primary {
-  background: var(--so-accent);
+  background: var(--so-accent-strong);
   color: #fff;
 }
 .primary:hover:not(:disabled) {

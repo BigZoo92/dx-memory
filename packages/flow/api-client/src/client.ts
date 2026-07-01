@@ -7,6 +7,7 @@ import {
   makeRequestId,
   toApiErrorPayload
 } from '@signalops/flow-effect'
+import { createLogger, getDefaultStore, getDefaultTrail } from '@signalops/flow-observability'
 import { getDemoControls, SLOW_NETWORK_DELAY_MS } from './demo-controls'
 
 /** Thrown when a request fails; carries the canonical `ApiError` envelope. This is the PUBLIC error
@@ -38,6 +39,11 @@ export type RequestOptions = {
 
 const DEFAULT_TIMEOUT_MS = 10_000
 const DEFAULT_RETRIES = 2
+
+// Client-side observability: structured events + breadcrumbs into the in-memory store the Ops surface
+// reads. Framework-free core only (never the `/effect` adapter) so the client bundle stays tiny.
+const clientLogger = createLogger({ store: getDefaultStore(), runtime: 'api-client' })
+const breadcrumbs = getDefaultTrail()
 
 /** Build a query string from a partial record, dropping empty values. */
 export function toQueryString(params: Record<string, string | number | undefined>): string {
@@ -81,7 +87,7 @@ function fetchEffect(
     try: () =>
       fetch(path, {
         method: options.method ?? 'GET',
-        headers: { accept: 'application/json' },
+        headers: { accept: 'application/json', 'x-request-id': requestId },
         signal: options.signal
       }),
     catch: (cause) =>
@@ -150,7 +156,14 @@ export function requestEffect<A>(
   const timeoutMs = options.timeoutMs ?? DEFAULT_TIMEOUT_MS
   const retries = options.retries ?? DEFAULT_RETRIES
 
-  const attempt = applyDemoControls(path, requestId).pipe(
+  const method = options.method ?? 'GET'
+  let attempts = 0
+  breadcrumbs.add({ category: 'request', message: `request started ${method} ${path}` })
+
+  const attempt = Effect.sync(() => {
+    attempts += 1
+  }).pipe(
+    Effect.zipRight(applyDemoControls(path, requestId)),
     Effect.zipRight(fetchEffect(path, requestId, options)),
     Effect.flatMap((response) => parseResponse<A>(response, requestId))
   )
@@ -163,7 +176,36 @@ export function requestEffect<A>(
     Effect.timeoutFail({
       duration: Duration.millis(timeoutMs),
       onTimeout: () => new FlowTimeoutError({ requestId, timeoutMs })
-    })
+    }),
+    Effect.tap(() =>
+      Effect.sync(() => {
+        clientLogger.info('request completed', {
+          requestId,
+          route: path,
+          method,
+          retryCount: attempts - 1
+        })
+      })
+    ),
+    Effect.tapError((error: ClientError) =>
+      Effect.sync(() => {
+        const { status, body } = toApiErrorPayload(error)
+        clientLogger.log(status >= 500 ? 'error' : 'warn', body.message, {
+          requestId,
+          route: path,
+          method,
+          status,
+          errorTag: error._tag,
+          errorCode: body.code,
+          retryCount: attempts - 1
+        })
+        breadcrumbs.add({
+          category: 'request',
+          level: 'error',
+          message: `request failed ${path} (${body.code})`
+        })
+      })
+    )
   )
 }
 

@@ -6,7 +6,8 @@ import { handleEffect } from '../../server/respond'
 export const Route = createFileRoute('/api/incidents')({
   server: {
     handlers: {
-      GET: ({ request }) => handleEffect(getIncidentsEffect(new URL(request.url).searchParams))
+      GET: ({ request }) =>
+        handleEffect(getIncidentsEffect(new URL(request.url).searchParams), request)
     }
   }
 })

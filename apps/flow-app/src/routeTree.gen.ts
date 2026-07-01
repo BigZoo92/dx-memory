@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SettingsRouteImport } from './routes/settings'
+import { Route as OpsRouteImport } from './routes/ops'
 import { Route as IncidentsRouteImport } from './routes/incidents'
 import { Route as DxMetricsRouteImport } from './routes/dx-metrics'
 import { Route as CompareRouteImport } from './routes/compare'
@@ -18,6 +19,7 @@ import { Route as SignalsIndexRouteImport } from './routes/signals/index'
 import { Route as SignalsIdRouteImport } from './routes/signals/$id'
 import { Route as ApiSimulateErrorRouteImport } from './routes/api/simulate-error'
 import { Route as ApiSignalsRouteImport } from './routes/api/signals'
+import { Route as ApiLogsRouteImport } from './routes/api/logs'
 import { Route as ApiIncidentsRouteImport } from './routes/api/incidents'
 import { Route as ApiHealthRouteImport } from './routes/api/health'
 import { Route as ApiDxMetricsRouteImport } from './routes/api/dx-metrics'
@@ -29,6 +31,11 @@ import { Route as ApiSignalsIdEventsRouteImport } from './routes/api/signals.$id
 const SettingsRoute = SettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OpsRoute = OpsRouteImport.update({
+  id: '/ops',
+  path: '/ops',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IncidentsRoute = IncidentsRouteImport.update({
@@ -69,6 +76,11 @@ const ApiSimulateErrorRoute = ApiSimulateErrorRouteImport.update({
 const ApiSignalsRoute = ApiSignalsRouteImport.update({
   id: '/api/signals',
   path: '/api/signals',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiLogsRoute = ApiLogsRouteImport.update({
+  id: '/api/logs',
+  path: '/api/logs',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiIncidentsRoute = ApiIncidentsRouteImport.update({
@@ -112,10 +124,12 @@ export interface FileRoutesByFullPath {
   '/compare': typeof CompareRoute
   '/dx-metrics': typeof DxMetricsRoute
   '/incidents': typeof IncidentsRoute
+  '/ops': typeof OpsRoute
   '/settings': typeof SettingsRoute
   '/api/dx-metrics': typeof ApiDxMetricsRoute
   '/api/health': typeof ApiHealthRoute
   '/api/incidents': typeof ApiIncidentsRoute
+  '/api/logs': typeof ApiLogsRoute
   '/api/signals': typeof ApiSignalsRouteWithChildren
   '/api/simulate-error': typeof ApiSimulateErrorRoute
   '/signals/$id': typeof SignalsIdRoute
@@ -130,10 +144,12 @@ export interface FileRoutesByTo {
   '/compare': typeof CompareRoute
   '/dx-metrics': typeof DxMetricsRoute
   '/incidents': typeof IncidentsRoute
+  '/ops': typeof OpsRoute
   '/settings': typeof SettingsRoute
   '/api/dx-metrics': typeof ApiDxMetricsRoute
   '/api/health': typeof ApiHealthRoute
   '/api/incidents': typeof ApiIncidentsRoute
+  '/api/logs': typeof ApiLogsRoute
   '/api/signals': typeof ApiSignalsRouteWithChildren
   '/api/simulate-error': typeof ApiSimulateErrorRoute
   '/signals/$id': typeof SignalsIdRoute
@@ -149,10 +165,12 @@ export interface FileRoutesById {
   '/compare': typeof CompareRoute
   '/dx-metrics': typeof DxMetricsRoute
   '/incidents': typeof IncidentsRoute
+  '/ops': typeof OpsRoute
   '/settings': typeof SettingsRoute
   '/api/dx-metrics': typeof ApiDxMetricsRoute
   '/api/health': typeof ApiHealthRoute
   '/api/incidents': typeof ApiIncidentsRoute
+  '/api/logs': typeof ApiLogsRoute
   '/api/signals': typeof ApiSignalsRouteWithChildren
   '/api/simulate-error': typeof ApiSimulateErrorRoute
   '/signals/$id': typeof SignalsIdRoute
@@ -169,10 +187,12 @@ export interface FileRouteTypes {
     | '/compare'
     | '/dx-metrics'
     | '/incidents'
+    | '/ops'
     | '/settings'
     | '/api/dx-metrics'
     | '/api/health'
     | '/api/incidents'
+    | '/api/logs'
     | '/api/signals'
     | '/api/simulate-error'
     | '/signals/$id'
@@ -187,10 +207,12 @@ export interface FileRouteTypes {
     | '/compare'
     | '/dx-metrics'
     | '/incidents'
+    | '/ops'
     | '/settings'
     | '/api/dx-metrics'
     | '/api/health'
     | '/api/incidents'
+    | '/api/logs'
     | '/api/signals'
     | '/api/simulate-error'
     | '/signals/$id'
@@ -205,10 +227,12 @@ export interface FileRouteTypes {
     | '/compare'
     | '/dx-metrics'
     | '/incidents'
+    | '/ops'
     | '/settings'
     | '/api/dx-metrics'
     | '/api/health'
     | '/api/incidents'
+    | '/api/logs'
     | '/api/signals'
     | '/api/simulate-error'
     | '/signals/$id'
@@ -224,10 +248,12 @@ export interface RootRouteChildren {
   CompareRoute: typeof CompareRoute
   DxMetricsRoute: typeof DxMetricsRoute
   IncidentsRoute: typeof IncidentsRoute
+  OpsRoute: typeof OpsRoute
   SettingsRoute: typeof SettingsRoute
   ApiDxMetricsRoute: typeof ApiDxMetricsRoute
   ApiHealthRoute: typeof ApiHealthRoute
   ApiIncidentsRoute: typeof ApiIncidentsRoute
+  ApiLogsRoute: typeof ApiLogsRoute
   ApiSignalsRoute: typeof ApiSignalsRouteWithChildren
   ApiSimulateErrorRoute: typeof ApiSimulateErrorRoute
   SignalsIdRoute: typeof SignalsIdRoute
@@ -243,6 +269,13 @@ declare module '@tanstack/react-router' {
       path: '/settings'
       fullPath: '/settings'
       preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ops': {
+      id: '/ops'
+      path: '/ops'
+      fullPath: '/ops'
+      preLoaderRoute: typeof OpsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/incidents': {
@@ -299,6 +332,13 @@ declare module '@tanstack/react-router' {
       path: '/api/signals'
       fullPath: '/api/signals'
       preLoaderRoute: typeof ApiSignalsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/logs': {
+      id: '/api/logs'
+      path: '/api/logs'
+      fullPath: '/api/logs'
+      preLoaderRoute: typeof ApiLogsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/incidents': {
@@ -382,10 +422,12 @@ const rootRouteChildren: RootRouteChildren = {
   CompareRoute: CompareRoute,
   DxMetricsRoute: DxMetricsRoute,
   IncidentsRoute: IncidentsRoute,
+  OpsRoute: OpsRoute,
   SettingsRoute: SettingsRoute,
   ApiDxMetricsRoute: ApiDxMetricsRoute,
   ApiHealthRoute: ApiHealthRoute,
   ApiIncidentsRoute: ApiIncidentsRoute,
+  ApiLogsRoute: ApiLogsRoute,
   ApiSignalsRoute: ApiSignalsRouteWithChildren,
   ApiSimulateErrorRoute: ApiSimulateErrorRoute,
   SignalsIdRoute: SignalsIdRoute,

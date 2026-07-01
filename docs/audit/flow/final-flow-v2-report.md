@@ -213,3 +213,35 @@ bundle numbers are in [`effect-integration-report.md`](./effect-integration-repo
 
 This enriches the balanced baseline (typed errors, injectable/testable services, declarative
 retry/timeout, runtime validation) without tipping Flow into Overfit.
+
+## 21. Run / Accessibility / Golden paths / AI governance pass (addendum)
+
+A later pass added the **Run** axis, accessibility, golden paths, one-shot commands and AI governance —
+all local-first and inside the Flow scope (no Sentry SDK, no OpenTelemetry SDK, no Playwright/Storybook;
+`packages/metrics` and `packages/contracts` untouched). Plan:
+[`flow-run-accessibility-golden-path-ai-governance-plan.md`](./flow-run-accessibility-golden-path-ai-governance-plan.md).
+
+- **Observability** — `@signalops/flow-observability` (framework-free core + isolated `/effect` adapter):
+  structured log events (OTel severities), bounded memory stores, breadcrumbs, window-based alert rules,
+  redaction, diagnostic pack. `X-Request-Id` now travels in the body AND the response header (the server
+  validates/mints, never trusts a raw header). Server + client + global-handler logging.
+- **Ops UI** — `/ops` (`@signalops/flow-feature-ops`): error inbox / alerts / run health / breadcrumbs /
+  diagnostic pack, fusing the client + server stores via the memory-only `/api/logs`.
+- **Run metrics** — a Run-readiness card in `/dx-metrics` (live counters from observability + seed
+  MTTD/MTTR), types in `flow-domain`; no change to `packages/metrics`.
+- **Accessibility** — skip link, accessible virtualized table (ARIA grid + `aria-sort`), error boundary
+  + `errorComponent`/`notFoundComponent`, reduced-motion, and `flow-ui` primitives (SkipLink,
+  VisuallyHidden, LiveRegion, ErrorMessage). Pa11y CI + Lighthouse CI wired in a separate CI job.
+- **Golden paths** — 14 guides in `docs/golden-paths/flow/`.
+- **Commands** — `flow:doctor|onboard|dev|ci|ci:fast|ci:full|a11y|ai-pr-check|ops:test` (real Node
+  scripts under `scripts/flow/` + aliases).
+- **AI governance** — `flow:ai-pr-check` (secrets / cross-variant / boundaries blocking; deps / docs /
+  TODO advisory), plus policy + report + manifest, mapped to OWASP LLM 2025.
+- **Verification (offline)** — typecheck + tests (observability 19, feature-ops 2, domain 39, flow-ui 20,
+  api-client 13, server-data-access 32), `audit:flow:boundaries` (446 modules, 0 violations),
+  `audit:flow:cycles` (clean), app build (route tree regenerated; `/ops` lazy), `analyze:flow` (no
+  server / fixtures / Effect-adapter in `dist/client`). Pa11y/Lighthouse and Docker are configured but
+  were not executed in this environment (no Chromium / Docker / network).
+
+Flow stays balanced: every addition is local-first, bounded and measurable, with explicit stop rules
+(see the plan's section 24) to avoid tipping into Overfit.

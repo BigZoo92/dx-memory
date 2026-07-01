@@ -13,16 +13,21 @@
   --so-border-subtle: #eceef0;
   --so-border-inner: #f2f3f5;
 
-  /* Text */
+  /* Text — muted tones darkened to clear WCAG AA (4.5:1) on both the white card
+     and the off-white surface (#f6f7f8). See docs/audit/flow/accessibility-report.md. */
   --so-ink: #14171a;
   --so-slate-700: #3a414a;
   --so-slate-500: #5c6470;
-  --so-slate-400: #8a929e;
-  --so-slate-300: #a3aab4;
+  --so-slate-400: #646b76;
+  --so-slate-300: #6d747f;
 
-  /* Accent (orange) */
+  /* Accent (orange).
+     --so-accent stays vibrant for decorative fills (focus ring, chart bars, icons, borders).
+     --so-accent-strong is the AA-safe solid fill for white text (primary button, logo mark).
+     --so-accent-hover is the AA-safe accent for text/links, incl. on the peach tints below. */
   --so-accent: #ef7e00;
-  --so-accent-hover: #c2630a;
+  --so-accent-strong: #ad5a00;
+  --so-accent-hover: #9a5100;
   --so-accent-tint-100: #fff1e3;
   --so-accent-tint-50: #fffaf3;
   --so-accent-border: #ffd9ad;
@@ -33,9 +38,9 @@
   --so-blue-bg: #eff4ff;
   --so-green-fg: #067647;
   --so-green-bg: #ecfdf3;
-  --so-red-fg: #d92d20;
+  --so-red-fg: #c92a1e;
   --so-red-bg: #fef3f2;
-  --so-amber-fg: #a86a04;
+  --so-amber-fg: #8f5a00;
   --so-amber-bg: #fef7e6;
   --so-grey-fg: #5c6470;
   --so-grey-bg: #f2f3f5;
@@ -96,4 +101,16 @@ body {
 a {
   color: inherit;
   text-decoration: none;
+}
+
+/* Respect a user's reduced-motion preference: disable (not just slow) animations and transitions. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
 }

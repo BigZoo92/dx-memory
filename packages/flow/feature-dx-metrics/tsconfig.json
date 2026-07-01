@@ -25,6 +25,9 @@
       "path": "../domain"
     },
     {
+      "path": "../observability"
+    },
+    {
       "path": "../../contracts"
     }
   ],

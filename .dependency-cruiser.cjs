@@ -155,6 +155,54 @@ module.exports = {
       to: { path: '^packages/flow/effect/src' }
     },
 
+    // ---- flow-observability stays framework-free and at the leaf of the graph ---------------
+    // It is imported by api-client (browser), server-data-access (node), features and the app, so any
+    // leak into React / TanStack / a sibling layer would break the client/server split or bloat the
+    // browser bundle. Allowed deps: @signalops/contracts (+ `effect` ONLY in the /effect adapter).
+    {
+      name: 'no-observability-to-framework',
+      comment: 'flow-observability core must not import React or TanStack (stays framework-free).',
+      severity: 'error',
+      from: { path: '^packages/flow/observability/src' },
+      to: { path: '/(react|react-dom)/|/@tanstack/' }
+    },
+    {
+      name: 'no-observability-to-siblings',
+      comment:
+        'flow-observability depends only on contracts (+ effect in the /effect adapter): not on ui, features, server-data-access, api-client or fixtures.',
+      severity: 'error',
+      from: { path: '^packages/flow/observability/src' },
+      to: {
+        path: '^packages/(fixtures|flow/(ui|server-data-access|api-client|feature-[^/]+))/src'
+      }
+    },
+    {
+      name: 'no-observability-to-app',
+      comment: 'flow-observability must not import the app.',
+      severity: 'error',
+      from: { path: '^packages/flow/observability/src' },
+      to: { path: '^apps/flow-app/src' }
+    },
+    {
+      name: 'no-observability-core-to-effect',
+      comment:
+        'Only the /effect adapter may import the Effect runtime; the core stays dependency-light so it never drags Effect into a client bundle.',
+      severity: 'error',
+      from: {
+        path: '^packages/flow/observability/src',
+        pathNot: '^packages/flow/observability/src/effect\\.ts$|\\.test\\.(ts|tsx)$'
+      },
+      to: { path: '/effect/dist/' }
+    },
+    {
+      name: 'no-ui-to-observability',
+      comment:
+        'UI stays data-agnostic: it receives plain props and must not import the observability runtime.',
+      severity: 'error',
+      from: { path: '^packages/flow/ui/src' },
+      to: { path: '^packages/flow/observability/src' }
+    },
+
     // ---- shared socle must never depend on a variant ---------------------------------------
     {
       name: 'no-shared-to-flow',

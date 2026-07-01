@@ -1,0 +1,32 @@
+.boundary {
+  margin: 24px auto;
+  max-width: 520px;
+  text-align: center;
+  background: var(--so-card, #fff);
+  border: 1px solid var(--so-border, #e8eaed);
+  border-radius: var(--so-radius-card, 12px);
+  padding: 28px;
+}
+.boundaryTitle {
+  margin: 0 0 6px;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--so-ink, #14171a);
+}
+.boundaryMsg {
+  margin: 0 0 16px;
+  color: var(--so-slate-500, #5c6470);
+  font-size: 13.5px;
+}
+.boundaryBtn {
+  background: var(--so-accent, #ef7e00);
+  color: #fff;
+  border: none;
+  border-radius: var(--so-radius-control, 9px);
+  padding: 8px 16px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.boundaryBtn:hover {
+  background: var(--so-accent-hover, #c2630a);
+}
