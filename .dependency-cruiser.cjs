@@ -4,7 +4,7 @@
  * OXC stays the fast everyday linter; this is the dedicated *architecture* check (run via
  * `pnpm audit:flow:boundaries`). It fails the build if a layer reaches across a forbidden edge —
  * the rules below are the executable form of the dependency graph in
- * `docs/audit/flow/flow-boundaries.md`.
+ * `docs/flow/architecture.md`.
  *
  * Paths are matched as regular expressions, relative to the repo root (forward slashes).
  * TS path aliases (`@signalops/*`) are resolved via `tsconfig.base.json`.

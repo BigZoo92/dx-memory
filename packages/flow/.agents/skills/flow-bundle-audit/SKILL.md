@@ -24,9 +24,8 @@ only. Do not touch other variants, `docs/product/`, or `maquettes/`.
 ## How to run
 
 ```bash
-pnpm audit:flow:bundle      # ANALYZE=true build, emits the visualizer
+pnpm analyze:flow           # ANALYZE=true build, emits the visualizer
 pnpm audit:flow:boundaries  # forbidden client->fixtures / client->server edges fail here too
 ```
 
-Outputs land in `docs/audit/flow/` (`bundle-stats.*.{html,json,md}`,
-`bundle-optimization-report.md`). Compare against the recorded baselines there before/after a change.
+Outputs land (git-ignored) in `docs/audit/flow/` (`bundle-stats.after.{html,json,md}`); regenerate them anytime with `pnpm analyze:flow`. Compare chunk sizes before/after a change.

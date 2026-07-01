@@ -14,7 +14,7 @@
   --so-border-inner: #f2f3f5;
 
   /* Text — muted tones darkened to clear WCAG AA (4.5:1) on both the white card
-     and the off-white surface (#f6f7f8). See docs/audit/flow/accessibility-report.md. */
+     and the off-white surface (#f6f7f8). See docs/flow/quality-gates.md. */
   --so-ink: #14171a;
   --so-slate-700: #3a414a;
   --so-slate-500: #5c6470;

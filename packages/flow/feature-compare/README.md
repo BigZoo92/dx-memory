@@ -14,5 +14,5 @@ pnpm nx run flow-feature-compare:lint
 pnpm nx run flow-feature-compare:build
 ```
 
-See [`docs/audit/flow/flow-boundaries.md`](../../../docs/audit/flow/flow-boundaries.md) for the
+See [`docs/flow/architecture.md`](../../../docs/flow/architecture.md) for the
 package's place in the dependency graph and the boundaries enforced around it.

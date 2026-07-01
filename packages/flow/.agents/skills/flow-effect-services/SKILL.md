@@ -37,4 +37,4 @@ pnpm nx run flow-app:typecheck
 pnpm nx run flow-app:build
 ```
 
-Bundle impact before/after is tracked in `docs/audit/flow/bundle-stats.before-effect.md` and `bundle-stats.after.md`.
+Measure bundle impact before/after with `pnpm analyze:flow` (see `docs/flow/quality-gates.md`).

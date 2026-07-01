@@ -46,5 +46,5 @@ pnpm nx run flow-effect:typecheck
 pnpm nx run flow-effect:test
 ```
 
-See [`docs/audit/flow/effect-integration-report.md`](../../../docs/audit/flow/effect-integration-report.md)
+See [`docs/flow/architecture.md`](../../../docs/flow/architecture.md)
 for the full integration rationale and bundle impact.

@@ -35,4 +35,4 @@ pnpm audit:flow:boundaries
 pnpm audit:flow:cycles
 ```
 
-Reference: `docs/audit/flow/flow-boundaries.md`.
+Reference: `docs/flow/architecture.md`.

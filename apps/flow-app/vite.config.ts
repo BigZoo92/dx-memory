@@ -45,5 +45,5 @@ export default defineConfig({
   // NOTE: a manual `vendor` split was evaluated and rejected — forcing all of @tanstack into one
   // vendor chunk made Table/Virtual eager on every route (they are route-lazy by default), which
   // is a net regression for non-table pages. TanStack Router's automatic route-level splitting is
-  // left in charge. See docs/audit/flow/bundle-optimization-report.md.
+  // left in charge. See docs/flow/quality-gates.md (Bundle).
 })

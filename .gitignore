@@ -20,6 +20,15 @@ build/
 
 # Nx graph export assets (regenerate with `pnpm nx graph --file=...`)
 docs/static/
+docs/results-log-flow-graph.html
+
+# Test coverage (regenerate with `nx run-many -t test --coverage`)
+coverage/
+
+# Flow audit artifacts — generated, regenerate with `pnpm flow:a11y` / `pnpm analyze:flow`.
+# Only the explanatory README is versioned.
+docs/audit/flow/*
+!docs/audit/flow/README.md
 
 # Collected per-app metrics report (regenerate with `nx run flow-app:metrics`)
 apps/flow-app/metrics.flow.json

@@ -38,4 +38,4 @@ to a package imported by every client feature would pull the Effect runtime towa
 bundle for no correctness gain, and the `flow-effect-services` skill is explicit: do not let Effect
 leak as a hard requirement of pure functions/types. So `domain` stays dependency-light
 (`@signalops/contracts` only). See
-[`docs/audit/flow/effect-integration-report.md`](../../../docs/audit/flow/effect-integration-report.md).
+[`docs/flow/architecture.md`](../../../docs/flow/architecture.md).
