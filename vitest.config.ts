@@ -17,6 +17,9 @@ export default defineConfig({
       // Flow packages + the app each carry their own environment (happy-dom / node) and setup files.
       'packages/flow/*/vitest.config.ts',
       'apps/flow-app/vitest.config.ts',
+      // Overfit packages + the Next app each carry their own environment (happy-dom / node).
+      'packages/overfit/*/vitest.config.ts',
+      'apps/overfit-web/vitest.config.ts',
       // Shared socle packages have no per-package config — they are pure node tests.
       {
         test: {

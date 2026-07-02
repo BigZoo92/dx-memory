@@ -1,0 +1,36 @@
+{
+  "name": "overfit-web",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "sourceRoot": "apps/overfit-web/app",
+  "tags": ["scope:overfit", "type:app", "layer:presentation"],
+  "targets": {
+    "dev": {
+      "executor": "nx:run-commands",
+      "options": { "command": "next dev -p 3300", "cwd": "apps/overfit-web" }
+    },
+    "build": {
+      "executor": "nx:run-commands",
+      "inputs": ["production", "^production"],
+      "outputs": ["{projectRoot}/.next"],
+      "cache": true,
+      "options": { "command": "next build", "cwd": "apps/overfit-web" }
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "inputs": ["default", "^production"],
+      "cache": true,
+      "options": { "command": "tsc --noEmit -p tsconfig.json", "cwd": "apps/overfit-web" }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "inputs": ["default", "^production"],
+      "cache": true,
+      "options": { "command": "vitest run", "cwd": "apps/overfit-web" }
+    },
+    "lint": {
+      "executor": "nx:run-commands",
+      "options": { "command": "next lint", "cwd": "apps/overfit-web" }
+    }
+  }
+}

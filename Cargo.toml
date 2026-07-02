@@ -1,0 +1,78 @@
+# SignalOps DX Lab — Variant C (Overfit) Rust workspace.
+#
+# This workspace is deliberately over-decomposed. A backend of this size would normally be one or
+# two crates; Overfit splits it into 17 library crates plus a binary so that every architectural
+# boundary (domain, application, contracts, events, event store, read models, repositories,
+# adapters, observability, policies, schema registry, audit, feature flags) has its own compilation
+# unit, its own Cargo.toml and its own version surface. That is the point: the cost is real and
+# measurable (see docs/overfit/architecture/polyglot-cost.md).
+#
+# It does NOT touch Flow or Friction (both are pnpm/TypeScript only). Nothing here changes the
+# visible product.
+
+[workspace]
+resolver = "2"
+members = [
+  "crates/overfit-domain",
+  "crates/overfit-events",
+  "crates/overfit-contracts",
+  "crates/overfit-event-store",
+  "crates/overfit-read-models",
+  "crates/overfit-repositories",
+  "crates/overfit-adapters-fixtures",
+  "crates/overfit-commands",
+  "crates/overfit-queries",
+  "crates/overfit-observability",
+  "crates/overfit-policies",
+  "crates/overfit-schema-registry",
+  "crates/overfit-audit",
+  "crates/overfit-feature-flags",
+  "crates/overfit-application",
+  "crates/overfit-adapters-http",
+  "crates/overfit-test-support",
+  "apps/overfit-api",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.75"
+license = "MIT"
+publish = false
+
+[workspace.dependencies]
+# External dependencies — pinned once, referenced by every crate with `workspace = true`.
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+thiserror = "1"
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "signal"] }
+axum = "0.7"
+tower = "0.4"
+tower-http = { version = "0.5", features = ["trace", "cors"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
+
+# Internal crates — the over-decomposed layers.
+overfit-domain = { path = "crates/overfit-domain" }
+overfit-events = { path = "crates/overfit-events" }
+overfit-contracts = { path = "crates/overfit-contracts" }
+overfit-event-store = { path = "crates/overfit-event-store" }
+overfit-read-models = { path = "crates/overfit-read-models" }
+overfit-repositories = { path = "crates/overfit-repositories" }
+overfit-adapters-fixtures = { path = "crates/overfit-adapters-fixtures" }
+overfit-commands = { path = "crates/overfit-commands" }
+overfit-queries = { path = "crates/overfit-queries" }
+overfit-observability = { path = "crates/overfit-observability" }
+overfit-policies = { path = "crates/overfit-policies" }
+overfit-schema-registry = { path = "crates/overfit-schema-registry" }
+overfit-audit = { path = "crates/overfit-audit" }
+overfit-feature-flags = { path = "crates/overfit-feature-flags" }
+overfit-application = { path = "crates/overfit-application" }
+overfit-adapters-http = { path = "crates/overfit-adapters-http" }
+overfit-test-support = { path = "crates/overfit-test-support" }
+
+[profile.release]
+opt-level = 3
+lto = "thin"
+codegen-units = 1
+strip = true

@@ -56,3 +56,11 @@ packages/metrics/results/*.json
 .DS_Store
 .idea/
 *.swp
+
+# Overfit (Variant C) — Rust build artifacts
+/target/
+
+# Overfit (Variant C) — Next.js build artifacts
+apps/overfit-web/.next/
+apps/overfit-web/.turbo/
+apps/overfit-web/out/

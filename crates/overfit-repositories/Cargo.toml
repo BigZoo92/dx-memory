@@ -1,0 +1,11 @@
+[package]
+name = "overfit-repositories"
+description = "SignalOps Overfit — repository ports (traits) and a fake transaction boundary. Persistence-agnostic; the only adapter is in-memory fixtures."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+overfit-domain = { workspace = true }

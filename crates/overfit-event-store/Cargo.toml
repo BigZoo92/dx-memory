@@ -1,0 +1,13 @@
+[package]
+name = "overfit-event-store"
+description = "SignalOps Overfit — in-memory, append-only event store with per-stream sequencing and replay."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+serde = { workspace = true }
+overfit-events = { workspace = true }
+overfit-domain = { workspace = true }

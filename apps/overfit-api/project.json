@@ -1,0 +1,29 @@
+{
+  "name": "overfit-api",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "sourceRoot": "apps/overfit-api/src",
+  "tags": ["scope:overfit", "type:api", "layer:application"],
+  "targets": {
+    "dev": {
+      "executor": "nx:run-commands",
+      "options": { "command": "cargo run -p overfit-api" }
+    },
+    "build": {
+      "executor": "nx:run-commands",
+      "options": { "command": "cargo build -p overfit-api --release" }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": { "command": "cargo test --workspace" }
+    },
+    "fmt": {
+      "executor": "nx:run-commands",
+      "options": { "command": "cargo fmt --all" }
+    },
+    "clippy": {
+      "executor": "nx:run-commands",
+      "options": { "command": "cargo clippy --workspace --all-targets" }
+    }
+  }
+}

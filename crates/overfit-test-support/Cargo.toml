@@ -1,0 +1,15 @@
+[package]
+name = "overfit-test-support"
+description = "SignalOps Overfit — shared test helpers: fixture builders, a booted Application factory and snapshot utilities."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }
+overfit-domain = { workspace = true }
+overfit-contracts = { workspace = true }
+overfit-application = { workspace = true }

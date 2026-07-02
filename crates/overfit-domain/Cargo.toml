@@ -1,0 +1,15 @@
+[package]
+name = "overfit-domain"
+description = "SignalOps Overfit — pure domain layer: enums, value objects, entities, aggregates, domain events and invariants. No transport, no IO."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+serde = { workspace = true }
+thiserror = { workspace = true }
+
+[dev-dependencies]
+serde_json = { workspace = true }

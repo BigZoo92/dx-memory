@@ -1,0 +1,12 @@
+[package]
+name = "overfit-feature-flags"
+description = "SignalOps Overfit — local, in-process platform feature flags. All enabled by default so the visible product is identical; exposed at /api/feature-flags."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }

@@ -1,0 +1,22 @@
+{
+  "name": "@signalops/overfit-ai-governance",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Overfit variant — AI-change governance: task manifest, policy scoring, generated-code labels, forbidden files, reviewer + ownership matrices.",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": { ".": "./src/index.ts" },
+  "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "build": "tsc --noEmit -p tsconfig.json",
+    "test": "vitest run",
+    "lint": "oxlint src"
+  },
+  "devDependencies": {
+    "typescript": "catalog:",
+    "vitest": "catalog:",
+    "oxlint": "catalog:",
+    "@types/node": "catalog:"
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "name": "overfit-ai-governance",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "library",
+  "sourceRoot": "packages/overfit/ai-governance/src",
+  "tags": ["scope:overfit", "type:governance"],
+  "targets": {
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "inputs": ["default", "^production"],
+      "cache": true,
+      "options": { "command": "tsc --noEmit -p tsconfig.json", "cwd": "packages/overfit/ai-governance" }
+    },
+    "build": {
+      "executor": "nx:run-commands",
+      "inputs": ["production", "^production"],
+      "cache": true,
+      "options": { "command": "tsc --noEmit -p tsconfig.json", "cwd": "packages/overfit/ai-governance" }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "inputs": ["default", "^production"],
+      "cache": true,
+      "options": { "command": "vitest run", "cwd": "packages/overfit/ai-governance" }
+    },
+    "lint": {
+      "executor": "nx:run-commands",
+      "inputs": ["default"],
+      "cache": true,
+      "options": { "command": "oxlint src", "cwd": "packages/overfit/ai-governance" }
+    }
+  }
+}

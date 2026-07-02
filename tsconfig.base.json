@@ -35,7 +35,21 @@
       "@signalops/flow-feature-compare": ["packages/flow/feature-compare/src/index.ts"],
       "@signalops/flow-feature-dx-metrics": ["packages/flow/feature-dx-metrics/src/index.ts"],
       "@signalops/flow-feature-settings": ["packages/flow/feature-settings/src/index.ts"],
-      "@signalops/flow-feature-ops": ["packages/flow/feature-ops/src/index.ts"]
+      "@signalops/flow-feature-ops": ["packages/flow/feature-ops/src/index.ts"],
+      "@signalops/overfit-contracts-generated": ["packages/overfit/contracts-generated/src/index.ts"],
+      "@signalops/overfit-api-client": ["packages/overfit/api-client/src/index.ts"],
+      "@signalops/overfit-ui": ["packages/overfit/ui/src/index.ts"],
+      "@signalops/overfit-feature-dashboard": ["packages/overfit/feature-dashboard/src/index.ts"],
+      "@signalops/overfit-feature-signals": ["packages/overfit/feature-signals/src/index.ts"],
+      "@signalops/overfit-feature-signal-detail": ["packages/overfit/feature-signal-detail/src/index.ts"],
+      "@signalops/overfit-feature-incidents": ["packages/overfit/feature-incidents/src/index.ts"],
+      "@signalops/overfit-feature-compare": ["packages/overfit/feature-compare/src/index.ts"],
+      "@signalops/overfit-feature-dx-metrics": ["packages/overfit/feature-dx-metrics/src/index.ts"],
+      "@signalops/overfit-feature-settings": ["packages/overfit/feature-settings/src/index.ts"],
+      "@signalops/overfit-feature-ops": ["packages/overfit/feature-ops/src/index.ts"],
+      "@signalops/overfit-quality-gates": ["packages/overfit/quality-gates/src/index.ts"],
+      "@signalops/overfit-ai-governance": ["packages/overfit/ai-governance/src/index.ts"],
+      "@signalops/overfit-generated-manifests": ["packages/overfit/generated-manifests/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "dist"]

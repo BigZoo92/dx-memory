@@ -1,0 +1,25 @@
+[package]
+name = "overfit-api"
+description = "SignalOps Overfit — the Axum binary. Bootstraps the application, mounts the HTTP adapter and serves the API."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[[bin]]
+name = "overfit-api"
+path = "src/main.rs"
+
+[dependencies]
+tokio = { workspace = true }
+axum = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+overfit-application = { workspace = true }
+overfit-adapters-http = { workspace = true }
+
+[dev-dependencies]
+overfit-test-support = { workspace = true }
+overfit-contracts = { workspace = true }
+serde_json = { workspace = true }

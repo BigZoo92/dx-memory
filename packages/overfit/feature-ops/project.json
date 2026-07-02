@@ -1,0 +1,33 @@
+{
+  "name": "overfit-feature-ops",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "library",
+  "sourceRoot": "packages/overfit/feature-ops/src",
+  "tags": ["scope:overfit", "type:feature", "layer:presentation"],
+  "targets": {
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "inputs": ["default", "^production"],
+      "cache": true,
+      "options": { "command": "tsc --noEmit -p tsconfig.json", "cwd": "packages/overfit/feature-ops" }
+    },
+    "build": {
+      "executor": "nx:run-commands",
+      "inputs": ["production", "^production"],
+      "cache": true,
+      "options": { "command": "tsc --noEmit -p tsconfig.json", "cwd": "packages/overfit/feature-ops" }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "inputs": ["default", "^production"],
+      "cache": true,
+      "options": { "command": "vitest run", "cwd": "packages/overfit/feature-ops" }
+    },
+    "lint": {
+      "executor": "nx:run-commands",
+      "inputs": ["default"],
+      "cache": true,
+      "options": { "command": "oxlint src", "cwd": "packages/overfit/feature-ops" }
+    }
+  }
+}

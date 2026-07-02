@@ -1,0 +1,12 @@
+[package]
+name = "overfit-observability"
+description = "SignalOps Overfit — memory-only observability: request ids, correlation, spans/traces, metrics, structured logs, breadcrumbs, a mock OTel-like collector and a diagnostic pack."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }

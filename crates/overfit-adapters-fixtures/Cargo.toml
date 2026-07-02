@@ -1,0 +1,12 @@
+[package]
+name = "overfit-adapters-fixtures"
+description = "SignalOps Overfit — deterministic in-memory fixtures adapter. Ports the shared mulberry32 generator to Rust and implements every repository port."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+overfit-domain = { workspace = true }
+overfit-repositories = { workspace = true }

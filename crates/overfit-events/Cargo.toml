@@ -1,0 +1,15 @@
+[package]
+name = "overfit-events"
+description = "SignalOps Overfit — event envelopes, metadata and versioning around domain events."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+serde = { workspace = true }
+overfit-domain = { workspace = true }
+
+[dev-dependencies]
+serde_json = { workspace = true }

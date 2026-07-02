@@ -1,0 +1,26 @@
+[package]
+name = "overfit-application"
+description = "SignalOps Overfit — the application layer. Owns state (fixtures store, event store, collector, audit, flags) and runs the full per-request pipeline: request id -> span -> audit -> policy -> query/command -> read model -> response mapper -> telemetry."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }
+overfit-domain = { workspace = true }
+overfit-contracts = { workspace = true }
+overfit-events = { workspace = true }
+overfit-event-store = { workspace = true }
+overfit-read-models = { workspace = true }
+overfit-repositories = { workspace = true }
+overfit-adapters-fixtures = { workspace = true }
+overfit-queries = { workspace = true }
+overfit-commands = { workspace = true }
+overfit-observability = { workspace = true }
+overfit-policies = { workspace = true }
+overfit-schema-registry = { workspace = true }
+overfit-audit = { workspace = true }
+overfit-feature-flags = { workspace = true }

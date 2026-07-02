@@ -1,0 +1,52 @@
+{
+  "$generated": true,
+  "variant": "overfit",
+  "description": "Architecture manifest for Variant C. Enumerates every compilation/publish boundary.",
+  "rustCrates": [
+    "overfit-domain",
+    "overfit-events",
+    "overfit-contracts",
+    "overfit-event-store",
+    "overfit-read-models",
+    "overfit-repositories",
+    "overfit-adapters-fixtures",
+    "overfit-commands",
+    "overfit-queries",
+    "overfit-observability",
+    "overfit-policies",
+    "overfit-schema-registry",
+    "overfit-audit",
+    "overfit-feature-flags",
+    "overfit-application",
+    "overfit-adapters-http",
+    "overfit-test-support",
+    "overfit-api"
+  ],
+  "tsPackages": [
+    "@signalops/overfit-contracts-generated",
+    "@signalops/overfit-api-client",
+    "@signalops/overfit-ui",
+    "@signalops/overfit-feature-dashboard",
+    "@signalops/overfit-feature-signals",
+    "@signalops/overfit-feature-signal-detail",
+    "@signalops/overfit-feature-incidents",
+    "@signalops/overfit-feature-compare",
+    "@signalops/overfit-feature-dx-metrics",
+    "@signalops/overfit-feature-settings",
+    "@signalops/overfit-feature-ops",
+    "@signalops/overfit-quality-gates",
+    "@signalops/overfit-ai-governance",
+    "@signalops/overfit-generated-manifests"
+  ],
+  "apps": ["overfit-api", "overfit-web"],
+  "layers": [
+    "presentation",
+    "application",
+    "contracts",
+    "domain",
+    "read-models",
+    "observability",
+    "governance"
+  ],
+  "boundaryCount": 38
+}

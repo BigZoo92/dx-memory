@@ -1,0 +1,318 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "SignalOps Overfit API",
+    "version": "0.1.0",
+    "description": "Variant C (Overfit) backend. Same visible product contract as Flow/Friction, served by a Rust + Axum, CQRS/event-sourced backend. This document is maintained (see ADR-0003) and is the source for the generated TypeScript client. Regenerate the client with `pnpm overfit:contracts:generate` and check drift with `pnpm overfit:contracts:check`."
+  },
+  "servers": [{ "url": "http://localhost:3200", "description": "local overfit-api" }],
+  "tags": [
+    { "name": "product", "description": "Endpoints backing the visible product (identical to Flow/Friction)." },
+    { "name": "ops", "description": "Overfit-only technical endpoints. Do not change the visible product." }
+  ],
+  "paths": {
+    "/api/health": {
+      "get": { "tags": ["product"], "operationId": "getHealth", "summary": "API status",
+        "responses": { "200": { "description": "ok", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/HealthResponse" } } } } } }
+    },
+    "/api/health/deep": {
+      "get": { "tags": ["ops"], "operationId": "getHealthDeep", "summary": "Deep health with subsystem checks",
+        "responses": { "200": { "description": "ok", "content": { "application/json": { "schema": { "type": "object" } } } } } }
+    },
+    "/api/health/dependencies": {
+      "get": { "tags": ["ops"], "operationId": "getHealthDependencies", "summary": "Dependency health",
+        "responses": { "200": { "description": "ok", "content": { "application/json": { "schema": { "type": "object" } } } } } }
+    },
+    "/api/signals": {
+      "get": {
+        "tags": ["product"], "operationId": "listSignals", "summary": "Paginated and filtered signals",
+        "parameters": [
+          { "name": "search", "in": "query", "schema": { "type": "string" } },
+          { "name": "severity", "in": "query", "schema": { "type": "string", "enum": ["low", "medium", "high", "critical"] } },
+          { "name": "status", "in": "query", "schema": { "type": "string", "enum": ["new", "triaged", "investigating", "resolved", "dismissed"] } },
+          { "name": "source", "in": "query", "schema": { "type": "string", "enum": ["web", "social", "internal", "partner", "api", "manual"] } },
+          { "name": "assignedTo", "in": "query", "schema": { "type": "string" } },
+          { "name": "riskTrend", "in": "query", "schema": { "type": "string", "enum": ["up", "stable", "down"] } },
+          { "name": "dateFrom", "in": "query", "schema": { "type": "string" } },
+          { "name": "dateTo", "in": "query", "schema": { "type": "string" } },
+          { "name": "page", "in": "query", "schema": { "type": "integer" } },
+          { "name": "pageSize", "in": "query", "schema": { "type": "integer" } },
+          { "name": "sortBy", "in": "query", "schema": { "type": "string" } },
+          { "name": "sortDirection", "in": "query", "schema": { "type": "string", "enum": ["asc", "desc"] } }
+        ],
+        "responses": { "200": { "description": "ok", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/PaginatedSignal" } } } } }
+      }
+    },
+    "/api/signals/{id}": {
+      "get": { "tags": ["product"], "operationId": "getSignal", "summary": "Signal detail",
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "responses": {
+          "200": { "description": "ok", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/SignalDetailResponse" } } } },
+          "404": { "description": "not found", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ApiError" } } } }
+        } }
+    },
+    "/api/signals/{id}/events": {
+      "get": { "tags": ["product"], "operationId": "getSignalEvents", "summary": "Signal timeline",
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "responses": {
+          "200": { "description": "ok", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/TimelineEvent" } } } } },
+          "404": { "description": "not found", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ApiError" } } } }
+        } }
+    },
+    "/api/incidents": {
+      "get": { "tags": ["product"], "operationId": "listIncidents", "summary": "Incident list",
+        "parameters": [
+          { "name": "status", "in": "query", "schema": { "type": "string" } },
+          { "name": "severity", "in": "query", "schema": { "type": "string" } },
+          { "name": "impact", "in": "query", "schema": { "type": "string" } },
+          { "name": "page", "in": "query", "schema": { "type": "integer" } },
+          { "name": "pageSize", "in": "query", "schema": { "type": "integer" } }
+        ],
+        "responses": { "200": { "description": "ok", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/PaginatedIncident" } } } } } }
+    },
+    "/api/dashboard/summary": {
+      "get": { "tags": ["product"], "operationId": "getDashboardSummary", "summary": "Dashboard KPIs and widgets",
+        "responses": { "200": { "description": "ok", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/DashboardSummary" } } } } } }
+    },
+    "/api/compare/{id}": {
+      "get": { "tags": ["product"], "operationId": "getCompare", "summary": "Before/after comparison",
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "responses": {
+          "200": { "description": "ok", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CompareResponse" } } } },
+          "404": { "description": "not found", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ApiError" } } } }
+        } }
+    },
+    "/api/dx-metrics": {
+      "get": { "tags": ["product"], "operationId": "getDxMetrics", "summary": "DX metrics",
+        "responses": { "200": { "description": "ok", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/DxMetricsResponse" } } } } } }
+    },
+    "/api/simulate-error": {
+      "post": { "tags": ["product"], "operationId": "simulateError", "summary": "Controlled API error",
+        "responses": { "500": { "description": "simulated", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ApiError" } } } } } }
+    },
+    "/api/logs": {
+      "get": { "tags": ["ops"], "operationId": "getLogs", "summary": "Recent structured logs",
+        "responses": { "200": { "description": "ok", "content": { "application/json": { "schema": { "type": "array", "items": { "type": "object" } } } } } } },
+      "post": { "tags": ["ops"], "operationId": "postLog", "summary": "Append a client log",
+        "requestBody": { "content": { "application/json": { "schema": { "type": "object" } } } },
+        "responses": { "201": { "description": "accepted", "content": { "application/json": { "schema": { "type": "object" } } } } } }
+    },
+    "/api/telemetry/traces": {
+      "get": { "tags": ["ops"], "operationId": "getTraces", "summary": "Recent traces",
+        "responses": { "200": { "description": "ok", "content": { "application/json": { "schema": { "type": "array", "items": { "type": "object" } } } } } } }
+    },
+    "/api/telemetry/metrics": {
+      "get": { "tags": ["ops"], "operationId": "getMetrics", "summary": "Metric points",
+        "responses": { "200": { "description": "ok", "content": { "application/json": { "schema": { "type": "array", "items": { "type": "object" } } } } } } }
+    },
+    "/api/audit-events": {
+      "get": { "tags": ["ops"], "operationId": "getAuditEvents", "summary": "Audit trail",
+        "responses": { "200": { "description": "ok", "content": { "application/json": { "schema": { "type": "array", "items": { "type": "object" } } } } } } }
+    },
+    "/api/schema-registry": {
+      "get": { "tags": ["ops"], "operationId": "getSchemaRegistry", "summary": "Endpoint/schema registry",
+        "responses": { "200": { "description": "ok", "content": { "application/json": { "schema": { "type": "object" } } } } } }
+    },
+    "/api/feature-flags": {
+      "get": { "tags": ["ops"], "operationId": "getFeatureFlags", "summary": "Platform feature flags",
+        "responses": { "200": { "description": "ok", "content": { "application/json": { "schema": { "type": "object" } } } } } }
+    },
+    "/api/policy/check": {
+      "post": { "tags": ["ops"], "operationId": "checkPolicy", "summary": "Evaluate a policy",
+        "requestBody": { "content": { "application/json": { "schema": { "type": "object" } } } },
+        "responses": { "200": { "description": "ok", "content": { "application/json": { "schema": { "type": "object" } } } } } }
+    },
+    "/api/diagnostic-pack": {
+      "get": { "tags": ["ops"], "operationId": "getDiagnosticPack", "summary": "Bundled diagnostic export",
+        "responses": { "200": { "description": "ok", "content": { "application/json": { "schema": { "type": "object" } } } } } }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Severity": { "type": "string", "enum": ["low", "medium", "high", "critical"] },
+      "SignalStatus": { "type": "string", "enum": ["new", "triaged", "investigating", "resolved", "dismissed"] },
+      "SignalSource": { "type": "string", "enum": ["web", "social", "internal", "partner", "api", "manual"] },
+      "RiskTrend": { "type": "string", "enum": ["up", "stable", "down"] },
+      "IncidentStatus": { "type": "string", "enum": ["open", "in_progress", "resolved"] },
+      "IncidentImpact": { "type": "string", "enum": ["user", "system", "security", "business"] },
+      "TimelineEventType": { "type": "string", "enum": ["created", "updated", "assigned", "commented", "escalated", "resolved"] },
+      "Signal": {
+        "type": "object",
+        "required": ["id", "title", "description", "severity", "status", "source", "confidence", "riskScore", "region", "assignedTo", "createdAt", "updatedAt", "tags", "hasLinkedIncident"],
+        "properties": {
+          "id": { "type": "string" },
+          "title": { "type": "string" },
+          "description": { "type": "string" },
+          "severity": { "$ref": "#/components/schemas/Severity" },
+          "status": { "$ref": "#/components/schemas/SignalStatus" },
+          "source": { "$ref": "#/components/schemas/SignalSource" },
+          "confidence": { "type": "number", "nullable": true },
+          "riskScore": { "type": "integer" },
+          "riskTrend": { "$ref": "#/components/schemas/RiskTrend" },
+          "region": { "type": "string" },
+          "assignedTo": { "type": "string", "nullable": true },
+          "createdAt": { "type": "string" },
+          "updatedAt": { "type": "string" },
+          "tags": { "type": "array", "items": { "type": "string" } },
+          "hasLinkedIncident": { "type": "boolean" }
+        }
+      },
+      "Incident": {
+        "type": "object",
+        "required": ["id", "title", "severity", "status", "linkedSignalIds", "owner", "createdAt", "resolvedAt", "impact"],
+        "properties": {
+          "id": { "type": "string" },
+          "title": { "type": "string" },
+          "severity": { "$ref": "#/components/schemas/Severity" },
+          "status": { "$ref": "#/components/schemas/IncidentStatus" },
+          "linkedSignalIds": { "type": "array", "items": { "type": "string" } },
+          "owner": { "type": "string" },
+          "createdAt": { "type": "string" },
+          "resolvedAt": { "type": "string", "nullable": true },
+          "impact": { "$ref": "#/components/schemas/IncidentImpact" }
+        }
+      },
+      "TimelineEvent": {
+        "type": "object",
+        "required": ["id", "signalId", "type", "label", "actor", "createdAt"],
+        "properties": {
+          "id": { "type": "string" },
+          "signalId": { "type": "string" },
+          "type": { "$ref": "#/components/schemas/TimelineEventType" },
+          "label": { "type": "string" },
+          "actor": { "type": "string" },
+          "createdAt": { "type": "string" }
+        }
+      },
+      "ApiError": {
+        "type": "object",
+        "required": ["code", "message", "requestId"],
+        "properties": {
+          "code": { "type": "string" },
+          "message": { "type": "string" },
+          "details": {},
+          "requestId": { "type": "string" }
+        }
+      },
+      "PaginatedSignal": {
+        "type": "object",
+        "required": ["items", "page", "pageSize", "total", "totalPages"],
+        "properties": {
+          "items": { "type": "array", "items": { "$ref": "#/components/schemas/Signal" } },
+          "page": { "type": "integer" },
+          "pageSize": { "type": "integer" },
+          "total": { "type": "integer" },
+          "totalPages": { "type": "integer" }
+        }
+      },
+      "PaginatedIncident": {
+        "type": "object",
+        "required": ["items", "page", "pageSize", "total", "totalPages"],
+        "properties": {
+          "items": { "type": "array", "items": { "$ref": "#/components/schemas/Incident" } },
+          "page": { "type": "integer" },
+          "pageSize": { "type": "integer" },
+          "total": { "type": "integer" },
+          "totalPages": { "type": "integer" }
+        }
+      },
+      "SignalDetailResponse": {
+        "type": "object",
+        "required": ["signal", "linkedIncident"],
+        "properties": {
+          "signal": { "$ref": "#/components/schemas/Signal" },
+          "linkedIncident": { "oneOf": [{ "$ref": "#/components/schemas/Incident" }, { "type": "null" }] }
+        }
+      },
+      "SummaryKpi": {
+        "type": "object",
+        "required": ["label", "value", "trend", "trendLabel"],
+        "properties": {
+          "label": { "type": "string" },
+          "value": { "type": "integer" },
+          "display": { "type": "string" },
+          "trend": { "type": "string", "enum": ["up", "down", "flat"] },
+          "trendLabel": { "type": "string" }
+        }
+      },
+      "DashboardSummary": {
+        "type": "object",
+        "required": ["kpis", "severityBreakdown", "signalsOverTime", "mostCriticalSignals", "systemStatus", "recentIncidents"],
+        "properties": {
+          "kpis": {
+            "type": "object",
+            "required": ["openSignals", "criticalSignals", "activeIncidents", "avgQualificationTimeMs"],
+            "properties": {
+              "openSignals": { "$ref": "#/components/schemas/SummaryKpi" },
+              "criticalSignals": { "$ref": "#/components/schemas/SummaryKpi" },
+              "activeIncidents": { "$ref": "#/components/schemas/SummaryKpi" },
+              "avgQualificationTimeMs": { "$ref": "#/components/schemas/SummaryKpi" }
+            }
+          },
+          "severityBreakdown": { "type": "array", "items": { "type": "object", "properties": { "severity": { "type": "string" }, "count": { "type": "integer" } } } },
+          "signalsOverTime": { "type": "array", "items": { "type": "object", "properties": { "date": { "type": "string" }, "total": { "type": "integer" }, "critical": { "type": "integer" } } } },
+          "mostCriticalSignals": { "type": "array", "items": { "$ref": "#/components/schemas/Signal" } },
+          "systemStatus": { "type": "array", "items": { "type": "object", "properties": { "name": { "type": "string" }, "status": { "type": "string" } } } },
+          "recentIncidents": { "type": "array", "items": { "$ref": "#/components/schemas/Incident" } }
+        }
+      },
+      "CompareDelta": { "type": "string", "enum": ["good", "bad", "neutral", "no-change"] },
+      "CompareResponse": {
+        "type": "object",
+        "required": ["signalId", "attributes", "timeline", "impactSentence", "impactMetrics"],
+        "properties": {
+          "signalId": { "type": "string" },
+          "attributes": { "type": "array", "items": { "type": "object", "properties": {
+            "attribute": { "type": "string" }, "before": { "type": "string" }, "after": { "type": "string" },
+            "changed": { "type": "boolean" }, "delta": { "$ref": "#/components/schemas/CompareDelta" } } } },
+          "timeline": { "type": "array", "items": { "$ref": "#/components/schemas/TimelineEvent" } },
+          "impactSentence": { "type": "string" },
+          "impactMetrics": { "type": "array", "items": { "type": "object", "properties": {
+            "label": { "type": "string" }, "delta": { "$ref": "#/components/schemas/CompareDelta" }, "value": { "type": "string" } } } }
+        }
+      },
+      "DxMetric": {
+        "type": "object",
+        "required": ["variant", "installTimeMs", "typecheckTimeMs", "testTimeMs", "buildTimeMs", "dockerBuildTimeMs", "ciDurationMs", "bundleSizeKb", "mainChunkSizeKb", "lighthousePerformance", "tableRenderTimeMs", "filesTouchedForAiTask", "testsImpacted", "errorReproductionSteps", "docsPagesNeeded", "aiTaskResult"],
+        "properties": {
+          "variant": { "type": "string", "enum": ["friction", "flow", "overfit"] },
+          "installTimeMs": { "type": "integer" },
+          "typecheckTimeMs": { "type": "integer" },
+          "testTimeMs": { "type": "integer" },
+          "buildTimeMs": { "type": "integer" },
+          "dockerBuildTimeMs": { "type": "integer" },
+          "ciDurationMs": { "type": "integer" },
+          "bundleSizeKb": { "type": "integer" },
+          "mainChunkSizeKb": { "type": "integer" },
+          "lighthousePerformance": { "type": "integer" },
+          "tableRenderTimeMs": { "type": "integer" },
+          "filesTouchedForAiTask": { "type": "integer" },
+          "testsImpacted": { "type": "integer" },
+          "errorReproductionSteps": { "type": "integer" },
+          "docsPagesNeeded": { "type": "integer" },
+          "aiTaskResult": { "type": "string", "enum": ["success", "partial", "failed"] }
+        }
+      },
+      "DxMetricsResponse": {
+        "type": "object",
+        "required": ["metrics", "current", "source"],
+        "properties": {
+          "metrics": { "type": "array", "items": { "$ref": "#/components/schemas/DxMetric" } },
+          "current": { "type": "string", "enum": ["friction", "flow", "overfit"] },
+          "source": { "type": "string", "enum": ["collected", "seed"] }
+        }
+      },
+      "HealthResponse": {
+        "type": "object",
+        "required": ["status", "version", "variant", "datasetVersion", "uptimeSeconds"],
+        "properties": {
+          "status": { "type": "string", "enum": ["ok", "degraded", "down"] },
+          "version": { "type": "string" },
+          "variant": { "type": "string" },
+          "datasetVersion": { "type": "string" },
+          "uptimeSeconds": { "type": "integer" }
+        }
+      }
+    }
+  }
+}

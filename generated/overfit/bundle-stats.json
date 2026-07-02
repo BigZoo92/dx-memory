@@ -1,0 +1,6 @@
+{
+  "$comment": "Seed bundle stats (from the DX-metrics seed table). Replaced by real numbers when the Next build emits a stats report.",
+  "source": "seed",
+  "bundleSizeKb": 164,
+  "mainChunkSizeKb": 96
+}

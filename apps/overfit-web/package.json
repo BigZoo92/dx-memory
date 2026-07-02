@@ -1,0 +1,38 @@
+{
+  "name": "@signalops/overfit-web",
+  "version": "0.0.0",
+  "private": true,
+  "description": "SignalOps Variant C (Overfit) frontend — Next.js App Router. Consumes the Rust API through the generated typed client and the over-decomposed feature packages.",
+  "type": "module",
+  "scripts": {
+    "dev": "next dev -p 3300",
+    "build": "next build",
+    "start": "next start -p 3300",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "vitest run",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@signalops/overfit-api-client": "workspace:*",
+    "@signalops/overfit-contracts-generated": "workspace:*",
+    "@signalops/overfit-ui": "workspace:*",
+    "@signalops/overfit-feature-dashboard": "workspace:*",
+    "@signalops/overfit-feature-signals": "workspace:*",
+    "@signalops/overfit-feature-signal-detail": "workspace:*",
+    "@signalops/overfit-feature-incidents": "workspace:*",
+    "@signalops/overfit-feature-compare": "workspace:*",
+    "@signalops/overfit-feature-dx-metrics": "workspace:*",
+    "@signalops/overfit-feature-settings": "workspace:*",
+    "@signalops/overfit-feature-ops": "workspace:*",
+    "next": "16.2.9",
+    "react": "catalog:",
+    "react-dom": "catalog:"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "name": "overfit-quality-gates",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "library",
+  "sourceRoot": "packages/overfit/quality-gates/src",
+  "tags": ["scope:overfit", "type:quality-gate"],
+  "targets": {
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "inputs": ["default", "^production"],
+      "cache": true,
+      "options": { "command": "tsc --noEmit -p tsconfig.json", "cwd": "packages/overfit/quality-gates" }
+    },
+    "build": {
+      "executor": "nx:run-commands",
+      "inputs": ["production", "^production"],
+      "cache": true,
+      "options": { "command": "tsc --noEmit -p tsconfig.json", "cwd": "packages/overfit/quality-gates" }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "inputs": ["default", "^production"],
+      "cache": true,
+      "options": { "command": "vitest run", "cwd": "packages/overfit/quality-gates" }
+    },
+    "lint": {
+      "executor": "nx:run-commands",
+      "inputs": ["default"],
+      "cache": true,
+      "options": { "command": "oxlint src", "cwd": "packages/overfit/quality-gates" }
+    }
+  }
+}

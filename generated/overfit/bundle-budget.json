@@ -1,0 +1,5 @@
+{
+  "$comment": "Overfit client bundle budget. Overfit wins raw bundle size; the budget guards it.",
+  "maxBundleKb": 200,
+  "maxMainChunkKb": 120
+}

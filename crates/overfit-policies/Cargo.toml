@@ -1,0 +1,12 @@
+[package]
+name = "overfit-policies"
+description = "SignalOps Overfit — a policy engine (AI, schema, route-access, redaction, feature-flag policies), evaluated on every request and exposed at /api/policy/check."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }

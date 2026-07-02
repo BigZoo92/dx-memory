@@ -1,0 +1,28 @@
+{
+  "$generated": true,
+  "variant": "overfit",
+  "product": [
+    "GET /api/health",
+    "GET /api/signals",
+    "GET /api/signals/:id",
+    "GET /api/signals/:id/events",
+    "GET /api/incidents",
+    "GET /api/dashboard/summary",
+    "GET /api/compare/:id",
+    "GET /api/dx-metrics",
+    "POST /api/simulate-error",
+    "GET /api/logs",
+    "POST /api/logs"
+  ],
+  "technical": [
+    "GET /api/health/deep",
+    "GET /api/health/dependencies",
+    "GET /api/telemetry/traces",
+    "GET /api/telemetry/metrics",
+    "GET /api/audit-events",
+    "GET /api/schema-registry",
+    "GET /api/feature-flags",
+    "POST /api/policy/check",
+    "GET /api/diagnostic-pack"
+  ]
+}

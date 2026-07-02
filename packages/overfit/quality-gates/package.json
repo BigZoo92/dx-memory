@@ -1,0 +1,29 @@
+{
+  "name": "@signalops/overfit-quality-gates",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Overfit variant — local quality gates: contract/schema drift, docs drift, bundle budget, generated-file and policy-manifest checks.",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": { ".": "./src/index.ts" },
+  "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "build": "tsc --noEmit -p tsconfig.json",
+    "test": "vitest run",
+    "lint": "oxlint src",
+    "gate:contracts:generate": "node scripts/generate-contracts.mjs",
+    "gate:contracts": "node scripts/check-contracts.mjs",
+    "gate:schema": "node scripts/check-schema.mjs",
+    "gate:docs": "node scripts/check-docs.mjs",
+    "gate:policy": "node scripts/check-policy.mjs",
+    "gate:bundle": "node scripts/check-bundle.mjs",
+    "gate:all": "node scripts/quality.mjs"
+  },
+  "devDependencies": {
+    "typescript": "catalog:",
+    "vitest": "catalog:",
+    "oxlint": "catalog:",
+    "@types/node": "catalog:"
+  }
+}

@@ -1,0 +1,39 @@
+# SignalOps Variant C (Overfit) — full local stack: Rust API + Next.js web.
+# No external services, no database, no secrets. Everything is in-memory / fixtures.
+#
+#   docker compose -f docker-compose.overfit.yml up --build
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: apps/overfit-api/Dockerfile
+      target: runtime
+    image: signalops-overfit-api:local
+    environment:
+      OVERFIT_API_PORT: "3200"
+      RUST_LOG: "info"
+    ports:
+      - "3200:3200"
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:3200/api/health"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/overfit-web/Dockerfile
+      target: runtime
+    image: signalops-overfit-web:local
+    environment:
+      # The Next server proxies /api/* to the api service on the compose network.
+      OVERFIT_API_URL: "http://api:3200"
+      NODE_ENV: "production"
+    ports:
+      - "3300:3300"
+    depends_on:
+      api:
+        condition: service_healthy

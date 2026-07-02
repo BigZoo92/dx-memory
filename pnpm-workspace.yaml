@@ -1,6 +1,7 @@
 packages:
   - 'packages/*'
   - 'packages/flow/*'
+  - 'packages/overfit/*'
   - 'apps/*'
 
 # pnpm catalogs — one source of truth per dependency version.

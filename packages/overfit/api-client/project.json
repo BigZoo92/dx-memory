@@ -1,0 +1,33 @@
+{
+  "name": "overfit-api-client",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "library",
+  "sourceRoot": "packages/overfit/api-client/src",
+  "tags": ["scope:overfit", "type:api-client", "layer:contracts"],
+  "targets": {
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "inputs": ["default", "^production"],
+      "cache": true,
+      "options": { "command": "tsc --noEmit -p tsconfig.json", "cwd": "packages/overfit/api-client" }
+    },
+    "build": {
+      "executor": "nx:run-commands",
+      "inputs": ["production", "^production"],
+      "cache": true,
+      "options": { "command": "tsc --noEmit -p tsconfig.json", "cwd": "packages/overfit/api-client" }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "inputs": ["default", "^production"],
+      "cache": true,
+      "options": { "command": "vitest run", "cwd": "packages/overfit/api-client" }
+    },
+    "lint": {
+      "executor": "nx:run-commands",
+      "inputs": ["default"],
+      "cache": true,
+      "options": { "command": "oxlint src", "cwd": "packages/overfit/api-client" }
+    }
+  }
+}

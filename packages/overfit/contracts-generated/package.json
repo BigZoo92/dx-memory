@@ -1,0 +1,22 @@
+{
+  "name": "@signalops/overfit-contracts-generated",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Overfit variant — TypeScript DTOs + runtime schemas generated from generated/overfit/openapi.json. DO NOT EDIT src by hand; run `pnpm overfit:contracts:generate`.",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": { ".": "./src/index.ts", "./runtime": "./src/runtime.ts" },
+  "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "build": "tsc --noEmit -p tsconfig.json",
+    "test": "vitest run",
+    "lint": "oxlint src"
+  },
+  "devDependencies": {
+    "typescript": "catalog:",
+    "vitest": "catalog:",
+    "oxlint": "catalog:",
+    "@types/node": "catalog:"
+  }
+}

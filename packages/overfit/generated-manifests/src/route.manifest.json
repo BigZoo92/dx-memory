@@ -1,0 +1,14 @@
+{
+  "$generated": true,
+  "variant": "overfit",
+  "routes": [
+    { "path": "/", "screen": "Overview", "feature": "@signalops/overfit-feature-dashboard" },
+    { "path": "/signals", "screen": "Signals Explorer", "feature": "@signalops/overfit-feature-signals" },
+    { "path": "/signals/:id", "screen": "Signal Detail", "feature": "@signalops/overfit-feature-signal-detail" },
+    { "path": "/incidents", "screen": "Incidents", "feature": "@signalops/overfit-feature-incidents" },
+    { "path": "/compare", "screen": "Compare", "feature": "@signalops/overfit-feature-compare" },
+    { "path": "/dx-metrics", "screen": "DX Metrics", "feature": "@signalops/overfit-feature-dx-metrics" },
+    { "path": "/settings", "screen": "Settings", "feature": "@signalops/overfit-feature-settings" },
+    { "path": "/ops", "screen": "Operational health", "feature": "@signalops/overfit-feature-ops" }
+  ]
+}
