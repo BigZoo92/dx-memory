@@ -12,15 +12,16 @@ const docker = args.includes('--docker') || full
 
 section(`Flow CI${fast ? ' — fast' : full ? ' — full' : ''}`)
 
-// Always: lint, typecheck, tests, architecture boundaries + cycles.
+// Always: lint, typecheck, tests, architecture boundaries + cycles + dead code (knip).
 run('pnpm lint')
 run('pnpm typecheck')
 run('pnpm test')
 run('pnpm audit:flow:boundaries')
 run('pnpm audit:flow:cycles')
+run('pnpm audit:flow:knip')
 
 if (fast) {
-  ok('fast CI passed (lint + typecheck + tests + boundaries + cycles)')
+  ok('fast CI passed (lint + typecheck + tests + boundaries + cycles + knip)')
   process.exit(0)
 }
 

@@ -68,6 +68,9 @@ jobs:
       - name: Circular dependencies (madge, generated route tree excluded)
         run: pnpm audit:flow:cycles
 
+      - name: Dead code / unused deps (knip)
+        run: pnpm audit:flow:knip
+
       # AI governance gate: secrets / cross-variant / boundaries are blocking (diffs base->head via
       # the NX_BASE/NX_HEAD set above); dependency/docs/TODO findings are advisory.
       - name: AI governance check
@@ -117,6 +120,9 @@ jobs:
 
       - name: Circular dependencies (madge, generated route tree excluded)
         run: pnpm audit:flow:cycles
+
+      - name: Dead code / unused deps (knip)
+        run: pnpm audit:flow:knip
 
       - name: Docker build (multi-stage)
         run: pnpm exec nx run flow-app:docker-build

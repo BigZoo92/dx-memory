@@ -31,7 +31,7 @@ const NO_ASSIGNEE_OVERRIDES: Record<string, string> = {}
  * TanStack Virtual positions rows in `estimateSize` increments, so any mismatch between this
  * value and the real CSS height makes rows overlap. One source of truth = no overlap, no drift.
  */
-export const SIGNALS_ROW_HEIGHT = 64
+const SIGNALS_ROW_HEIGHT = 64
 
 export type SignalsTableProps = {
   signals: Signal[]

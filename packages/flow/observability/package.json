@@ -17,8 +17,6 @@
     "lint": "oxlint src"
   },
   "dependencies": {
-    "@signalops/contracts": "workspace:*",
-    "@signalops/flow-effect": "workspace:*",
     "effect": "catalog:"
   },
   "devDependencies": {

@@ -41,9 +41,7 @@
     "zod": "catalog:"
   },
   "devDependencies": {
-    "@tanstack/router-plugin": "catalog:",
     "@testing-library/react": "catalog:",
-    "@testing-library/user-event": "catalog:",
     "effect": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",

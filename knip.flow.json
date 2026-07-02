@@ -1,0 +1,28 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "exclude": ["catalog"],
+  "ignoreBinaries": ["act"],
+  "ignoreWorkspaces": [
+    "apps/friction-api",
+    "apps/friction-web",
+    "apps/overfit-api",
+    "apps/overfit-web",
+    "packages/overfit/*",
+    "packages/contracts",
+    "packages/fixtures",
+    "packages/metrics",
+    "packages/test-scenarios",
+    "packages/ui-spec"
+  ],
+  "workspaces": {
+    ".": {
+      "nx": false,
+      "ignore": ["packages/overfit/**", "maquettes/**"],
+      "ignoreDependencies": ["oxlint"]
+    },
+    "apps/flow-app": {
+      "entry": ["src/router.tsx", "src/routes/**/*.{ts,tsx}", "src/server/**/*.ts", "scripts/*.mjs"]
+    },
+    "packages/flow/*": {}
+  }
+}

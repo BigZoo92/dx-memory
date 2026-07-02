@@ -1,7 +1,7 @@
 // Tiny shared helpers for the Flow one-shot scripts. No dependencies — Node built-ins only.
 import { execSync } from 'node:child_process'
 
-export const C = {
+const C = {
   reset: '[0m',
   red: '[31m',
   green: '[32m',
