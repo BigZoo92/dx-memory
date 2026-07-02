@@ -1,0 +1,23 @@
+{
+  "$schema": "../../node_modules/oxlint/configuration_schema.json",
+  "plugins": ["react", "typescript", "jsx-a11y", "import", "unicorn", "oxc"],
+  "env": { "browser": true, "node": true, "es2024": true },
+  "settings": { "react": { "version": "19.0" } },
+  "categories": {
+    "correctness": "error",
+    "suspicious": "warn",
+    "perf": "warn"
+  },
+  "rules": {
+    "react/rules-of-hooks": "error",
+    "react/jsx-key": "error",
+    "jsx-a11y/alt-text": "error",
+    "jsx-a11y/aria-props": "error",
+    "react/react-in-jsx-scope": "off",
+    "no-console": "off",
+    "typescript/no-explicit-any": "warn",
+    "react/no-array-index-key": "off",
+    "jsx-a11y/prefer-tag-over-role": "off",
+    "jsx-a11y/control-has-associated-label": "off"
+  }
+}

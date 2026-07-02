@@ -1,0 +1,31 @@
+{
+  "name": "metrics-dashboard",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "sourceRoot": "apps/metrics-dashboard/src",
+  "tags": ["scope:metrics", "type:app"],
+  "targets": {
+    "collect": {
+      "executor": "nx:run-commands",
+      "options": { "command": "node tools/metrics/collect.mjs --no-history", "cwd": "{workspaceRoot}" }
+    },
+    "dev": {
+      "executor": "nx:run-commands",
+      "options": { "command": "vite", "cwd": "apps/metrics-dashboard" }
+    },
+    "build": {
+      "executor": "nx:run-commands",
+      "outputs": ["{projectRoot}/dist"],
+      "dependsOn": ["collect"],
+      "options": { "command": "tsc -p tsconfig.json && vite build", "cwd": "apps/metrics-dashboard" }
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": { "command": "tsc -p tsconfig.json --noEmit", "cwd": "apps/metrics-dashboard" }
+    },
+    "lint": {
+      "executor": "nx:run-commands",
+      "options": { "command": "oxlint src", "cwd": "apps/metrics-dashboard" }
+    }
+  }
+}

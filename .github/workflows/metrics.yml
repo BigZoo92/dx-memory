@@ -38,12 +38,62 @@ jobs:
       - name: Test shared packages
         run: pnpm test
 
-      - name: Collect metrics
+      - name: Collect metrics (seed socle pipeline)
         run: pnpm metrics:collect
+
+      # --- Dynamic metrics + dashboard --------------------------------------
+      # Build the three variants first so the bundle collector has real dist output to
+      # measure (best-effort: a build failure must not fail the metrics job).
+      - name: Build variants for bundle metrics (best-effort)
+        run: pnpm build:flow || true
+        continue-on-error: true
+
+      - name: Collect dynamic metrics
+        run: pnpm metrics:dynamic
+        env:
+          # commit / branch / run id are read from these automatically
+          CI: 'true'
+
+      - name: Build metrics dashboard
+        run: pnpm --filter @signalops/metrics-dashboard build
 
       - name: Upload metrics results
         uses: actions/upload-artifact@v4
         with:
           name: metrics-results
-          path: packages/metrics/results/*.json
+          path: |
+            packages/metrics/results/*.json
+            tools/metrics/results/latest/*.json
+            tools/metrics/results/summary/latest.json
+            tools/metrics/results/history/**
+          if-no-files-found: error
+
+      - name: Upload dashboard (static site)
+        uses: actions/upload-artifact@v4
+        with:
+          name: metrics-dashboard
+          path: apps/metrics-dashboard/dist
+          if-no-files-found: warn
+
+  # Optional: wall-clock build/test/typecheck/lint timings for all variants. Heavy, so it
+  # runs only on demand (workflow_dispatch) and writes into the same results tree.
+  dynamic-timings:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - name: Install
+        run: pnpm install --frozen-lockfile
+      - name: Collect dynamic metrics with timings
+        run: pnpm metrics:dynamic:timings
+      - name: Upload timing results
+        uses: actions/upload-artifact@v4
+        with:
+          name: metrics-results-timings
+          path: tools/metrics/results/**
           if-no-files-found: error

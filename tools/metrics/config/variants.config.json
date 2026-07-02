@@ -1,0 +1,63 @@
+{
+  "$comment": "Descriptor for each SignalOps variant: where its source lives, what to measure, and how to attribute files. Shared 'socle' packages (contracts, fixtures, metrics, ui-spec, test-scenarios) are intentionally NOT attributed to any single variant so the comparison reflects variant-specific engineering.",
+  "collectorVersion": "1.0.0",
+  "variants": [
+    {
+      "id": "flow",
+      "label": "Flow",
+      "thesis": "The balanced choice — modular, readable, and the cheapest to change.",
+      "stack": "TanStack Start · React 19 · Vite · TypeScript",
+      "accent": "#38e8c6",
+      "roots": ["apps/flow-app", "packages/flow"],
+      "dist": "apps/flow-app/dist/client",
+      "dockerfiles": ["apps/flow-app/Dockerfile"],
+      "appUrl": "http://localhost:3000",
+      "apiUrl": null,
+      "lighthouseUrlHint": "localhost:3000",
+      "timings": {
+        "build": "nx run flow-app:build --skip-nx-cache",
+        "typecheck": "nx run flow-app:typecheck --skip-nx-cache",
+        "test": "nx run flow-app:test --skip-nx-cache",
+        "lint": "nx run flow-app:lint --skip-nx-cache"
+      }
+    },
+    {
+      "id": "friction",
+      "label": "Friction",
+      "thesis": "Locally fast, globally expensive — fewer parts, tangled and harder to trust.",
+      "stack": "Vite · React · Express-style API · TypeScript",
+      "accent": "#ff7a5c",
+      "roots": ["apps/friction-web", "apps/friction-api"],
+      "dist": "apps/friction-web/dist",
+      "dockerfiles": ["apps/friction-web/Dockerfile", "apps/friction-api/Dockerfile"],
+      "appUrl": null,
+      "apiUrl": null,
+      "lighthouseUrlHint": null,
+      "timings": {
+        "build": "pnpm --filter @signalops/friction-web --filter @signalops/friction-api run build",
+        "typecheck": "pnpm --filter @signalops/friction-web --filter @signalops/friction-api run typecheck",
+        "test": "pnpm --filter @signalops/friction-web --filter @signalops/friction-api run test",
+        "lint": "pnpm --filter @signalops/friction-web --filter @signalops/friction-api run lint"
+      }
+    },
+    {
+      "id": "overfit",
+      "label": "Overfit",
+      "thesis": "Technically impressive, dangerously expensive — over-engineered past its payoff.",
+      "stack": "Next.js · Rust/Axum · CQRS · 17 crates + 14 packages",
+      "accent": "#a98bff",
+      "roots": ["apps/overfit-web", "apps/overfit-api", "packages/overfit", "crates"],
+      "dist": "apps/overfit-web/.next/static",
+      "dockerfiles": ["apps/overfit-web/Dockerfile", "apps/overfit-api/Dockerfile"],
+      "appUrl": null,
+      "apiUrl": null,
+      "lighthouseUrlHint": null,
+      "timings": {
+        "build": "pnpm overfit:build",
+        "typecheck": "pnpm overfit:typecheck",
+        "test": "pnpm overfit:test",
+        "lint": "pnpm overfit:boundaries"
+      }
+    }
+  ]
+}

@@ -1,0 +1,94 @@
+{
+  "$comment": "Single source of truth for the metric catalog and the derived scores. Every collected metric key MUST appear in `metrics`. Score groups reference metric keys and weights. Normalization is min-max across the three variants (see tools/metrics/score.mjs); unavailable metrics are skipped and their group's weights are renormalized so partial data never fakes a score.",
+  "version": "1.0.0",
+  "normalization": "minmax-across-variants",
+  "headline": {
+    "method": "weighted-mean-over-measured-axes",
+    "$comment": "Total Delivery Score = weighted mean of the delivery axes that are actually measured for a variant (gated axes are excluded and the remaining weights renormalized). Change is weighted highest because change/maintenance is the majority of a product's lifetime cost — and it is the only axis fully measured for all three variants today. Build is currently gated for everyone (timings are opt-in, pass 2). Run counts only where runtime quality is actually proven (Lighthouse), not merely inferred from bundle size."
+  },
+  "axisCoverageMin": 0.34,
+  "balanceBands": {
+    "$comment": "For structural metrics both extremes are costly: too few projects/files means an under-modularized monolith (hard to change safely), too many means over-fragmentation (hard to hold in your head). Bands are engineering heuristics for a product of this size, applied identically to all variants. Score = 100 inside [idealMin,idealMax], falling linearly to 0 at hardMin/hardMax.",
+    "nxProjects": { "idealMin": 6, "idealMax": 18, "hardMin": 1, "hardMax": 40 },
+    "graphNodes": { "idealMin": 6, "idealMax": 18, "hardMin": 1, "hardMax": 40 },
+    "sourceFiles": { "idealMin": 55, "idealMax": 220, "hardMin": 5, "hardMax": 400 },
+    "locTotal": { "idealMin": 4000, "idealMax": 9500, "hardMin": 500, "hardMax": 20000 }
+  },
+  "axisWeights": {
+    "$comment": "Weights of the 4 delivery axes inside the headline. Change dominates: it is where lifetime delivery cost concentrates and the only axis fully measured for all three variants. Ship (raw size) is deliberately minor — being smallest is not the same as being cheapest to deliver over time. Edit these to re-frame the verdict; the dashboard reads them live.",
+    "Build": 0.1,
+    "Ship": 0.1,
+    "Run": 0.25,
+    "Change": 0.55
+  },
+  "metrics": {
+    "nxProjects": { "label": "Workspace projects", "category": "Architecture", "axis": "Change", "unit": "count", "direction": "balance", "collector": "graph", "description": "Buildable projects (npm packages + Rust crates). Scored on balance: a monolith is under-modularized, dozens of projects is over-fragmented; the healthy band is in between." },
+    "sourceFiles": { "label": "Source files", "category": "Architecture", "axis": "Change", "unit": "count", "direction": "balance", "collector": "architecture", "description": "Source files (ts/tsx/js/rs/css), excluding tests, config, docs and generated code. Scored on balance." },
+    "locTotal": { "label": "Total LOC", "category": "Architecture", "axis": "Change", "unit": "loc", "direction": "balance", "collector": "architecture", "description": "Non-empty lines of source code. Scored on balance — too little means missing structure, too much means bloat." },
+    "locFrontend": { "label": "Frontend LOC", "category": "Architecture", "axis": "Change", "unit": "loc", "direction": "neutral", "collector": "architecture", "description": "Lines of front-end code (heuristic classification)." },
+    "locBackend": { "label": "Backend LOC", "category": "Architecture", "axis": "Change", "unit": "loc", "direction": "neutral", "collector": "architecture", "description": "Lines of back-end / server code (heuristic classification, includes Rust)." },
+    "locTests": { "label": "Test LOC", "category": "Architecture", "axis": "Change", "unit": "loc", "direction": "neutral", "collector": "architecture", "description": "Lines of test code." },
+    "locDocs": { "label": "Docs LOC", "category": "Architecture", "axis": "Change", "unit": "loc", "direction": "neutral", "collector": "architecture", "description": "Lines of Markdown documentation." },
+    "configFiles": { "label": "Config files", "category": "Architecture", "axis": "Change", "unit": "count", "direction": "lower", "collector": "architecture", "description": "Number of configuration files (json/yaml/toml/rc/*.config.*)." },
+    "todoCount": { "label": "TODO / FIXME", "category": "Architecture", "axis": "Change", "unit": "count", "direction": "lower", "collector": "architecture", "description": "Occurrences of TODO / FIXME / HACK / XXX markers in source." },
+    "anyCount": { "label": "`any` usages", "category": "Architecture", "axis": "Change", "unit": "count", "direction": "lower", "collector": "architecture", "description": "Uses of the TypeScript `any` escape hatch (`: any`, `as any`, `<any>`)." },
+    "asUnknownAsCount": { "label": "`as unknown as` casts", "category": "Architecture", "axis": "Change", "unit": "count", "direction": "lower", "collector": "architecture", "description": "Double casts through `unknown` — a strong smell of fighting the type system." },
+    "lintDisableCount": { "label": "Lint disables", "category": "Architecture", "axis": "Change", "unit": "count", "direction": "lower", "collector": "architecture", "description": "eslint-disable / oxlint-disable / @ts-ignore / @ts-expect-error directives." },
+    "avgComplexity": { "label": "Avg cyclomatic complexity", "category": "Architecture", "axis": "Change", "unit": "index", "direction": "lower", "collector": "architecture", "description": "Mean per-function cyclomatic complexity (decision-point heuristic)." },
+    "maxComplexity": { "label": "Max cyclomatic complexity", "category": "Architecture", "axis": "Change", "unit": "index", "direction": "lower", "collector": "architecture", "description": "Worst single-function cyclomatic complexity found." },
+    "fnsOverComplexity": { "label": "Functions over threshold", "category": "Architecture", "axis": "Change", "unit": "count", "direction": "lower", "collector": "architecture", "description": "Functions whose cyclomatic complexity exceeds 10." },
+    "filesOverSize": { "label": "Files over 300 LOC", "category": "Architecture", "axis": "Change", "unit": "count", "direction": "lower", "collector": "architecture", "description": "Source files longer than 300 lines." },
+    "businessRatio": { "label": "Business/boilerplate ratio", "category": "Architecture", "axis": "Change", "unit": "ratio", "direction": "higher", "collector": "architecture", "description": "Share of code that is product logic vs config/generated/barrel boilerplate. Higher = more signal per line." },
+
+    "directDeps": { "label": "Direct dependencies", "category": "Architecture", "axis": "Change", "unit": "count", "direction": "lower", "collector": "dependencies", "description": "Distinct third-party runtime + dev dependencies declared across the variant's manifests." },
+    "circularDeps": { "label": "Circular dependencies", "category": "Architecture", "axis": "Change", "unit": "count", "direction": "lower", "collector": "dependencies", "description": "Import cycles between the variant's own projects (detected from workspace manifests)." },
+
+    "graphNodes": { "label": "Graph nodes", "category": "Graph", "axis": "Change", "unit": "count", "direction": "balance", "collector": "graph", "description": "Projects in the variant's internal dependency graph. Scored on balance." },
+    "graphEdges": { "label": "Graph edges", "category": "Graph", "axis": "Change", "unit": "count", "direction": "lower", "collector": "graph", "description": "Internal dependency edges between the variant's projects." },
+    "graphDensity": { "label": "Graph density", "category": "Graph", "axis": "Change", "unit": "ratio", "direction": "lower", "collector": "graph", "description": "Edges / possible-edges — how tangled the internal graph is." },
+    "fanInAvg": { "label": "Avg fan-in", "category": "Graph", "axis": "Change", "unit": "index", "direction": "neutral", "collector": "graph", "description": "Average number of projects that depend on a given project." },
+    "fanOutAvg": { "label": "Avg fan-out", "category": "Graph", "axis": "Change", "unit": "index", "direction": "lower", "collector": "graph", "description": "Average number of projects a given project depends on." },
+    "fanInMax": { "label": "Max fan-in", "category": "Graph", "axis": "Change", "unit": "count", "direction": "lower", "collector": "graph", "description": "Most-depended-upon project's fan-in — the blast radius of a change to the busiest hub." },
+    "fanOutMax": { "label": "Max fan-out", "category": "Graph", "axis": "Change", "unit": "count", "direction": "lower", "collector": "graph", "description": "Highest number of dependencies a single project pulls in." },
+
+    "bundleJsKb": { "label": "JS bundle (raw)", "category": "Bundle", "axis": "Run", "unit": "kb", "direction": "lower", "collector": "bundle", "description": "Total uncompressed JavaScript shipped to the browser." },
+    "bundleJsGzipKb": { "label": "JS bundle (gzip)", "category": "Bundle", "axis": "Run", "unit": "kb", "direction": "lower", "collector": "bundle", "description": "Gzip-compressed JavaScript — the closest proxy to what users download." },
+    "bundleJsBrotliKb": { "label": "JS bundle (brotli)", "category": "Bundle", "axis": "Run", "unit": "kb", "direction": "lower", "collector": "bundle", "description": "Brotli-compressed JavaScript." },
+    "bundleCssKb": { "label": "CSS bundle (raw)", "category": "Bundle", "axis": "Run", "unit": "kb", "direction": "lower", "collector": "bundle", "description": "Total uncompressed CSS shipped to the browser." },
+    "bundleCssGzipKb": { "label": "CSS bundle (gzip)", "category": "Bundle", "axis": "Run", "unit": "kb", "direction": "lower", "collector": "bundle", "description": "Gzip-compressed CSS." },
+    "jsChunks": { "label": "JS chunks", "category": "Bundle", "axis": "Run", "unit": "count", "direction": "lower", "collector": "bundle", "description": "Number of emitted JavaScript chunks." },
+    "cssChunks": { "label": "CSS chunks", "category": "Bundle", "axis": "Run", "unit": "count", "direction": "lower", "collector": "bundle", "description": "Number of emitted CSS chunks." },
+    "largestChunkKb": { "label": "Largest chunk", "category": "Bundle", "axis": "Run", "unit": "kb", "direction": "lower", "collector": "bundle", "description": "Size of the single biggest JS chunk (a hydration-cost proxy)." },
+    "imagesKb": { "label": "Images", "category": "Bundle", "axis": "Run", "unit": "kb", "direction": "lower", "collector": "bundle", "description": "Total image weight in the build output." },
+    "fontsKb": { "label": "Fonts", "category": "Bundle", "axis": "Run", "unit": "kb", "direction": "lower", "collector": "bundle", "description": "Total font weight in the build output." },
+    "distTotalKb": { "label": "Build artifact", "category": "Bundle", "axis": "Ship", "unit": "kb", "direction": "lower", "collector": "bundle", "description": "Total size of the deployable build output." },
+
+    "buildTimeMs": { "label": "Build time (cold)", "category": "Build", "axis": "Build", "unit": "ms", "direction": "lower", "collector": "build", "description": "Wall-clock cold build time (opt-in: run with --timings)." },
+    "typecheckTimeMs": { "label": "Typecheck time", "category": "Build", "axis": "Build", "unit": "ms", "direction": "lower", "collector": "build", "description": "Time to run the type checker (opt-in)." },
+    "testTimeMs": { "label": "Test time", "category": "Build", "axis": "Build", "unit": "ms", "direction": "lower", "collector": "build", "description": "Time to run the unit test suite (opt-in)." },
+    "lintTimeMs": { "label": "Lint time", "category": "Build", "axis": "Build", "unit": "ms", "direction": "lower", "collector": "build", "description": "Time to run the linter / boundary check (opt-in)." },
+
+    "lighthousePerformance": { "label": "Lighthouse Performance", "category": "UX", "axis": "Run", "unit": "score", "direction": "higher", "collector": "lighthouse", "description": "Lighthouse performance score (0–100)." },
+    "lighthouseAccessibility": { "label": "Lighthouse Accessibility", "category": "Accessibility", "axis": "Run", "unit": "score", "direction": "higher", "collector": "lighthouse", "description": "Lighthouse accessibility score (0–100)." },
+    "lighthouseBestPractices": { "label": "Lighthouse Best Practices", "category": "UX", "axis": "Run", "unit": "score", "direction": "higher", "collector": "lighthouse", "description": "Lighthouse best-practices score (0–100)." },
+    "lcpMs": { "label": "LCP", "category": "UX", "axis": "Run", "unit": "ms", "direction": "lower", "collector": "lighthouse", "description": "Largest Contentful Paint." },
+    "cls": { "label": "CLS", "category": "UX", "axis": "Run", "unit": "index", "direction": "lower", "collector": "lighthouse", "description": "Cumulative Layout Shift." },
+    "tbtMs": { "label": "TBT", "category": "UX", "axis": "Run", "unit": "ms", "direction": "lower", "collector": "lighthouse", "description": "Total Blocking Time." },
+    "speedIndexMs": { "label": "Speed Index", "category": "UX", "axis": "Run", "unit": "ms", "direction": "lower", "collector": "lighthouse", "description": "Lighthouse Speed Index." },
+    "fcpMs": { "label": "FCP", "category": "UX", "axis": "Run", "unit": "ms", "direction": "lower", "collector": "lighthouse", "description": "First Contentful Paint." },
+    "requests": { "label": "Initial requests", "category": "Sustainability", "axis": "Run", "unit": "count", "direction": "lower", "collector": "lighthouse", "description": "Number of network requests to load the main route." },
+    "transferredKb": { "label": "Transferred weight", "category": "Sustainability", "axis": "Run", "unit": "kb", "direction": "lower", "collector": "lighthouse", "description": "Total bytes transferred over the wire for the main route." },
+    "co2PerViewMg": { "label": "CO₂ / page view", "category": "Sustainability", "axis": "Run", "unit": "mg", "direction": "lower", "collector": "lighthouse", "description": "Estimated CO₂ per page view (SWD model from transferred bytes)." }
+  },
+  "scoreGroups": {
+    "build": { "label": "Build", "kind": "axis", "members": { "buildTimeMs": 0.4, "typecheckTimeMs": 0.2, "testTimeMs": 0.2, "lintTimeMs": 0.1, "distTotalKb": 0.1 } },
+    "ship": { "label": "Ship", "kind": "axis", "members": { "distTotalKb": 0.5, "bundleJsGzipKb": 0.5 } },
+    "run": { "label": "Run", "kind": "axis", "members": { "lighthousePerformance": 0.3, "lcpMs": 0.2, "tbtMs": 0.15, "cls": 0.1, "bundleJsGzipKb": 0.25 } },
+    "change": { "label": "Change", "kind": "axis", "members": { "nxProjects": 0.18, "circularDeps": 0.15, "avgComplexity": 0.12, "maxComplexity": 0.08, "fanInMax": 0.12, "anyCount": 0.1, "lintDisableCount": 0.05, "businessRatio": 0.1, "filesOverSize": 0.1 } },
+    "uxQuality": { "label": "UX Quality", "kind": "derived", "members": { "lighthousePerformance": 0.35, "lcpMs": 0.2, "tbtMs": 0.15, "cls": 0.1, "speedIndexMs": 0.1, "fcpMs": 0.1 } },
+    "accessibility": { "label": "Accessibility", "kind": "derived", "members": { "lighthouseAccessibility": 1.0 } },
+    "sustainability": { "label": "Sustainability", "kind": "derived", "members": { "transferredKb": 0.4, "requests": 0.2, "co2PerViewMg": 0.2, "bundleJsGzipKb": 0.2 } },
+    "architectureComplexity": { "label": "Architecture Health", "kind": "derived", "members": { "nxProjects": 0.15, "graphNodes": 0.05, "circularDeps": 0.12, "avgComplexity": 0.12, "maxComplexity": 0.08, "graphDensity": 0.05, "fanInMax": 0.1, "anyCount": 0.1, "asUnknownAsCount": 0.05, "lintDisableCount": 0.08, "businessRatio": 0.1 } }
+  },
+  "thresholds": { "complexity": 10, "fileSize": 300 }
+}

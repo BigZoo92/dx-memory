@@ -1,0 +1,871 @@
+{
+  "meta": {
+    "app": "signalops-friction",
+    "variant": "friction",
+    "label": "Friction",
+    "thesis": "Locally fast, globally expensive — fewer parts, tangled and harder to trust.",
+    "stack": "Vite · React · Express-style API · TypeScript",
+    "accent": "#ff7a5c",
+    "commit": "4e748c5b5722d7ea3006151f92ec19577dac458d",
+    "commitShort": "4e748c5",
+    "branch": "main",
+    "timestamp": "2026-07-02T15:45:07.563Z",
+    "ciPipelineId": null,
+    "ciRunNumber": null,
+    "environment": "local",
+    "appUrl": null,
+    "apiUrl": null
+  },
+  "metrics": {
+    "sourceFiles": {
+      "value": 31,
+      "status": "ok",
+      "label": "Source files",
+      "unit": "count",
+      "direction": "balance",
+      "category": "Architecture",
+      "axis": "Change",
+      "description": "Source files (ts/tsx/js/rs/css), excluding tests, config, docs and generated code. Scored on balance."
+    },
+    "configFiles": {
+      "value": 13,
+      "status": "ok",
+      "label": "Config files",
+      "unit": "count",
+      "direction": "lower",
+      "category": "Architecture",
+      "axis": "Change",
+      "description": "Number of configuration files (json/yaml/toml/rc/*.config.*)."
+    },
+    "locTotal": {
+      "value": 3862,
+      "status": "ok",
+      "label": "Total LOC",
+      "unit": "loc",
+      "direction": "balance",
+      "category": "Architecture",
+      "axis": "Change",
+      "description": "Non-empty lines of source code. Scored on balance — too little means missing structure, too much means bloat."
+    },
+    "locFrontend": {
+      "value": 2747,
+      "status": "ok",
+      "label": "Frontend LOC",
+      "unit": "loc",
+      "direction": "neutral",
+      "category": "Architecture",
+      "axis": "Change",
+      "description": "Lines of front-end code (heuristic classification)."
+    },
+    "locBackend": {
+      "value": 1115,
+      "status": "ok",
+      "label": "Backend LOC",
+      "unit": "loc",
+      "direction": "neutral",
+      "category": "Architecture",
+      "axis": "Change",
+      "description": "Lines of back-end / server code (heuristic classification, includes Rust)."
+    },
+    "locTests": {
+      "value": 474,
+      "status": "ok",
+      "label": "Test LOC",
+      "unit": "loc",
+      "direction": "neutral",
+      "category": "Architecture",
+      "axis": "Change",
+      "description": "Lines of test code."
+    },
+    "locDocs": {
+      "value": 22,
+      "status": "ok",
+      "label": "Docs LOC",
+      "unit": "loc",
+      "direction": "neutral",
+      "category": "Architecture",
+      "axis": "Change",
+      "description": "Lines of Markdown documentation."
+    },
+    "todoCount": {
+      "value": 0,
+      "status": "ok",
+      "label": "TODO / FIXME",
+      "unit": "count",
+      "direction": "lower",
+      "category": "Architecture",
+      "axis": "Change",
+      "description": "Occurrences of TODO / FIXME / HACK / XXX markers in source."
+    },
+    "anyCount": {
+      "value": 7,
+      "status": "ok",
+      "label": "`any` usages",
+      "unit": "count",
+      "direction": "lower",
+      "category": "Architecture",
+      "axis": "Change",
+      "description": "Uses of the TypeScript `any` escape hatch (`: any`, `as any`, `<any>`)."
+    },
+    "asUnknownAsCount": {
+      "value": 0,
+      "status": "ok",
+      "label": "`as unknown as` casts",
+      "unit": "count",
+      "direction": "lower",
+      "category": "Architecture",
+      "axis": "Change",
+      "description": "Double casts through `unknown` — a strong smell of fighting the type system."
+    },
+    "lintDisableCount": {
+      "value": 0,
+      "status": "ok",
+      "label": "Lint disables",
+      "unit": "count",
+      "direction": "lower",
+      "category": "Architecture",
+      "axis": "Change",
+      "description": "eslint-disable / oxlint-disable / @ts-ignore / @ts-expect-error directives."
+    },
+    "avgComplexity": {
+      "value": 2.21,
+      "status": "ok",
+      "label": "Avg cyclomatic complexity",
+      "unit": "index",
+      "direction": "lower",
+      "category": "Architecture",
+      "axis": "Change",
+      "description": "Mean per-function cyclomatic complexity (decision-point heuristic)."
+    },
+    "maxComplexity": {
+      "value": 19,
+      "status": "ok",
+      "label": "Max cyclomatic complexity",
+      "unit": "index",
+      "direction": "lower",
+      "category": "Architecture",
+      "axis": "Change",
+      "description": "Worst single-function cyclomatic complexity found."
+    },
+    "fnsOverComplexity": {
+      "value": 2,
+      "status": "ok",
+      "label": "Functions over threshold",
+      "unit": "count",
+      "direction": "lower",
+      "category": "Architecture",
+      "axis": "Change",
+      "description": "Functions whose cyclomatic complexity exceeds 10."
+    },
+    "filesOverSize": {
+      "value": 6,
+      "status": "ok",
+      "label": "Files over 300 LOC",
+      "unit": "count",
+      "direction": "lower",
+      "category": "Architecture",
+      "axis": "Change",
+      "description": "Source files longer than 300 lines."
+    },
+    "businessRatio": {
+      "value": 0.934,
+      "status": "ok",
+      "label": "Business/boilerplate ratio",
+      "unit": "ratio",
+      "direction": "higher",
+      "category": "Architecture",
+      "axis": "Change",
+      "description": "Share of code that is product logic vs config/generated/barrel boilerplate. Higher = more signal per line."
+    },
+    "directDeps": {
+      "value": 28,
+      "status": "ok",
+      "label": "Direct dependencies",
+      "unit": "count",
+      "direction": "lower",
+      "category": "Architecture",
+      "axis": "Change",
+      "description": "Distinct third-party runtime + dev dependencies declared across the variant's manifests."
+    },
+    "transitiveDeps": {
+      "value": null,
+      "status": "unavailable",
+      "reason": "Per-variant transitive resolution not computed offline; wire `pnpm list --json` / `cargo tree` in a later pass.",
+      "label": "transitiveDeps",
+      "unit": null,
+      "direction": "neutral",
+      "category": "Other",
+      "axis": null,
+      "description": null
+    },
+    "nxProjects": {
+      "value": 2,
+      "status": "ok",
+      "label": "Workspace projects",
+      "unit": "count",
+      "direction": "balance",
+      "category": "Architecture",
+      "axis": "Change",
+      "description": "Buildable projects (npm packages + Rust crates). Scored on balance: a monolith is under-modularized, dozens of projects is over-fragmented; the healthy band is in between."
+    },
+    "graphNodes": {
+      "value": 2,
+      "status": "ok",
+      "label": "Graph nodes",
+      "unit": "count",
+      "direction": "balance",
+      "category": "Graph",
+      "axis": "Change",
+      "description": "Projects in the variant's internal dependency graph. Scored on balance."
+    },
+    "graphEdges": {
+      "value": 0,
+      "status": "ok",
+      "label": "Graph edges",
+      "unit": "count",
+      "direction": "lower",
+      "category": "Graph",
+      "axis": "Change",
+      "description": "Internal dependency edges between the variant's projects."
+    },
+    "graphDensity": {
+      "value": 0,
+      "status": "ok",
+      "label": "Graph density",
+      "unit": "ratio",
+      "direction": "lower",
+      "category": "Graph",
+      "axis": "Change",
+      "description": "Edges / possible-edges — how tangled the internal graph is."
+    },
+    "fanInAvg": {
+      "value": 0,
+      "status": "ok",
+      "label": "Avg fan-in",
+      "unit": "index",
+      "direction": "neutral",
+      "category": "Graph",
+      "axis": "Change",
+      "description": "Average number of projects that depend on a given project."
+    },
+    "fanOutAvg": {
+      "value": 0,
+      "status": "ok",
+      "label": "Avg fan-out",
+      "unit": "index",
+      "direction": "lower",
+      "category": "Graph",
+      "axis": "Change",
+      "description": "Average number of projects a given project depends on."
+    },
+    "fanInMax": {
+      "value": 0,
+      "status": "ok",
+      "label": "Max fan-in",
+      "unit": "count",
+      "direction": "lower",
+      "category": "Graph",
+      "axis": "Change",
+      "description": "Most-depended-upon project's fan-in — the blast radius of a change to the busiest hub."
+    },
+    "fanOutMax": {
+      "value": 0,
+      "status": "ok",
+      "label": "Max fan-out",
+      "unit": "count",
+      "direction": "lower",
+      "category": "Graph",
+      "axis": "Change",
+      "description": "Highest number of dependencies a single project pulls in."
+    },
+    "circularDeps": {
+      "value": 0,
+      "status": "ok",
+      "label": "Circular dependencies",
+      "unit": "count",
+      "direction": "lower",
+      "category": "Architecture",
+      "axis": "Change",
+      "description": "Import cycles between the variant's own projects (detected from workspace manifests)."
+    },
+    "bundleJsKb": {
+      "value": 264.8,
+      "status": "ok",
+      "label": "JS bundle (raw)",
+      "unit": "kb",
+      "direction": "lower",
+      "category": "Bundle",
+      "axis": "Run",
+      "description": "Total uncompressed JavaScript shipped to the browser."
+    },
+    "bundleJsGzipKb": {
+      "value": 80.1,
+      "status": "ok",
+      "label": "JS bundle (gzip)",
+      "unit": "kb",
+      "direction": "lower",
+      "category": "Bundle",
+      "axis": "Run",
+      "description": "Gzip-compressed JavaScript — the closest proxy to what users download."
+    },
+    "bundleJsBrotliKb": {
+      "value": 69.3,
+      "status": "ok",
+      "label": "JS bundle (brotli)",
+      "unit": "kb",
+      "direction": "lower",
+      "category": "Bundle",
+      "axis": "Run",
+      "description": "Brotli-compressed JavaScript."
+    },
+    "bundleCssKb": {
+      "value": 16.5,
+      "status": "ok",
+      "label": "CSS bundle (raw)",
+      "unit": "kb",
+      "direction": "lower",
+      "category": "Bundle",
+      "axis": "Run",
+      "description": "Total uncompressed CSS shipped to the browser."
+    },
+    "bundleCssGzipKb": {
+      "value": 3.9,
+      "status": "ok",
+      "label": "CSS bundle (gzip)",
+      "unit": "kb",
+      "direction": "lower",
+      "category": "Bundle",
+      "axis": "Run",
+      "description": "Gzip-compressed CSS."
+    },
+    "jsChunks": {
+      "value": 1,
+      "status": "ok",
+      "label": "JS chunks",
+      "unit": "count",
+      "direction": "lower",
+      "category": "Bundle",
+      "axis": "Run",
+      "description": "Number of emitted JavaScript chunks."
+    },
+    "cssChunks": {
+      "value": 1,
+      "status": "ok",
+      "label": "CSS chunks",
+      "unit": "count",
+      "direction": "lower",
+      "category": "Bundle",
+      "axis": "Run",
+      "description": "Number of emitted CSS chunks."
+    },
+    "largestChunkKb": {
+      "value": 264.8,
+      "status": "ok",
+      "label": "Largest chunk",
+      "unit": "kb",
+      "direction": "lower",
+      "category": "Bundle",
+      "axis": "Run",
+      "description": "Size of the single biggest JS chunk (a hydration-cost proxy)."
+    },
+    "imagesKb": {
+      "value": 0,
+      "status": "ok",
+      "label": "Images",
+      "unit": "kb",
+      "direction": "lower",
+      "category": "Bundle",
+      "axis": "Run",
+      "description": "Total image weight in the build output."
+    },
+    "fontsKb": {
+      "value": 0,
+      "status": "ok",
+      "label": "Fonts",
+      "unit": "kb",
+      "direction": "lower",
+      "category": "Bundle",
+      "axis": "Run",
+      "description": "Total font weight in the build output."
+    },
+    "distTotalKb": {
+      "value": 281.7,
+      "status": "ok",
+      "label": "Build artifact",
+      "unit": "kb",
+      "direction": "lower",
+      "category": "Bundle",
+      "axis": "Ship",
+      "description": "Total size of the deployable build output."
+    },
+    "buildTimeMs": {
+      "value": null,
+      "status": "unavailable",
+      "reason": "Opt-in — re-run with --timings to measure `pnpm --filter @signalops/friction-web --filter @signalops/friction-api run build`.",
+      "label": "Build time (cold)",
+      "unit": "ms",
+      "direction": "lower",
+      "category": "Build",
+      "axis": "Build",
+      "description": "Wall-clock cold build time (opt-in: run with --timings)."
+    },
+    "typecheckTimeMs": {
+      "value": null,
+      "status": "unavailable",
+      "reason": "Opt-in — re-run with --timings to measure `pnpm --filter @signalops/friction-web --filter @signalops/friction-api run typecheck`.",
+      "label": "Typecheck time",
+      "unit": "ms",
+      "direction": "lower",
+      "category": "Build",
+      "axis": "Build",
+      "description": "Time to run the type checker (opt-in)."
+    },
+    "testTimeMs": {
+      "value": null,
+      "status": "unavailable",
+      "reason": "Opt-in — re-run with --timings to measure `pnpm --filter @signalops/friction-web --filter @signalops/friction-api run test`.",
+      "label": "Test time",
+      "unit": "ms",
+      "direction": "lower",
+      "category": "Build",
+      "axis": "Build",
+      "description": "Time to run the unit test suite (opt-in)."
+    },
+    "lintTimeMs": {
+      "value": null,
+      "status": "unavailable",
+      "reason": "Opt-in — re-run with --timings to measure `pnpm --filter @signalops/friction-web --filter @signalops/friction-api run lint`.",
+      "label": "Lint time",
+      "unit": "ms",
+      "direction": "lower",
+      "category": "Build",
+      "axis": "Build",
+      "description": "Time to run the linter / boundary check (opt-in)."
+    },
+    "lighthousePerformance": {
+      "value": null,
+      "status": "unavailable",
+      "reason": "No deployed/served URL configured for this variant yet.",
+      "label": "Lighthouse Performance",
+      "unit": "score",
+      "direction": "higher",
+      "category": "UX",
+      "axis": "Run",
+      "description": "Lighthouse performance score (0–100)."
+    },
+    "lighthouseAccessibility": {
+      "value": null,
+      "status": "unavailable",
+      "reason": "No deployed/served URL configured for this variant yet.",
+      "label": "Lighthouse Accessibility",
+      "unit": "score",
+      "direction": "higher",
+      "category": "Accessibility",
+      "axis": "Run",
+      "description": "Lighthouse accessibility score (0–100)."
+    },
+    "lighthouseBestPractices": {
+      "value": null,
+      "status": "unavailable",
+      "reason": "No deployed/served URL configured for this variant yet.",
+      "label": "Lighthouse Best Practices",
+      "unit": "score",
+      "direction": "higher",
+      "category": "UX",
+      "axis": "Run",
+      "description": "Lighthouse best-practices score (0–100)."
+    },
+    "lcpMs": {
+      "value": null,
+      "status": "unavailable",
+      "reason": "No deployed/served URL configured for this variant yet.",
+      "label": "LCP",
+      "unit": "ms",
+      "direction": "lower",
+      "category": "UX",
+      "axis": "Run",
+      "description": "Largest Contentful Paint."
+    },
+    "cls": {
+      "value": null,
+      "status": "unavailable",
+      "reason": "No deployed/served URL configured for this variant yet.",
+      "label": "CLS",
+      "unit": "index",
+      "direction": "lower",
+      "category": "UX",
+      "axis": "Run",
+      "description": "Cumulative Layout Shift."
+    },
+    "tbtMs": {
+      "value": null,
+      "status": "unavailable",
+      "reason": "No deployed/served URL configured for this variant yet.",
+      "label": "TBT",
+      "unit": "ms",
+      "direction": "lower",
+      "category": "UX",
+      "axis": "Run",
+      "description": "Total Blocking Time."
+    },
+    "speedIndexMs": {
+      "value": null,
+      "status": "unavailable",
+      "reason": "No deployed/served URL configured for this variant yet.",
+      "label": "Speed Index",
+      "unit": "ms",
+      "direction": "lower",
+      "category": "UX",
+      "axis": "Run",
+      "description": "Lighthouse Speed Index."
+    },
+    "fcpMs": {
+      "value": null,
+      "status": "unavailable",
+      "reason": "No deployed/served URL configured for this variant yet.",
+      "label": "FCP",
+      "unit": "ms",
+      "direction": "lower",
+      "category": "UX",
+      "axis": "Run",
+      "description": "First Contentful Paint."
+    },
+    "requests": {
+      "value": null,
+      "status": "unavailable",
+      "reason": "No deployed/served URL configured for this variant yet.",
+      "label": "Initial requests",
+      "unit": "count",
+      "direction": "lower",
+      "category": "Sustainability",
+      "axis": "Run",
+      "description": "Number of network requests to load the main route."
+    },
+    "transferredKb": {
+      "value": null,
+      "status": "unavailable",
+      "reason": "No deployed/served URL configured for this variant yet.",
+      "label": "Transferred weight",
+      "unit": "kb",
+      "direction": "lower",
+      "category": "Sustainability",
+      "axis": "Run",
+      "description": "Total bytes transferred over the wire for the main route."
+    },
+    "co2PerViewMg": {
+      "value": null,
+      "status": "unavailable",
+      "reason": "No deployed/served URL configured for this variant yet.",
+      "label": "CO₂ / page view",
+      "unit": "mg",
+      "direction": "lower",
+      "category": "Sustainability",
+      "axis": "Run",
+      "description": "Estimated CO₂ per page view (SWD model from transferred bytes)."
+    }
+  },
+  "graph": {
+    "nodes": [
+      {
+        "id": "@signalops/friction-web",
+        "short": "friction-web",
+        "dir": "apps/friction-web",
+        "kind": "npm",
+        "fanIn": 0,
+        "fanOut": 0
+      },
+      {
+        "id": "@signalops/friction-api",
+        "short": "friction-api",
+        "dir": "apps/friction-api",
+        "kind": "npm",
+        "fanIn": 0,
+        "fanOut": 0
+      }
+    ],
+    "edges": [],
+    "central": [
+      {
+        "name": "@signalops/friction-web",
+        "fanIn": 0
+      },
+      {
+        "name": "@signalops/friction-api",
+        "fanIn": 0
+      }
+    ],
+    "isolated": [
+      "@signalops/friction-web",
+      "@signalops/friction-api"
+    ]
+  },
+  "topChunks": [
+    {
+      "name": "index-DlQi7mwI.js",
+      "kb": 264.8,
+      "gzipKb": 80.1
+    }
+  ],
+  "scores": {
+    "build": {
+      "label": "Build",
+      "kind": "axis",
+      "value": null,
+      "coverage": "1/5",
+      "coverageFrac": 0.1,
+      "complete": false,
+      "gated": true
+    },
+    "ship": {
+      "label": "Ship",
+      "kind": "axis",
+      "value": 100,
+      "coverage": "2/2",
+      "coverageFrac": 1,
+      "complete": true,
+      "gated": false
+    },
+    "run": {
+      "label": "Run",
+      "kind": "axis",
+      "value": null,
+      "coverage": "1/5",
+      "coverageFrac": 0.25,
+      "complete": false,
+      "gated": true
+    },
+    "change": {
+      "label": "Change",
+      "kind": "axis",
+      "value": 45.6,
+      "coverage": "9/9",
+      "coverageFrac": 1,
+      "complete": true,
+      "gated": false
+    },
+    "uxQuality": {
+      "label": "UX Quality",
+      "kind": "derived",
+      "value": null,
+      "coverage": "0/6",
+      "coverageFrac": 0,
+      "complete": false,
+      "gated": false
+    },
+    "accessibility": {
+      "label": "Accessibility",
+      "kind": "derived",
+      "value": null,
+      "coverage": "0/1",
+      "coverageFrac": 0,
+      "complete": false,
+      "gated": false
+    },
+    "sustainability": {
+      "label": "Sustainability",
+      "kind": "derived",
+      "value": 100,
+      "coverage": "1/4",
+      "coverageFrac": 0.2,
+      "complete": false,
+      "gated": false
+    },
+    "architectureComplexity": {
+      "label": "Architecture Health",
+      "kind": "derived",
+      "value": 54,
+      "coverage": "11/11",
+      "coverageFrac": 1,
+      "complete": true,
+      "gated": false
+    },
+    "totalDeliveryScore": {
+      "label": "Total Delivery Score",
+      "kind": "headline",
+      "value": 54,
+      "method": "weighted-mean-over-measured-axes",
+      "axesUsed": [
+        "Ship",
+        "Change"
+      ]
+    }
+  },
+  "statuses": {
+    "ok": 37,
+    "unavailable": 16,
+    "error": 0
+  },
+  "collectorErrors": [],
+  "notMeasured": {
+    "docker": {
+      "status": "unavailable",
+      "reason": "Docker not run in this pass (not available in the collection sandbox).",
+      "seam": "tools/metrics/collectors/docker.mjs — time `docker build`, read image size/layers via `docker inspect`.",
+      "metrics": {
+        "dockerBuildTimeMs": {
+          "value": null,
+          "status": "unavailable",
+          "reason": "Docker build not executed."
+        },
+        "dockerImageKb": {
+          "value": null,
+          "status": "unavailable",
+          "reason": "Docker image not built."
+        },
+        "dockerLayers": {
+          "value": null,
+          "status": "unavailable",
+          "reason": "Docker image not built."
+        },
+        "containerStartMs": {
+          "value": null,
+          "status": "unavailable",
+          "reason": "Container not started."
+        },
+        "healthcheckOk": {
+          "value": null,
+          "status": "unavailable",
+          "reason": "Container not started."
+        }
+      }
+    },
+    "ci": {
+      "status": "unavailable",
+      "reason": "CI provider API not queried in this pass.",
+      "seam": "tools/metrics/collectors/ci.mjs — read GITHUB_* env + GitHub Actions API for per-job timings, success/flaky rate over last 10 runs.",
+      "metrics": {
+        "ciWallTimeMs": {
+          "value": null,
+          "status": "unavailable",
+          "reason": "CI API not queried."
+        },
+        "ciJobs": {
+          "value": null,
+          "status": "unavailable",
+          "reason": "CI API not queried."
+        },
+        "ciSuccessRate10": {
+          "value": null,
+          "status": "unavailable",
+          "reason": "CI API not queried."
+        },
+        "flakyRate10": {
+          "value": null,
+          "status": "unavailable",
+          "reason": "CI API not queried."
+        },
+        "deployTimeMs": {
+          "value": null,
+          "status": "unavailable",
+          "reason": "CI API not queried."
+        },
+        "lastDeployStatus": {
+          "value": null,
+          "status": "unavailable",
+          "reason": "CI API not queried."
+        }
+      }
+    },
+    "runtime": {
+      "status": "unavailable",
+      "reason": "No deployed URLs configured; live probing skipped.",
+      "seam": "tools/metrics/collectors/runtime.mjs — probe appUrl/apiUrl for healthcheck + latency percentiles.",
+      "metrics": {
+        "healthStatus": {
+          "value": null,
+          "status": "unavailable",
+          "reason": "No deployed URL."
+        },
+        "homepageResponseMs": {
+          "value": null,
+          "status": "unavailable",
+          "reason": "No deployed URL."
+        },
+        "apiP50Ms": {
+          "value": null,
+          "status": "unavailable",
+          "reason": "No deployed URL."
+        },
+        "apiP95Ms": {
+          "value": null,
+          "status": "unavailable",
+          "reason": "No deployed URL."
+        },
+        "apiP99Ms": {
+          "value": null,
+          "status": "unavailable",
+          "reason": "No deployed URL."
+        },
+        "apiErrorRate": {
+          "value": null,
+          "status": "unavailable",
+          "reason": "No deployed URL."
+        }
+      }
+    },
+    "frontendErrors": {
+      "status": "unavailable",
+      "reason": "Playwright console/error capture not run in this pass.",
+      "seam": "tools/metrics/collectors/playwright.mjs — drive the app, capture console errors/warnings, network errors, table/filter latency.",
+      "metrics": {
+        "consoleErrors": {
+          "value": null,
+          "status": "unavailable",
+          "reason": "Playwright run required."
+        },
+        "consoleWarnings": {
+          "value": null,
+          "status": "unavailable",
+          "reason": "Playwright run required."
+        },
+        "networkErrors": {
+          "value": null,
+          "status": "unavailable",
+          "reason": "Playwright run required."
+        },
+        "tableRenderMs": {
+          "value": null,
+          "status": "unavailable",
+          "reason": "Playwright run required."
+        },
+        "filterLatencyMs": {
+          "value": null,
+          "status": "unavailable",
+          "reason": "Playwright run required."
+        },
+        "sortLatencyMs": {
+          "value": null,
+          "status": "unavailable",
+          "reason": "Playwright run required."
+        }
+      }
+    },
+    "axe": {
+      "status": "unavailable",
+      "reason": "axe-core run not executed in this pass (Lighthouse a11y score is available).",
+      "seam": "tools/metrics/collectors/axe.mjs — run @axe-core/playwright, bucket violations by impact.",
+      "metrics": {
+        "axeViolations": {
+          "value": null,
+          "status": "unavailable",
+          "reason": "axe run required."
+        },
+        "axeCritical": {
+          "value": null,
+          "status": "unavailable",
+          "reason": "axe run required."
+        },
+        "axeSerious": {
+          "value": null,
+          "status": "unavailable",
+          "reason": "axe run required."
+        },
+        "axeModerate": {
+          "value": null,
+          "status": "unavailable",
+          "reason": "axe run required."
+        }
+      }
+    }
+  }
+}
