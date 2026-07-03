@@ -99,10 +99,83 @@ export function Legend({ items }: { items: { label: string; color: string }[] })
   )
 }
 
-export function SectionHead({ kicker, title, lede }: { kicker: string; title: string; lede?: ReactNode }) {
+/** A single KPI tile: big value, small label, optional sub-line and accent. */
+export function StatTile({
+  label,
+  value,
+  sub,
+  accent,
+  title
+}: {
+  label: string
+  value: ReactNode
+  sub?: ReactNode
+  accent?: string
+  title?: string
+}) {
+  return (
+    <div className="stat-tile" title={title}>
+      <div className="stat-label">{label}</div>
+      <div className="stat-value" style={accent ? { color: accent } : undefined}>
+        {value}
+      </div>
+      {sub != null && <div className="stat-sub">{sub}</div>}
+    </div>
+  )
+}
+
+/** A colored confidence/status pill (e.g. GitHub signal confidence). */
+export function StatusBadge({ color, children, title }: { color: string; children: ReactNode; title?: string }) {
+  return (
+    <span className="status-badge" style={{ color, borderColor: color }} title={title}>
+      <span className="status-badge-dot" style={{ background: color }} />
+      {children}
+    </span>
+  )
+}
+
+/**
+ * A pill declaring whether a section/metric compares the three variants (`variant-level`)
+ * or reads the shared repo delivery chain (`repo-level`, ties across variants). This is the
+ * core distinction of pass 2.5 — surfaced everywhere the two kinds of signal appear.
+ */
+export function ScopeBadge({ scope, title }: { scope: 'variant' | 'repo'; title?: string }) {
+  const isVariant = scope === 'variant'
+  const color = isVariant ? '#38e8c6' : '#7aa2ff'
+  return (
+    <span
+      className="status-badge"
+      style={{ color, borderColor: color }}
+      title={
+        title ??
+        (isVariant
+          ? 'Variant-level: measured per app, so it compares Flow / Friction / Overfit directly.'
+          : 'Repo-level: the shared monorepo delivery chain — identical across the three variants, so it ties (context, not comparison).')
+      }
+    >
+      <span className="status-badge-dot" style={{ background: color }} />
+      {isVariant ? 'variant-level' : 'repo-level'}
+    </span>
+  )
+}
+
+export function SectionHead({
+  kicker,
+  title,
+  lede,
+  badge
+}: {
+  kicker: string
+  title: string
+  lede?: ReactNode
+  badge?: ReactNode
+}) {
   return (
     <Reveal className="sec-head">
-      <div className="sec-kicker">{kicker}</div>
+      <div className="sec-kicker" style={badge ? { display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' } : undefined}>
+        {kicker}
+        {badge}
+      </div>
       <h2 className="sec-title">{title}</h2>
       {lede && <p className="sec-lede">{lede}</p>}
     </Reveal>

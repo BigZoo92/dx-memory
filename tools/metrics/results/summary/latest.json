@@ -1,37 +1,45 @@
 {
-  "generatedAt": "2026-07-02T15:45:07.563Z",
-  "collectorVersion": "1.0.0",
+  "generatedAt": "2026-07-03T09:16:11.074Z",
+  "collectorVersion": "1.1.0",
   "source": "collected",
   "withTimings": false,
-  "commit": "4e748c5b5722d7ea3006151f92ec19577dac458d",
-  "commitShort": "4e748c5",
+  "commit": "59e363d1a5a85fe22721f3d1a5b1913d55ac8b09",
+  "commitShort": "59e363d",
   "branch": "main",
   "environment": "local",
   "axisWeights": {
-    "$comment": "Weights of the 4 delivery axes inside the headline. Change dominates: it is where lifetime delivery cost concentrates and the only axis fully measured for all three variants. Ship (raw size) is deliberately minor — being smallest is not the same as being cheapest to deliver over time. Edit these to re-frame the verdict; the dashboard reads them live.",
-    "Build": 0.1,
-    "Ship": 0.1,
-    "Run": 0.25,
-    "Change": 0.55
+    "$comment": "Weights of the 4 delivery axes inside the headline. Change dominates: it is where lifetime delivery cost concentrates. As of pass 2.5 the variant-level CI matrix makes Build and Ship truly measured & differentiating (real per-variant build/typecheck/lint/test durations + Docker image size/build), so both get a modest bump from 0.10 → 0.15; Run eases to 0.20. Change still dominates at 0.50. When no CI artifacts exist (default static run) Build gates out and the headline renormalizes over the measured axes — so this is backward-compatible. Edit these to re-frame the verdict; the dashboard reads them live.",
+    "Build": 0.15,
+    "Ship": 0.15,
+    "Run": 0.2,
+    "Change": 0.5
   },
   "scoreGroups": {
     "build": {
+      "$comment": "Build = cost to compile, type-check, lint and test. As of pass 2.5 this is scored from the variant-level CI matrix (scope:'variant', real per-variant durations) instead of the opt-in local `*TimeMs` timings — so the axis actually differentiates the three. When no CI artifact exists it gates out cleanly (backward-compatible).",
       "label": "Build",
       "kind": "axis",
       "members": {
-        "buildTimeMs": 0.4,
-        "typecheckTimeMs": 0.2,
-        "testTimeMs": 0.2,
-        "lintTimeMs": 0.1,
-        "distTotalKb": 0.1
+        "variant.ci.build.duration": 0.35,
+        "variant.ci.typecheck.duration": 0.2,
+        "variant.ci.lint.duration": 0.15,
+        "variant.ci.test.duration": 0.3
       }
     },
     "ship": {
-      "label": "Ship",
+      "$comment": "Ship = cost to deliver. Variant-level signals dominate (0.85): deployable artifact + browser bundle + real Docker image size / build time / layer count from the CI matrix — all scope:'variant', so they differentiate Flow/Friction/Overfit. The repo-level GitHub CI/deploy members are held to 0.15 so they enrich with the real shared-pipeline cost without overwriting the variant comparison; they tie across variants (shared monorepo CI) and drop out cleanly when no GITHUB token is present.",
       "kind": "axis",
       "members": {
-        "distTotalKb": 0.5,
-        "bundleJsGzipKb": 0.5
+        "distTotalKb": 0.22,
+        "bundleJsGzipKb": 0.22,
+        "variant.docker.image.size": 0.22,
+        "variant.docker.build.duration": 0.12,
+        "variant.docker.layers.count": 0.07,
+        "ship.ci.wallTime.avg": 0.05,
+        "ship.ci.successRate.lastN": 0.04,
+        "ship.ci.flakyProxy.rate": 0.03,
+        "ship.ci.artifacts.totalSize": 0.02,
+        "ship.deploy.avgDuration": 0.01
       }
     },
     "run": {
@@ -46,7 +54,7 @@
       }
     },
     "change": {
-      "label": "Change",
+      "$comment": "Change = cost to safely evolve the code — the dominant axis. Structural signals (differentiating, per-variant) stay dominant. Two repo-level PR proxies are added at a deliberately small weight (0.08 total): PR change-surface and time-to-merge mix all chantiers and are NOT controlled per-variant scenarios, so they enrich without distorting the verdict and tie across variants.",
       "kind": "axis",
       "members": {
         "nxProjects": 0.18,
@@ -57,7 +65,9 @@
         "anyCount": 0.1,
         "lintDisableCount": 0.05,
         "businessRatio": 0.1,
-        "filesOverSize": 0.1
+        "filesOverSize": 0.1,
+        "change.pr.avgChangedFiles": 0.05,
+        "change.pr.avgTimeToMerge": 0.03
       }
     },
     "uxQuality": {
@@ -477,6 +487,207 @@
       "collector": "build",
       "description": "Time to run the linter / boundary check (opt-in)."
     },
+    "$comment_variant_ci": "Variant-level CI metrics (collector: variant-ci, scope: variant). Produced by the CI matrix (one job per variant) and read back from tools/metrics/results/ci/<variant>.json. UNLIKE the repo-level GitHub metrics below (which tie across variants because the three share one monorepo pipeline), THESE are per-variant real measurements — the numbers that actually differentiate Flow / Friction / Overfit on the cost to build, validate, test and containerise. All degrade to `unavailable` when no CI artifact is present (e.g. the default local static run).",
+    "variant.ci.build.duration": {
+      "label": "Variant build time",
+      "category": "Build CI",
+      "axis": "Build",
+      "unit": "ms",
+      "direction": "lower",
+      "collector": "variant-ci",
+      "scope": "variant",
+      "description": "Wall-clock cold build of this variant's app(s), measured in the per-variant CI job."
+    },
+    "variant.ci.typecheck.duration": {
+      "label": "Variant typecheck time",
+      "category": "Build CI",
+      "axis": "Build",
+      "unit": "ms",
+      "direction": "lower",
+      "collector": "variant-ci",
+      "scope": "variant",
+      "description": "Wall-clock typecheck of this variant, from the per-variant CI job."
+    },
+    "variant.ci.lint.duration": {
+      "label": "Variant lint time",
+      "category": "Build CI",
+      "axis": "Build",
+      "unit": "ms",
+      "direction": "lower",
+      "collector": "variant-ci",
+      "scope": "variant",
+      "description": "Wall-clock lint / boundary check of this variant, from the per-variant CI job."
+    },
+    "variant.ci.test.duration": {
+      "label": "Variant test time",
+      "category": "Build CI",
+      "axis": "Build",
+      "unit": "ms",
+      "direction": "lower",
+      "collector": "variant-ci",
+      "scope": "variant",
+      "description": "Wall-clock unit-test run of this variant (vitest), from the per-variant CI job."
+    },
+    "variant.ci.tests.executed": {
+      "label": "Tests executed",
+      "category": "Build CI",
+      "axis": "Build",
+      "unit": "count",
+      "direction": "neutral",
+      "collector": "variant-ci",
+      "scope": "variant",
+      "description": "Number of unit tests executed by this variant's suite. Informational (not scored)."
+    },
+    "variant.ci.tests.passed": {
+      "label": "Tests passed",
+      "category": "Build CI",
+      "axis": "Build",
+      "unit": "count",
+      "direction": "neutral",
+      "collector": "variant-ci",
+      "scope": "variant",
+      "description": "Number of passing unit tests. Informational."
+    },
+    "variant.ci.tests.failed": {
+      "label": "Tests failed",
+      "category": "Build CI",
+      "axis": "Build",
+      "unit": "count",
+      "direction": "lower",
+      "collector": "variant-ci",
+      "scope": "variant",
+      "description": "Number of failing unit tests."
+    },
+    "variant.ci.tests.skipped": {
+      "label": "Tests skipped",
+      "category": "Build CI",
+      "axis": "Build",
+      "unit": "count",
+      "direction": "lower",
+      "collector": "variant-ci",
+      "scope": "variant",
+      "description": "Number of skipped unit tests."
+    },
+    "variant.ci.warnings.count": {
+      "label": "CI warnings",
+      "category": "Build CI",
+      "axis": "Build",
+      "unit": "count",
+      "direction": "lower",
+      "collector": "variant-ci",
+      "scope": "variant",
+      "description": "Warnings parsed from this variant's build/lint/typecheck output (heuristic across tsc/eslint/oxlint/cargo)."
+    },
+    "variant.ci.errors.count": {
+      "label": "CI errors",
+      "category": "Build CI",
+      "axis": "Build",
+      "unit": "count",
+      "direction": "lower",
+      "collector": "variant-ci",
+      "scope": "variant",
+      "description": "Errors parsed from this variant's build/lint/typecheck output (heuristic)."
+    },
+    "variant.ci.ramPeak.build": {
+      "label": "Build peak RAM",
+      "category": "Build CI",
+      "axis": "Build",
+      "unit": "kb",
+      "direction": "lower",
+      "collector": "variant-ci",
+      "scope": "variant",
+      "description": "Peak resident memory of the build step (from /usr/bin/time on the CI runner). Unavailable where the runner lacks GNU/BSD time."
+    },
+    "variant.ci.ramPeak.tests": {
+      "label": "Test peak RAM",
+      "category": "Build CI",
+      "axis": "Build",
+      "unit": "kb",
+      "direction": "lower",
+      "collector": "variant-ci",
+      "scope": "variant",
+      "description": "Peak resident memory of the test step (from /usr/bin/time)."
+    },
+    "variant.ci.artifact.distSize": {
+      "label": "Variant dist size (CI)",
+      "category": "Build CI",
+      "axis": "Ship",
+      "unit": "kb",
+      "direction": "lower",
+      "collector": "variant-ci",
+      "scope": "variant",
+      "description": "Build-output size measured in the CI job right after build. Informational — `distTotalKb` (bundle collector) is the scored artifact size."
+    },
+    "variant.docker.build.duration": {
+      "label": "Docker build time",
+      "category": "Docker",
+      "axis": "Ship",
+      "unit": "ms",
+      "direction": "lower",
+      "collector": "variant-ci",
+      "scope": "variant",
+      "description": "Wall-clock `docker build --no-cache` for this variant's image. Best-effort: `unavailable` if Docker isn't present or has no Dockerfile."
+    },
+    "variant.docker.image.size": {
+      "label": "Docker image size",
+      "category": "Docker",
+      "axis": "Ship",
+      "unit": "kb",
+      "direction": "lower",
+      "collector": "variant-ci",
+      "scope": "variant",
+      "description": "Final image size via `docker image inspect`. The user-facing (web) image where a variant ships several."
+    },
+    "variant.docker.layers.count": {
+      "label": "Docker layers",
+      "category": "Docker",
+      "axis": "Ship",
+      "unit": "count",
+      "direction": "lower",
+      "collector": "variant-ci",
+      "scope": "variant",
+      "description": "RootFS content layers in the image — a proxy for build-cache friendliness."
+    },
+    "variant.docker.layer.maxSize": {
+      "label": "Largest Docker layer",
+      "category": "Docker",
+      "axis": "Ship",
+      "unit": "kb",
+      "direction": "lower",
+      "collector": "variant-ci",
+      "scope": "variant",
+      "description": "Biggest single layer (from `docker history`). Informational."
+    },
+    "variant.docker.startup.duration": {
+      "label": "Container startup",
+      "category": "Docker",
+      "axis": "Ship",
+      "unit": "ms",
+      "direction": "lower",
+      "collector": "variant-ci",
+      "scope": "variant",
+      "description": "Time from `docker run` to the container answering its health endpoint. Best-effort."
+    },
+    "variant.docker.healthcheck.status": {
+      "label": "Container healthcheck",
+      "category": "Docker",
+      "axis": "Ship",
+      "unit": "status",
+      "direction": "neutral",
+      "collector": "variant-ci",
+      "scope": "variant",
+      "description": "Whether the started container served its health endpoint (ok/fail). Informational."
+    },
+    "variant.docker.healthcheck.duration": {
+      "label": "Healthcheck latency",
+      "category": "Docker",
+      "axis": "Ship",
+      "unit": "ms",
+      "direction": "lower",
+      "collector": "variant-ci",
+      "scope": "variant",
+      "description": "Latency of the first successful health request once the container is up. Informational."
+    },
     "lighthousePerformance": {
       "label": "Lighthouse Performance",
       "category": "UX",
@@ -575,6 +786,117 @@
       "direction": "lower",
       "collector": "lighthouse",
       "description": "Estimated CO₂ per page view (SWD model from transferred bytes)."
+    },
+    "$comment_github": "Repo-level delivery-pipeline metrics from the GitHub Actions API (collector: github, scope: repo). The three variants SHARE one monorepo CI pipeline, so these numbers describe the shared delivery chain — they are identical for all variants and therefore tie at 100 during min-max normalization. They enrich the Ship/Change axes with the real cost of shipping without ever faking per-variant differentiation. All degrade to `unavailable` (score falls back to the differentiating members) when no GITHUB token is present.",
+    "ship.ci.wallTime.avg": {
+      "label": "CI wall time (avg)",
+      "category": "Delivery",
+      "axis": "Ship",
+      "unit": "ms",
+      "direction": "lower",
+      "collector": "github",
+      "scope": "repo",
+      "description": "Mean wall-clock time of the last N completed workflow runs (updated_at − run_started_at). Repo-level."
+    },
+    "ship.ci.wallTime.p95": {
+      "label": "CI wall time (p95)",
+      "category": "Delivery",
+      "axis": "Ship",
+      "unit": "ms",
+      "direction": "lower",
+      "collector": "github",
+      "scope": "repo",
+      "description": "95th-percentile wall-clock run time — the tail a developer occasionally waits through. Repo-level (display only)."
+    },
+    "ship.ci.successRate.lastN": {
+      "label": "CI success rate",
+      "category": "Delivery",
+      "axis": "Ship",
+      "unit": "%",
+      "direction": "higher",
+      "collector": "github",
+      "scope": "repo",
+      "description": "Successful ÷ completed runs over the last N. Repo-level."
+    },
+    "ship.ci.flakyProxy.rate": {
+      "label": "CI instability proxy",
+      "category": "Delivery",
+      "axis": "Ship",
+      "unit": "ratio",
+      "direction": "lower",
+      "collector": "github",
+      "scope": "repo",
+      "description": "Share of jobs that both passed AND failed across the sampled runs. A job-level instability proxy — NOT a test-level flaky rate. Repo-level."
+    },
+    "ship.ci.artifacts.totalSize": {
+      "label": "CI artifacts (total)",
+      "category": "Delivery",
+      "axis": "Ship",
+      "unit": "kb",
+      "direction": "lower",
+      "collector": "github",
+      "scope": "repo",
+      "description": "Total size of non-expired workflow artifacts. Repo-level."
+    },
+    "ship.deploy.avgDuration": {
+      "label": "Deploy duration (avg)",
+      "category": "Delivery",
+      "axis": "Ship",
+      "unit": "ms",
+      "direction": "lower",
+      "collector": "github",
+      "scope": "repo",
+      "description": "Average deployment duration (GitHub Deployments API, else deploy-named Actions jobs). Repo-level; unavailable if neither exists."
+    },
+    "change.pr.avgChangedFiles": {
+      "label": "PR changed files (avg)",
+      "category": "Pull requests",
+      "axis": "Change",
+      "unit": "count",
+      "direction": "lower",
+      "collector": "github",
+      "scope": "repo",
+      "description": "Average files touched per merged PR — a proxy for change surface. Repo-level, mixes all chantiers; not a controlled per-variant scenario."
+    },
+    "change.pr.avgAdditions": {
+      "label": "PR additions (avg)",
+      "category": "Pull requests",
+      "axis": "Change",
+      "unit": "loc",
+      "direction": "lower",
+      "collector": "github",
+      "scope": "repo",
+      "description": "Average lines added per merged PR. Repo-level (display only)."
+    },
+    "change.pr.avgDeletions": {
+      "label": "PR deletions (avg)",
+      "category": "Pull requests",
+      "axis": "Change",
+      "unit": "loc",
+      "direction": "lower",
+      "collector": "github",
+      "scope": "repo",
+      "description": "Average lines deleted per merged PR. Repo-level (display only)."
+    },
+    "change.pr.avgTimeToMerge": {
+      "label": "PR time to merge (avg)",
+      "category": "Pull requests",
+      "axis": "Change",
+      "unit": "ms",
+      "direction": "lower",
+      "collector": "github",
+      "scope": "repo",
+      "description": "Average created→merged duration for merged PRs — a proxy for review/merge latency. Repo-level."
+    },
+    "change.pr.avgReviewCount": {
+      "label": "PR reviews (avg)",
+      "category": "Pull requests",
+      "axis": "Change",
+      "unit": "count",
+      "direction": "higher",
+      "collector": "github",
+      "scope": "repo",
+      "description": "Average number of reviews per merged PR. Repo-level (display only)."
     }
   },
   "thresholds": {
@@ -590,10 +912,10 @@
         "thesis": "The balanced choice — modular, readable, and the cheapest to change.",
         "stack": "TanStack Start · React 19 · Vite · TypeScript",
         "accent": "#38e8c6",
-        "commit": "4e748c5b5722d7ea3006151f92ec19577dac458d",
-        "commitShort": "4e748c5",
+        "commit": "59e363d1a5a85fe22721f3d1a5b1913d55ac8b09",
+        "commitShort": "59e363d",
         "branch": "main",
-        "timestamp": "2026-07-02T15:45:07.563Z",
+        "timestamp": "2026-07-03T09:16:11.074Z",
         "ciPipelineId": null,
         "ciRunNumber": null,
         "environment": "local",
@@ -609,6 +931,7 @@
           "direction": "balance",
           "category": "Architecture",
           "axis": "Change",
+          "scope": "variant",
           "description": "Source files (ts/tsx/js/rs/css), excluding tests, config, docs and generated code. Scored on balance."
         },
         "configFiles": {
@@ -619,6 +942,7 @@
           "direction": "lower",
           "category": "Architecture",
           "axis": "Change",
+          "scope": "variant",
           "description": "Number of configuration files (json/yaml/toml/rc/*.config.*)."
         },
         "locTotal": {
@@ -629,6 +953,7 @@
           "direction": "balance",
           "category": "Architecture",
           "axis": "Change",
+          "scope": "variant",
           "description": "Non-empty lines of source code. Scored on balance — too little means missing structure, too much means bloat."
         },
         "locFrontend": {
@@ -639,6 +964,7 @@
           "direction": "neutral",
           "category": "Architecture",
           "axis": "Change",
+          "scope": "variant",
           "description": "Lines of front-end code (heuristic classification)."
         },
         "locBackend": {
@@ -649,6 +975,7 @@
           "direction": "neutral",
           "category": "Architecture",
           "axis": "Change",
+          "scope": "variant",
           "description": "Lines of back-end / server code (heuristic classification, includes Rust)."
         },
         "locTests": {
@@ -659,6 +986,7 @@
           "direction": "neutral",
           "category": "Architecture",
           "axis": "Change",
+          "scope": "variant",
           "description": "Lines of test code."
         },
         "locDocs": {
@@ -669,6 +997,7 @@
           "direction": "neutral",
           "category": "Architecture",
           "axis": "Change",
+          "scope": "variant",
           "description": "Lines of Markdown documentation."
         },
         "todoCount": {
@@ -679,6 +1008,7 @@
           "direction": "lower",
           "category": "Architecture",
           "axis": "Change",
+          "scope": "variant",
           "description": "Occurrences of TODO / FIXME / HACK / XXX markers in source."
         },
         "anyCount": {
@@ -689,6 +1019,7 @@
           "direction": "lower",
           "category": "Architecture",
           "axis": "Change",
+          "scope": "variant",
           "description": "Uses of the TypeScript `any` escape hatch (`: any`, `as any`, `<any>`)."
         },
         "asUnknownAsCount": {
@@ -699,6 +1030,7 @@
           "direction": "lower",
           "category": "Architecture",
           "axis": "Change",
+          "scope": "variant",
           "description": "Double casts through `unknown` — a strong smell of fighting the type system."
         },
         "lintDisableCount": {
@@ -709,6 +1041,7 @@
           "direction": "lower",
           "category": "Architecture",
           "axis": "Change",
+          "scope": "variant",
           "description": "eslint-disable / oxlint-disable / @ts-ignore / @ts-expect-error directives."
         },
         "avgComplexity": {
@@ -719,6 +1052,7 @@
           "direction": "lower",
           "category": "Architecture",
           "axis": "Change",
+          "scope": "variant",
           "description": "Mean per-function cyclomatic complexity (decision-point heuristic)."
         },
         "maxComplexity": {
@@ -729,6 +1063,7 @@
           "direction": "lower",
           "category": "Architecture",
           "axis": "Change",
+          "scope": "variant",
           "description": "Worst single-function cyclomatic complexity found."
         },
         "fnsOverComplexity": {
@@ -739,6 +1074,7 @@
           "direction": "lower",
           "category": "Architecture",
           "axis": "Change",
+          "scope": "variant",
           "description": "Functions whose cyclomatic complexity exceeds 10."
         },
         "filesOverSize": {
@@ -749,6 +1085,7 @@
           "direction": "lower",
           "category": "Architecture",
           "axis": "Change",
+          "scope": "variant",
           "description": "Source files longer than 300 lines."
         },
         "businessRatio": {
@@ -759,6 +1096,7 @@
           "direction": "higher",
           "category": "Architecture",
           "axis": "Change",
+          "scope": "variant",
           "description": "Share of code that is product logic vs config/generated/barrel boilerplate. Higher = more signal per line."
         },
         "directDeps": {
@@ -769,6 +1107,7 @@
           "direction": "lower",
           "category": "Architecture",
           "axis": "Change",
+          "scope": "variant",
           "description": "Distinct third-party runtime + dev dependencies declared across the variant's manifests."
         },
         "transitiveDeps": {
@@ -780,6 +1119,7 @@
           "direction": "neutral",
           "category": "Other",
           "axis": null,
+          "scope": "variant",
           "description": null
         },
         "nxProjects": {
@@ -790,6 +1130,7 @@
           "direction": "balance",
           "category": "Architecture",
           "axis": "Change",
+          "scope": "variant",
           "description": "Buildable projects (npm packages + Rust crates). Scored on balance: a monolith is under-modularized, dozens of projects is over-fragmented; the healthy band is in between."
         },
         "graphNodes": {
@@ -800,6 +1141,7 @@
           "direction": "balance",
           "category": "Graph",
           "axis": "Change",
+          "scope": "variant",
           "description": "Projects in the variant's internal dependency graph. Scored on balance."
         },
         "graphEdges": {
@@ -810,6 +1152,7 @@
           "direction": "lower",
           "category": "Graph",
           "axis": "Change",
+          "scope": "variant",
           "description": "Internal dependency edges between the variant's projects."
         },
         "graphDensity": {
@@ -820,6 +1163,7 @@
           "direction": "lower",
           "category": "Graph",
           "axis": "Change",
+          "scope": "variant",
           "description": "Edges / possible-edges — how tangled the internal graph is."
         },
         "fanInAvg": {
@@ -830,6 +1174,7 @@
           "direction": "neutral",
           "category": "Graph",
           "axis": "Change",
+          "scope": "variant",
           "description": "Average number of projects that depend on a given project."
         },
         "fanOutAvg": {
@@ -840,6 +1185,7 @@
           "direction": "lower",
           "category": "Graph",
           "axis": "Change",
+          "scope": "variant",
           "description": "Average number of projects a given project depends on."
         },
         "fanInMax": {
@@ -850,6 +1196,7 @@
           "direction": "lower",
           "category": "Graph",
           "axis": "Change",
+          "scope": "variant",
           "description": "Most-depended-upon project's fan-in — the blast radius of a change to the busiest hub."
         },
         "fanOutMax": {
@@ -860,6 +1207,7 @@
           "direction": "lower",
           "category": "Graph",
           "axis": "Change",
+          "scope": "variant",
           "description": "Highest number of dependencies a single project pulls in."
         },
         "circularDeps": {
@@ -870,6 +1218,7 @@
           "direction": "lower",
           "category": "Architecture",
           "axis": "Change",
+          "scope": "variant",
           "description": "Import cycles between the variant's own projects (detected from workspace manifests)."
         },
         "bundleJsKb": {
@@ -880,6 +1229,7 @@
           "direction": "lower",
           "category": "Bundle",
           "axis": "Run",
+          "scope": "variant",
           "description": "Total uncompressed JavaScript shipped to the browser."
         },
         "bundleJsGzipKb": {
@@ -890,6 +1240,7 @@
           "direction": "lower",
           "category": "Bundle",
           "axis": "Run",
+          "scope": "variant",
           "description": "Gzip-compressed JavaScript — the closest proxy to what users download."
         },
         "bundleJsBrotliKb": {
@@ -900,6 +1251,7 @@
           "direction": "lower",
           "category": "Bundle",
           "axis": "Run",
+          "scope": "variant",
           "description": "Brotli-compressed JavaScript."
         },
         "bundleCssKb": {
@@ -910,6 +1262,7 @@
           "direction": "lower",
           "category": "Bundle",
           "axis": "Run",
+          "scope": "variant",
           "description": "Total uncompressed CSS shipped to the browser."
         },
         "bundleCssGzipKb": {
@@ -920,6 +1273,7 @@
           "direction": "lower",
           "category": "Bundle",
           "axis": "Run",
+          "scope": "variant",
           "description": "Gzip-compressed CSS."
         },
         "jsChunks": {
@@ -930,6 +1284,7 @@
           "direction": "lower",
           "category": "Bundle",
           "axis": "Run",
+          "scope": "variant",
           "description": "Number of emitted JavaScript chunks."
         },
         "cssChunks": {
@@ -940,6 +1295,7 @@
           "direction": "lower",
           "category": "Bundle",
           "axis": "Run",
+          "scope": "variant",
           "description": "Number of emitted CSS chunks."
         },
         "largestChunkKb": {
@@ -950,6 +1306,7 @@
           "direction": "lower",
           "category": "Bundle",
           "axis": "Run",
+          "scope": "variant",
           "description": "Size of the single biggest JS chunk (a hydration-cost proxy)."
         },
         "imagesKb": {
@@ -960,6 +1317,7 @@
           "direction": "lower",
           "category": "Bundle",
           "axis": "Run",
+          "scope": "variant",
           "description": "Total image weight in the build output."
         },
         "fontsKb": {
@@ -970,6 +1328,7 @@
           "direction": "lower",
           "category": "Bundle",
           "axis": "Run",
+          "scope": "variant",
           "description": "Total font weight in the build output."
         },
         "distTotalKb": {
@@ -980,6 +1339,7 @@
           "direction": "lower",
           "category": "Bundle",
           "axis": "Ship",
+          "scope": "variant",
           "description": "Total size of the deployable build output."
         },
         "buildTimeMs": {
@@ -991,6 +1351,7 @@
           "direction": "lower",
           "category": "Build",
           "axis": "Build",
+          "scope": "variant",
           "description": "Wall-clock cold build time (opt-in: run with --timings)."
         },
         "typecheckTimeMs": {
@@ -1002,6 +1363,7 @@
           "direction": "lower",
           "category": "Build",
           "axis": "Build",
+          "scope": "variant",
           "description": "Time to run the type checker (opt-in)."
         },
         "testTimeMs": {
@@ -1013,6 +1375,7 @@
           "direction": "lower",
           "category": "Build",
           "axis": "Build",
+          "scope": "variant",
           "description": "Time to run the unit test suite (opt-in)."
         },
         "lintTimeMs": {
@@ -1024,7 +1387,248 @@
           "direction": "lower",
           "category": "Build",
           "axis": "Build",
+          "scope": "variant",
           "description": "Time to run the linter / boundary check (opt-in)."
+        },
+        "variant.ci.build.duration": {
+          "value": null,
+          "status": "unavailable",
+          "reason": "No CI artifact — run `pnpm metrics:variant --variant flow` (or the CI matrix job) to produce tools/metrics/results/ci/flow.json.",
+          "label": "Variant build time",
+          "unit": "ms",
+          "direction": "lower",
+          "category": "Build CI",
+          "axis": "Build",
+          "scope": "variant",
+          "description": "Wall-clock cold build of this variant's app(s), measured in the per-variant CI job."
+        },
+        "variant.ci.typecheck.duration": {
+          "value": null,
+          "status": "unavailable",
+          "reason": "No CI artifact — run `pnpm metrics:variant --variant flow` (or the CI matrix job) to produce tools/metrics/results/ci/flow.json.",
+          "label": "Variant typecheck time",
+          "unit": "ms",
+          "direction": "lower",
+          "category": "Build CI",
+          "axis": "Build",
+          "scope": "variant",
+          "description": "Wall-clock typecheck of this variant, from the per-variant CI job."
+        },
+        "variant.ci.lint.duration": {
+          "value": null,
+          "status": "unavailable",
+          "reason": "No CI artifact — run `pnpm metrics:variant --variant flow` (or the CI matrix job) to produce tools/metrics/results/ci/flow.json.",
+          "label": "Variant lint time",
+          "unit": "ms",
+          "direction": "lower",
+          "category": "Build CI",
+          "axis": "Build",
+          "scope": "variant",
+          "description": "Wall-clock lint / boundary check of this variant, from the per-variant CI job."
+        },
+        "variant.ci.test.duration": {
+          "value": null,
+          "status": "unavailable",
+          "reason": "No CI artifact — run `pnpm metrics:variant --variant flow` (or the CI matrix job) to produce tools/metrics/results/ci/flow.json.",
+          "label": "Variant test time",
+          "unit": "ms",
+          "direction": "lower",
+          "category": "Build CI",
+          "axis": "Build",
+          "scope": "variant",
+          "description": "Wall-clock unit-test run of this variant (vitest), from the per-variant CI job."
+        },
+        "variant.ci.tests.executed": {
+          "value": null,
+          "status": "unavailable",
+          "reason": "No CI artifact — run `pnpm metrics:variant --variant flow` (or the CI matrix job) to produce tools/metrics/results/ci/flow.json.",
+          "label": "Tests executed",
+          "unit": "count",
+          "direction": "neutral",
+          "category": "Build CI",
+          "axis": "Build",
+          "scope": "variant",
+          "description": "Number of unit tests executed by this variant's suite. Informational (not scored)."
+        },
+        "variant.ci.tests.passed": {
+          "value": null,
+          "status": "unavailable",
+          "reason": "No CI artifact — run `pnpm metrics:variant --variant flow` (or the CI matrix job) to produce tools/metrics/results/ci/flow.json.",
+          "label": "Tests passed",
+          "unit": "count",
+          "direction": "neutral",
+          "category": "Build CI",
+          "axis": "Build",
+          "scope": "variant",
+          "description": "Number of passing unit tests. Informational."
+        },
+        "variant.ci.tests.failed": {
+          "value": null,
+          "status": "unavailable",
+          "reason": "No CI artifact — run `pnpm metrics:variant --variant flow` (or the CI matrix job) to produce tools/metrics/results/ci/flow.json.",
+          "label": "Tests failed",
+          "unit": "count",
+          "direction": "lower",
+          "category": "Build CI",
+          "axis": "Build",
+          "scope": "variant",
+          "description": "Number of failing unit tests."
+        },
+        "variant.ci.tests.skipped": {
+          "value": null,
+          "status": "unavailable",
+          "reason": "No CI artifact — run `pnpm metrics:variant --variant flow` (or the CI matrix job) to produce tools/metrics/results/ci/flow.json.",
+          "label": "Tests skipped",
+          "unit": "count",
+          "direction": "lower",
+          "category": "Build CI",
+          "axis": "Build",
+          "scope": "variant",
+          "description": "Number of skipped unit tests."
+        },
+        "variant.ci.warnings.count": {
+          "value": null,
+          "status": "unavailable",
+          "reason": "No CI artifact — run `pnpm metrics:variant --variant flow` (or the CI matrix job) to produce tools/metrics/results/ci/flow.json.",
+          "label": "CI warnings",
+          "unit": "count",
+          "direction": "lower",
+          "category": "Build CI",
+          "axis": "Build",
+          "scope": "variant",
+          "description": "Warnings parsed from this variant's build/lint/typecheck output (heuristic across tsc/eslint/oxlint/cargo)."
+        },
+        "variant.ci.errors.count": {
+          "value": null,
+          "status": "unavailable",
+          "reason": "No CI artifact — run `pnpm metrics:variant --variant flow` (or the CI matrix job) to produce tools/metrics/results/ci/flow.json.",
+          "label": "CI errors",
+          "unit": "count",
+          "direction": "lower",
+          "category": "Build CI",
+          "axis": "Build",
+          "scope": "variant",
+          "description": "Errors parsed from this variant's build/lint/typecheck output (heuristic)."
+        },
+        "variant.ci.ramPeak.build": {
+          "value": null,
+          "status": "unavailable",
+          "reason": "No CI artifact — run `pnpm metrics:variant --variant flow` (or the CI matrix job) to produce tools/metrics/results/ci/flow.json.",
+          "label": "Build peak RAM",
+          "unit": "kb",
+          "direction": "lower",
+          "category": "Build CI",
+          "axis": "Build",
+          "scope": "variant",
+          "description": "Peak resident memory of the build step (from /usr/bin/time on the CI runner). Unavailable where the runner lacks GNU/BSD time."
+        },
+        "variant.ci.ramPeak.tests": {
+          "value": null,
+          "status": "unavailable",
+          "reason": "No CI artifact — run `pnpm metrics:variant --variant flow` (or the CI matrix job) to produce tools/metrics/results/ci/flow.json.",
+          "label": "Test peak RAM",
+          "unit": "kb",
+          "direction": "lower",
+          "category": "Build CI",
+          "axis": "Build",
+          "scope": "variant",
+          "description": "Peak resident memory of the test step (from /usr/bin/time)."
+        },
+        "variant.ci.artifact.distSize": {
+          "value": null,
+          "status": "unavailable",
+          "reason": "No CI artifact — run `pnpm metrics:variant --variant flow` (or the CI matrix job) to produce tools/metrics/results/ci/flow.json.",
+          "label": "Variant dist size (CI)",
+          "unit": "kb",
+          "direction": "lower",
+          "category": "Build CI",
+          "axis": "Ship",
+          "scope": "variant",
+          "description": "Build-output size measured in the CI job right after build. Informational — `distTotalKb` (bundle collector) is the scored artifact size."
+        },
+        "variant.docker.build.duration": {
+          "value": null,
+          "status": "unavailable",
+          "reason": "No CI artifact — run `pnpm metrics:variant --variant flow` (or the CI matrix job) to produce tools/metrics/results/ci/flow.json.",
+          "label": "Docker build time",
+          "unit": "ms",
+          "direction": "lower",
+          "category": "Docker",
+          "axis": "Ship",
+          "scope": "variant",
+          "description": "Wall-clock `docker build --no-cache` for this variant's image. Best-effort: `unavailable` if Docker isn't present or has no Dockerfile."
+        },
+        "variant.docker.image.size": {
+          "value": null,
+          "status": "unavailable",
+          "reason": "No CI artifact — run `pnpm metrics:variant --variant flow` (or the CI matrix job) to produce tools/metrics/results/ci/flow.json.",
+          "label": "Docker image size",
+          "unit": "kb",
+          "direction": "lower",
+          "category": "Docker",
+          "axis": "Ship",
+          "scope": "variant",
+          "description": "Final image size via `docker image inspect`. The user-facing (web) image where a variant ships several."
+        },
+        "variant.docker.layers.count": {
+          "value": null,
+          "status": "unavailable",
+          "reason": "No CI artifact — run `pnpm metrics:variant --variant flow` (or the CI matrix job) to produce tools/metrics/results/ci/flow.json.",
+          "label": "Docker layers",
+          "unit": "count",
+          "direction": "lower",
+          "category": "Docker",
+          "axis": "Ship",
+          "scope": "variant",
+          "description": "RootFS content layers in the image — a proxy for build-cache friendliness."
+        },
+        "variant.docker.layer.maxSize": {
+          "value": null,
+          "status": "unavailable",
+          "reason": "No CI artifact — run `pnpm metrics:variant --variant flow` (or the CI matrix job) to produce tools/metrics/results/ci/flow.json.",
+          "label": "Largest Docker layer",
+          "unit": "kb",
+          "direction": "lower",
+          "category": "Docker",
+          "axis": "Ship",
+          "scope": "variant",
+          "description": "Biggest single layer (from `docker history`). Informational."
+        },
+        "variant.docker.startup.duration": {
+          "value": null,
+          "status": "unavailable",
+          "reason": "No CI artifact — run `pnpm metrics:variant --variant flow` (or the CI matrix job) to produce tools/metrics/results/ci/flow.json.",
+          "label": "Container startup",
+          "unit": "ms",
+          "direction": "lower",
+          "category": "Docker",
+          "axis": "Ship",
+          "scope": "variant",
+          "description": "Time from `docker run` to the container answering its health endpoint. Best-effort."
+        },
+        "variant.docker.healthcheck.status": {
+          "value": null,
+          "status": "unavailable",
+          "reason": "No CI artifact — run `pnpm metrics:variant --variant flow` (or the CI matrix job) to produce tools/metrics/results/ci/flow.json.",
+          "label": "Container healthcheck",
+          "unit": "status",
+          "direction": "neutral",
+          "category": "Docker",
+          "axis": "Ship",
+          "scope": "variant",
+          "description": "Whether the started container served its health endpoint (ok/fail). Informational."
+        },
+        "variant.docker.healthcheck.duration": {
+          "value": null,
+          "status": "unavailable",
+          "reason": "No CI artifact — run `pnpm metrics:variant --variant flow` (or the CI matrix job) to produce tools/metrics/results/ci/flow.json.",
+          "label": "Healthcheck latency",
+          "unit": "ms",
+          "direction": "lower",
+          "category": "Docker",
+          "axis": "Ship",
+          "scope": "variant",
+          "description": "Latency of the first successful health request once the container is up. Informational."
         },
         "lighthousePerformance": {
           "value": 100,
@@ -1034,6 +1638,7 @@
           "direction": "higher",
           "category": "UX",
           "axis": "Run",
+          "scope": "variant",
           "description": "Lighthouse performance score (0–100)."
         },
         "lighthouseAccessibility": {
@@ -1044,6 +1649,7 @@
           "direction": "higher",
           "category": "Accessibility",
           "axis": "Run",
+          "scope": "variant",
           "description": "Lighthouse accessibility score (0–100)."
         },
         "lighthouseBestPractices": {
@@ -1054,6 +1660,7 @@
           "direction": "higher",
           "category": "UX",
           "axis": "Run",
+          "scope": "variant",
           "description": "Lighthouse best-practices score (0–100)."
         },
         "lcpMs": {
@@ -1064,6 +1671,7 @@
           "direction": "lower",
           "category": "UX",
           "axis": "Run",
+          "scope": "variant",
           "description": "Largest Contentful Paint."
         },
         "cls": {
@@ -1074,6 +1682,7 @@
           "direction": "lower",
           "category": "UX",
           "axis": "Run",
+          "scope": "variant",
           "description": "Cumulative Layout Shift."
         },
         "tbtMs": {
@@ -1084,6 +1693,7 @@
           "direction": "lower",
           "category": "UX",
           "axis": "Run",
+          "scope": "variant",
           "description": "Total Blocking Time."
         },
         "speedIndexMs": {
@@ -1094,6 +1704,7 @@
           "direction": "lower",
           "category": "UX",
           "axis": "Run",
+          "scope": "variant",
           "description": "Lighthouse Speed Index."
         },
         "fcpMs": {
@@ -1104,6 +1715,7 @@
           "direction": "lower",
           "category": "UX",
           "axis": "Run",
+          "scope": "variant",
           "description": "First Contentful Paint."
         },
         "requests": {
@@ -1114,6 +1726,7 @@
           "direction": "lower",
           "category": "Sustainability",
           "axis": "Run",
+          "scope": "variant",
           "description": "Number of network requests to load the main route."
         },
         "transferredKb": {
@@ -1124,6 +1737,7 @@
           "direction": "lower",
           "category": "Sustainability",
           "axis": "Run",
+          "scope": "variant",
           "description": "Total bytes transferred over the wire for the main route."
         },
         "co2PerViewMg": {
@@ -1134,6 +1748,7 @@
           "direction": "lower",
           "category": "Sustainability",
           "axis": "Run",
+          "scope": "variant",
           "description": "Estimated CO₂ per page view (SWD model from transferred bytes)."
         }
       },
@@ -1509,18 +2124,17 @@
           "label": "Build",
           "kind": "axis",
           "value": null,
-          "coverage": "1/5",
-          "coverageFrac": 0.1,
+          "coverage": "0/4",
+          "coverageFrac": 0,
           "complete": false,
           "gated": true
         },
         "ship": {
-          "label": "Ship",
           "kind": "axis",
           "value": 0,
-          "coverage": "2/2",
-          "coverageFrac": 1,
-          "complete": true,
+          "coverage": "2/10",
+          "coverageFrac": 0.44,
+          "complete": false,
           "gated": false
         },
         "run": {
@@ -1533,12 +2147,11 @@
           "gated": false
         },
         "change": {
-          "label": "Change",
           "kind": "axis",
           "value": 70.4,
-          "coverage": "9/9",
-          "coverageFrac": 1,
-          "complete": true,
+          "coverage": "9/11",
+          "coverageFrac": 0.93,
+          "complete": false,
           "gated": false
         },
         "uxQuality": {
@@ -1580,7 +2193,7 @@
         "totalDeliveryScore": {
           "label": "Total Delivery Score",
           "kind": "headline",
-          "value": 63.9,
+          "value": 59.1,
           "method": "weighted-mean-over-measured-axes",
           "axesUsed": [
             "Ship",
@@ -1591,7 +2204,7 @@
       },
       "statuses": {
         "ok": 48,
-        "unavailable": 5,
+        "unavailable": 25,
         "error": 0
       }
     },
@@ -1603,10 +2216,10 @@
         "thesis": "Locally fast, globally expensive — fewer parts, tangled and harder to trust.",
         "stack": "Vite · React · Express-style API · TypeScript",
         "accent": "#ff7a5c",
-        "commit": "4e748c5b5722d7ea3006151f92ec19577dac458d",
-        "commitShort": "4e748c5",
+        "commit": "59e363d1a5a85fe22721f3d1a5b1913d55ac8b09",
+        "commitShort": "59e363d",
         "branch": "main",
-        "timestamp": "2026-07-02T15:45:07.563Z",
+        "timestamp": "2026-07-03T09:16:11.074Z",
         "ciPipelineId": null,
         "ciRunNumber": null,
         "environment": "local",
@@ -1622,6 +2235,7 @@
           "direction": "balance",
           "category": "Architecture",
           "axis": "Change",
+          "scope": "variant",
           "description": "Source files (ts/tsx/js/rs/css), excluding tests, config, docs and generated code. Scored on balance."
         },
         "configFiles": {
@@ -1632,6 +2246,7 @@
           "direction": "lower",
           "category": "Architecture",
           "axis": "Change",
+          "scope": "variant",
           "description": "Number of configuration files (json/yaml/toml/rc/*.config.*)."
         },
         "locTotal": {
@@ -1642,6 +2257,7 @@
           "direction": "balance",
           "category": "Architecture",
           "axis": "Change",
+          "scope": "variant",
           "description": "Non-empty lines of source code. Scored on balance — too little means missing structure, too much means bloat."
         },
         "locFrontend": {
@@ -1652,6 +2268,7 @@
           "direction": "neutral",
           "category": "Architecture",
           "axis": "Change",
+          "scope": "variant",
           "description": "Lines of front-end code (heuristic classification)."
         },
         "locBackend": {
@@ -1662,6 +2279,7 @@
           "direction": "neutral",
           "category": "Architecture",
           "axis": "Change",
+          "scope": "variant",
           "description": "Lines of back-end / server code (heuristic classification, includes Rust)."
         },
         "locTests": {
@@ -1672,6 +2290,7 @@
           "direction": "neutral",
           "category": "Architecture",
           "axis": "Change",
+          "scope": "variant",
           "description": "Lines of test code."
         },
         "locDocs": {
@@ -1682,6 +2301,7 @@
           "direction": "neutral",
           "category": "Architecture",
           "axis": "Change",
+          "scope": "variant",
           "description": "Lines of Markdown documentation."
         },
         "todoCount": {
@@ -1692,6 +2312,7 @@
           "direction": "lower",
           "category": "Architecture",
           "axis": "Change",
+          "scope": "variant",
           "description": "Occurrences of TODO / FIXME / HACK / XXX markers in source."
         },
         "anyCount": {
@@ -1702,6 +2323,7 @@
           "direction": "lower",
           "category": "Architecture",
           "axis": "Change",
+          "scope": "variant",
           "description": "Uses of the TypeScript `any` escape hatch (`: any`, `as any`, `<any>`)."
         },
         "asUnknownAsCount": {
@@ -1712,6 +2334,7 @@
           "direction": "lower",
           "category": "Architecture",
           "axis": "Change",
+          "scope": "variant",
           "description": "Double casts through `unknown` — a strong smell of fighting the type system."
         },
         "lintDisableCount": {
@@ -1722,6 +2345,7 @@
           "direction": "lower",
           "category": "Architecture",
           "axis": "Change",
+          "scope": "variant",
           "description": "eslint-disable / oxlint-disable / @ts-ignore / @ts-expect-error directives."
         },
         "avgComplexity": {
@@ -1732,6 +2356,7 @@
           "direction": "lower",
           "category": "Architecture",
           "axis": "Change",
+          "scope": "variant",
           "description": "Mean per-function cyclomatic complexity (decision-point heuristic)."
         },
         "maxComplexity": {
@@ -1742,6 +2367,7 @@
           "direction": "lower",
           "category": "Architecture",
           "axis": "Change",
+          "scope": "variant",
           "description": "Worst single-function cyclomatic complexity found."
         },
         "fnsOverComplexity": {
@@ -1752,6 +2378,7 @@
           "direction": "lower",
           "category": "Architecture",
           "axis": "Change",
+          "scope": "variant",
           "description": "Functions whose cyclomatic complexity exceeds 10."
         },
         "filesOverSize": {
@@ -1762,6 +2389,7 @@
           "direction": "lower",
           "category": "Architecture",
           "axis": "Change",
+          "scope": "variant",
           "description": "Source files longer than 300 lines."
         },
         "businessRatio": {
@@ -1772,6 +2400,7 @@
           "direction": "higher",
           "category": "Architecture",
           "axis": "Change",
+          "scope": "variant",
           "description": "Share of code that is product logic vs config/generated/barrel boilerplate. Higher = more signal per line."
         },
         "directDeps": {
@@ -1782,6 +2411,7 @@
           "direction": "lower",
           "category": "Architecture",
           "axis": "Change",
+          "scope": "variant",
           "description": "Distinct third-party runtime + dev dependencies declared across the variant's manifests."
         },
         "transitiveDeps": {
@@ -1793,6 +2423,7 @@
           "direction": "neutral",
           "category": "Other",
           "axis": null,
+          "scope": "variant",
           "description": null
         },
         "nxProjects": {
@@ -1803,6 +2434,7 @@
           "direction": "balance",
           "category": "Architecture",
           "axis": "Change",
+          "scope": "variant",
           "description": "Buildable projects (npm packages + Rust crates). Scored on balance: a monolith is under-modularized, dozens of projects is over-fragmented; the healthy band is in between."
         },
         "graphNodes": {
@@ -1813,6 +2445,7 @@
           "direction": "balance",
           "category": "Graph",
           "axis": "Change",
+          "scope": "variant",
           "description": "Projects in the variant's internal dependency graph. Scored on balance."
         },
         "graphEdges": {
@@ -1823,6 +2456,7 @@
           "direction": "lower",
           "category": "Graph",
           "axis": "Change",
+          "scope": "variant",
           "description": "Internal dependency edges between the variant's projects."
         },
         "graphDensity": {
@@ -1833,6 +2467,7 @@
           "direction": "lower",
           "category": "Graph",
           "axis": "Change",
+          "scope": "variant",
           "description": "Edges / possible-edges — how tangled the internal graph is."
         },
         "fanInAvg": {
@@ -1843,6 +2478,7 @@
           "direction": "neutral",
           "category": "Graph",
           "axis": "Change",
+          "scope": "variant",
           "description": "Average number of projects that depend on a given project."
         },
         "fanOutAvg": {
@@ -1853,6 +2489,7 @@
           "direction": "lower",
           "category": "Graph",
           "axis": "Change",
+          "scope": "variant",
           "description": "Average number of projects a given project depends on."
         },
         "fanInMax": {
@@ -1863,6 +2500,7 @@
           "direction": "lower",
           "category": "Graph",
           "axis": "Change",
+          "scope": "variant",
           "description": "Most-depended-upon project's fan-in — the blast radius of a change to the busiest hub."
         },
         "fanOutMax": {
@@ -1873,6 +2511,7 @@
           "direction": "lower",
           "category": "Graph",
           "axis": "Change",
+          "scope": "variant",
           "description": "Highest number of dependencies a single project pulls in."
         },
         "circularDeps": {
@@ -1883,6 +2522,7 @@
           "direction": "lower",
           "category": "Architecture",
           "axis": "Change",
+          "scope": "variant",
           "description": "Import cycles between the variant's own projects (detected from workspace manifests)."
         },
         "bundleJsKb": {
@@ -1893,6 +2533,7 @@
           "direction": "lower",
           "category": "Bundle",
           "axis": "Run",
+          "scope": "variant",
           "description": "Total uncompressed JavaScript shipped to the browser."
         },
         "bundleJsGzipKb": {
@@ -1903,6 +2544,7 @@
           "direction": "lower",
           "category": "Bundle",
           "axis": "Run",
+          "scope": "variant",
           "description": "Gzip-compressed JavaScript — the closest proxy to what users download."
         },
         "bundleJsBrotliKb": {
@@ -1913,6 +2555,7 @@
           "direction": "lower",
           "category": "Bundle",
           "axis": "Run",
+          "scope": "variant",
           "description": "Brotli-compressed JavaScript."
         },
         "bundleCssKb": {
@@ -1923,6 +2566,7 @@
           "direction": "lower",
           "category": "Bundle",
           "axis": "Run",
+          "scope": "variant",
           "description": "Total uncompressed CSS shipped to the browser."
         },
         "bundleCssGzipKb": {
@@ -1933,6 +2577,7 @@
           "direction": "lower",
           "category": "Bundle",
           "axis": "Run",
+          "scope": "variant",
           "description": "Gzip-compressed CSS."
         },
         "jsChunks": {
@@ -1943,6 +2588,7 @@
           "direction": "lower",
           "category": "Bundle",
           "axis": "Run",
+          "scope": "variant",
           "description": "Number of emitted JavaScript chunks."
         },
         "cssChunks": {
@@ -1953,6 +2599,7 @@
           "direction": "lower",
           "category": "Bundle",
           "axis": "Run",
+          "scope": "variant",
           "description": "Number of emitted CSS chunks."
         },
         "largestChunkKb": {
@@ -1963,6 +2610,7 @@
           "direction": "lower",
           "category": "Bundle",
           "axis": "Run",
+          "scope": "variant",
           "description": "Size of the single biggest JS chunk (a hydration-cost proxy)."
         },
         "imagesKb": {
@@ -1973,6 +2621,7 @@
           "direction": "lower",
           "category": "Bundle",
           "axis": "Run",
+          "scope": "variant",
           "description": "Total image weight in the build output."
         },
         "fontsKb": {
@@ -1983,6 +2632,7 @@
           "direction": "lower",
           "category": "Bundle",
           "axis": "Run",
+          "scope": "variant",
           "description": "Total font weight in the build output."
         },
         "distTotalKb": {
@@ -1993,6 +2643,7 @@
           "direction": "lower",
           "category": "Bundle",
           "axis": "Ship",
+          "scope": "variant",
           "description": "Total size of the deployable build output."
         },
         "buildTimeMs": {
@@ -2004,6 +2655,7 @@
           "direction": "lower",
           "category": "Build",
           "axis": "Build",
+          "scope": "variant",
           "description": "Wall-clock cold build time (opt-in: run with --timings)."
         },
         "typecheckTimeMs": {
@@ -2015,6 +2667,7 @@
           "direction": "lower",
           "category": "Build",
           "axis": "Build",
+          "scope": "variant",
           "description": "Time to run the type checker (opt-in)."
         },
         "testTimeMs": {
@@ -2026,6 +2679,7 @@
           "direction": "lower",
           "category": "Build",
           "axis": "Build",
+          "scope": "variant",
           "description": "Time to run the unit test suite (opt-in)."
         },
         "lintTimeMs": {
@@ -2037,7 +2691,248 @@
           "direction": "lower",
           "category": "Build",
           "axis": "Build",
+          "scope": "variant",
           "description": "Time to run the linter / boundary check (opt-in)."
+        },
+        "variant.ci.build.duration": {
+          "value": null,
+          "status": "unavailable",
+          "reason": "No CI artifact — run `pnpm metrics:variant --variant friction` (or the CI matrix job) to produce tools/metrics/results/ci/friction.json.",
+          "label": "Variant build time",
+          "unit": "ms",
+          "direction": "lower",
+          "category": "Build CI",
+          "axis": "Build",
+          "scope": "variant",
+          "description": "Wall-clock cold build of this variant's app(s), measured in the per-variant CI job."
+        },
+        "variant.ci.typecheck.duration": {
+          "value": null,
+          "status": "unavailable",
+          "reason": "No CI artifact — run `pnpm metrics:variant --variant friction` (or the CI matrix job) to produce tools/metrics/results/ci/friction.json.",
+          "label": "Variant typecheck time",
+          "unit": "ms",
+          "direction": "lower",
+          "category": "Build CI",
+          "axis": "Build",
+          "scope": "variant",
+          "description": "Wall-clock typecheck of this variant, from the per-variant CI job."
+        },
+        "variant.ci.lint.duration": {
+          "value": null,
+          "status": "unavailable",
+          "reason": "No CI artifact — run `pnpm metrics:variant --variant friction` (or the CI matrix job) to produce tools/metrics/results/ci/friction.json.",
+          "label": "Variant lint time",
+          "unit": "ms",
+          "direction": "lower",
+          "category": "Build CI",
+          "axis": "Build",
+          "scope": "variant",
+          "description": "Wall-clock lint / boundary check of this variant, from the per-variant CI job."
+        },
+        "variant.ci.test.duration": {
+          "value": null,
+          "status": "unavailable",
+          "reason": "No CI artifact — run `pnpm metrics:variant --variant friction` (or the CI matrix job) to produce tools/metrics/results/ci/friction.json.",
+          "label": "Variant test time",
+          "unit": "ms",
+          "direction": "lower",
+          "category": "Build CI",
+          "axis": "Build",
+          "scope": "variant",
+          "description": "Wall-clock unit-test run of this variant (vitest), from the per-variant CI job."
+        },
+        "variant.ci.tests.executed": {
+          "value": null,
+          "status": "unavailable",
+          "reason": "No CI artifact — run `pnpm metrics:variant --variant friction` (or the CI matrix job) to produce tools/metrics/results/ci/friction.json.",
+          "label": "Tests executed",
+          "unit": "count",
+          "direction": "neutral",
+          "category": "Build CI",
+          "axis": "Build",
+          "scope": "variant",
+          "description": "Number of unit tests executed by this variant's suite. Informational (not scored)."
+        },
+        "variant.ci.tests.passed": {
+          "value": null,
+          "status": "unavailable",
+          "reason": "No CI artifact — run `pnpm metrics:variant --variant friction` (or the CI matrix job) to produce tools/metrics/results/ci/friction.json.",
+          "label": "Tests passed",
+          "unit": "count",
+          "direction": "neutral",
+          "category": "Build CI",
+          "axis": "Build",
+          "scope": "variant",
+          "description": "Number of passing unit tests. Informational."
+        },
+        "variant.ci.tests.failed": {
+          "value": null,
+          "status": "unavailable",
+          "reason": "No CI artifact — run `pnpm metrics:variant --variant friction` (or the CI matrix job) to produce tools/metrics/results/ci/friction.json.",
+          "label": "Tests failed",
+          "unit": "count",
+          "direction": "lower",
+          "category": "Build CI",
+          "axis": "Build",
+          "scope": "variant",
+          "description": "Number of failing unit tests."
+        },
+        "variant.ci.tests.skipped": {
+          "value": null,
+          "status": "unavailable",
+          "reason": "No CI artifact — run `pnpm metrics:variant --variant friction` (or the CI matrix job) to produce tools/metrics/results/ci/friction.json.",
+          "label": "Tests skipped",
+          "unit": "count",
+          "direction": "lower",
+          "category": "Build CI",
+          "axis": "Build",
+          "scope": "variant",
+          "description": "Number of skipped unit tests."
+        },
+        "variant.ci.warnings.count": {
+          "value": null,
+          "status": "unavailable",
+          "reason": "No CI artifact — run `pnpm metrics:variant --variant friction` (or the CI matrix job) to produce tools/metrics/results/ci/friction.json.",
+          "label": "CI warnings",
+          "unit": "count",
+          "direction": "lower",
+          "category": "Build CI",
+          "axis": "Build",
+          "scope": "variant",
+          "description": "Warnings parsed from this variant's build/lint/typecheck output (heuristic across tsc/eslint/oxlint/cargo)."
+        },
+        "variant.ci.errors.count": {
+          "value": null,
+          "status": "unavailable",
+          "reason": "No CI artifact — run `pnpm metrics:variant --variant friction` (or the CI matrix job) to produce tools/metrics/results/ci/friction.json.",
+          "label": "CI errors",
+          "unit": "count",
+          "direction": "lower",
+          "category": "Build CI",
+          "axis": "Build",
+          "scope": "variant",
+          "description": "Errors parsed from this variant's build/lint/typecheck output (heuristic)."
+        },
+        "variant.ci.ramPeak.build": {
+          "value": null,
+          "status": "unavailable",
+          "reason": "No CI artifact — run `pnpm metrics:variant --variant friction` (or the CI matrix job) to produce tools/metrics/results/ci/friction.json.",
+          "label": "Build peak RAM",
+          "unit": "kb",
+          "direction": "lower",
+          "category": "Build CI",
+          "axis": "Build",
+          "scope": "variant",
+          "description": "Peak resident memory of the build step (from /usr/bin/time on the CI runner). Unavailable where the runner lacks GNU/BSD time."
+        },
+        "variant.ci.ramPeak.tests": {
+          "value": null,
+          "status": "unavailable",
+          "reason": "No CI artifact — run `pnpm metrics:variant --variant friction` (or the CI matrix job) to produce tools/metrics/results/ci/friction.json.",
+          "label": "Test peak RAM",
+          "unit": "kb",
+          "direction": "lower",
+          "category": "Build CI",
+          "axis": "Build",
+          "scope": "variant",
+          "description": "Peak resident memory of the test step (from /usr/bin/time)."
+        },
+        "variant.ci.artifact.distSize": {
+          "value": null,
+          "status": "unavailable",
+          "reason": "No CI artifact — run `pnpm metrics:variant --variant friction` (or the CI matrix job) to produce tools/metrics/results/ci/friction.json.",
+          "label": "Variant dist size (CI)",
+          "unit": "kb",
+          "direction": "lower",
+          "category": "Build CI",
+          "axis": "Ship",
+          "scope": "variant",
+          "description": "Build-output size measured in the CI job right after build. Informational — `distTotalKb` (bundle collector) is the scored artifact size."
+        },
+        "variant.docker.build.duration": {
+          "value": null,
+          "status": "unavailable",
+          "reason": "No CI artifact — run `pnpm metrics:variant --variant friction` (or the CI matrix job) to produce tools/metrics/results/ci/friction.json.",
+          "label": "Docker build time",
+          "unit": "ms",
+          "direction": "lower",
+          "category": "Docker",
+          "axis": "Ship",
+          "scope": "variant",
+          "description": "Wall-clock `docker build --no-cache` for this variant's image. Best-effort: `unavailable` if Docker isn't present or has no Dockerfile."
+        },
+        "variant.docker.image.size": {
+          "value": null,
+          "status": "unavailable",
+          "reason": "No CI artifact — run `pnpm metrics:variant --variant friction` (or the CI matrix job) to produce tools/metrics/results/ci/friction.json.",
+          "label": "Docker image size",
+          "unit": "kb",
+          "direction": "lower",
+          "category": "Docker",
+          "axis": "Ship",
+          "scope": "variant",
+          "description": "Final image size via `docker image inspect`. The user-facing (web) image where a variant ships several."
+        },
+        "variant.docker.layers.count": {
+          "value": null,
+          "status": "unavailable",
+          "reason": "No CI artifact — run `pnpm metrics:variant --variant friction` (or the CI matrix job) to produce tools/metrics/results/ci/friction.json.",
+          "label": "Docker layers",
+          "unit": "count",
+          "direction": "lower",
+          "category": "Docker",
+          "axis": "Ship",
+          "scope": "variant",
+          "description": "RootFS content layers in the image — a proxy for build-cache friendliness."
+        },
+        "variant.docker.layer.maxSize": {
+          "value": null,
+          "status": "unavailable",
+          "reason": "No CI artifact — run `pnpm metrics:variant --variant friction` (or the CI matrix job) to produce tools/metrics/results/ci/friction.json.",
+          "label": "Largest Docker layer",
+          "unit": "kb",
+          "direction": "lower",
+          "category": "Docker",
+          "axis": "Ship",
+          "scope": "variant",
+          "description": "Biggest single layer (from `docker history`). Informational."
+        },
+        "variant.docker.startup.duration": {
+          "value": null,
+          "status": "unavailable",
+          "reason": "No CI artifact — run `pnpm metrics:variant --variant friction` (or the CI matrix job) to produce tools/metrics/results/ci/friction.json.",
+          "label": "Container startup",
+          "unit": "ms",
+          "direction": "lower",
+          "category": "Docker",
+          "axis": "Ship",
+          "scope": "variant",
+          "description": "Time from `docker run` to the container answering its health endpoint. Best-effort."
+        },
+        "variant.docker.healthcheck.status": {
+          "value": null,
+          "status": "unavailable",
+          "reason": "No CI artifact — run `pnpm metrics:variant --variant friction` (or the CI matrix job) to produce tools/metrics/results/ci/friction.json.",
+          "label": "Container healthcheck",
+          "unit": "status",
+          "direction": "neutral",
+          "category": "Docker",
+          "axis": "Ship",
+          "scope": "variant",
+          "description": "Whether the started container served its health endpoint (ok/fail). Informational."
+        },
+        "variant.docker.healthcheck.duration": {
+          "value": null,
+          "status": "unavailable",
+          "reason": "No CI artifact — run `pnpm metrics:variant --variant friction` (or the CI matrix job) to produce tools/metrics/results/ci/friction.json.",
+          "label": "Healthcheck latency",
+          "unit": "ms",
+          "direction": "lower",
+          "category": "Docker",
+          "axis": "Ship",
+          "scope": "variant",
+          "description": "Latency of the first successful health request once the container is up. Informational."
         },
         "lighthousePerformance": {
           "value": null,
@@ -2048,6 +2943,7 @@
           "direction": "higher",
           "category": "UX",
           "axis": "Run",
+          "scope": "variant",
           "description": "Lighthouse performance score (0–100)."
         },
         "lighthouseAccessibility": {
@@ -2059,6 +2955,7 @@
           "direction": "higher",
           "category": "Accessibility",
           "axis": "Run",
+          "scope": "variant",
           "description": "Lighthouse accessibility score (0–100)."
         },
         "lighthouseBestPractices": {
@@ -2070,6 +2967,7 @@
           "direction": "higher",
           "category": "UX",
           "axis": "Run",
+          "scope": "variant",
           "description": "Lighthouse best-practices score (0–100)."
         },
         "lcpMs": {
@@ -2081,6 +2979,7 @@
           "direction": "lower",
           "category": "UX",
           "axis": "Run",
+          "scope": "variant",
           "description": "Largest Contentful Paint."
         },
         "cls": {
@@ -2092,6 +2991,7 @@
           "direction": "lower",
           "category": "UX",
           "axis": "Run",
+          "scope": "variant",
           "description": "Cumulative Layout Shift."
         },
         "tbtMs": {
@@ -2103,6 +3003,7 @@
           "direction": "lower",
           "category": "UX",
           "axis": "Run",
+          "scope": "variant",
           "description": "Total Blocking Time."
         },
         "speedIndexMs": {
@@ -2114,6 +3015,7 @@
           "direction": "lower",
           "category": "UX",
           "axis": "Run",
+          "scope": "variant",
           "description": "Lighthouse Speed Index."
         },
         "fcpMs": {
@@ -2125,6 +3027,7 @@
           "direction": "lower",
           "category": "UX",
           "axis": "Run",
+          "scope": "variant",
           "description": "First Contentful Paint."
         },
         "requests": {
@@ -2136,6 +3039,7 @@
           "direction": "lower",
           "category": "Sustainability",
           "axis": "Run",
+          "scope": "variant",
           "description": "Number of network requests to load the main route."
         },
         "transferredKb": {
@@ -2147,6 +3051,7 @@
           "direction": "lower",
           "category": "Sustainability",
           "axis": "Run",
+          "scope": "variant",
           "description": "Total bytes transferred over the wire for the main route."
         },
         "co2PerViewMg": {
@@ -2158,6 +3063,7 @@
           "direction": "lower",
           "category": "Sustainability",
           "axis": "Run",
+          "scope": "variant",
           "description": "Estimated CO₂ per page view (SWD model from transferred bytes)."
         }
       },
@@ -2208,18 +3114,17 @@
           "label": "Build",
           "kind": "axis",
           "value": null,
-          "coverage": "1/5",
-          "coverageFrac": 0.1,
+          "coverage": "0/4",
+          "coverageFrac": 0,
           "complete": false,
           "gated": true
         },
         "ship": {
-          "label": "Ship",
           "kind": "axis",
           "value": 100,
-          "coverage": "2/2",
-          "coverageFrac": 1,
-          "complete": true,
+          "coverage": "2/10",
+          "coverageFrac": 0.44,
+          "complete": false,
           "gated": false
         },
         "run": {
@@ -2232,12 +3137,11 @@
           "gated": true
         },
         "change": {
-          "label": "Change",
           "kind": "axis",
           "value": 45.6,
-          "coverage": "9/9",
-          "coverageFrac": 1,
-          "complete": true,
+          "coverage": "9/11",
+          "coverageFrac": 0.93,
+          "complete": false,
           "gated": false
         },
         "uxQuality": {
@@ -2279,7 +3183,7 @@
         "totalDeliveryScore": {
           "label": "Total Delivery Score",
           "kind": "headline",
-          "value": 54,
+          "value": 58.2,
           "method": "weighted-mean-over-measured-axes",
           "axesUsed": [
             "Ship",
@@ -2289,7 +3193,7 @@
       },
       "statuses": {
         "ok": 37,
-        "unavailable": 16,
+        "unavailable": 36,
         "error": 0
       }
     },
@@ -2301,10 +3205,10 @@
         "thesis": "Technically impressive, dangerously expensive — over-engineered past its payoff.",
         "stack": "Next.js · Rust/Axum · CQRS · 17 crates + 14 packages",
         "accent": "#a98bff",
-        "commit": "4e748c5b5722d7ea3006151f92ec19577dac458d",
-        "commitShort": "4e748c5",
+        "commit": "59e363d1a5a85fe22721f3d1a5b1913d55ac8b09",
+        "commitShort": "59e363d",
         "branch": "main",
-        "timestamp": "2026-07-02T15:45:07.563Z",
+        "timestamp": "2026-07-03T09:16:11.074Z",
         "ciPipelineId": null,
         "ciRunNumber": null,
         "environment": "local",
@@ -2320,6 +3224,7 @@
           "direction": "balance",
           "category": "Architecture",
           "axis": "Change",
+          "scope": "variant",
           "description": "Source files (ts/tsx/js/rs/css), excluding tests, config, docs and generated code. Scored on balance."
         },
         "configFiles": {
@@ -2330,6 +3235,7 @@
           "direction": "lower",
           "category": "Architecture",
           "axis": "Change",
+          "scope": "variant",
           "description": "Number of configuration files (json/yaml/toml/rc/*.config.*)."
         },
         "locTotal": {
@@ -2340,6 +3246,7 @@
           "direction": "balance",
           "category": "Architecture",
           "axis": "Change",
+          "scope": "variant",
           "description": "Non-empty lines of source code. Scored on balance — too little means missing structure, too much means bloat."
         },
         "locFrontend": {
@@ -2350,6 +3257,7 @@
           "direction": "neutral",
           "category": "Architecture",
           "axis": "Change",
+          "scope": "variant",
           "description": "Lines of front-end code (heuristic classification)."
         },
         "locBackend": {
@@ -2360,6 +3268,7 @@
           "direction": "neutral",
           "category": "Architecture",
           "axis": "Change",
+          "scope": "variant",
           "description": "Lines of back-end / server code (heuristic classification, includes Rust)."
         },
         "locTests": {
@@ -2370,6 +3279,7 @@
           "direction": "neutral",
           "category": "Architecture",
           "axis": "Change",
+          "scope": "variant",
           "description": "Lines of test code."
         },
         "locDocs": {
@@ -2380,6 +3290,7 @@
           "direction": "neutral",
           "category": "Architecture",
           "axis": "Change",
+          "scope": "variant",
           "description": "Lines of Markdown documentation."
         },
         "todoCount": {
@@ -2390,6 +3301,7 @@
           "direction": "lower",
           "category": "Architecture",
           "axis": "Change",
+          "scope": "variant",
           "description": "Occurrences of TODO / FIXME / HACK / XXX markers in source."
         },
         "anyCount": {
@@ -2400,6 +3312,7 @@
           "direction": "lower",
           "category": "Architecture",
           "axis": "Change",
+          "scope": "variant",
           "description": "Uses of the TypeScript `any` escape hatch (`: any`, `as any`, `<any>`)."
         },
         "asUnknownAsCount": {
@@ -2410,6 +3323,7 @@
           "direction": "lower",
           "category": "Architecture",
           "axis": "Change",
+          "scope": "variant",
           "description": "Double casts through `unknown` — a strong smell of fighting the type system."
         },
         "lintDisableCount": {
@@ -2420,6 +3334,7 @@
           "direction": "lower",
           "category": "Architecture",
           "axis": "Change",
+          "scope": "variant",
           "description": "eslint-disable / oxlint-disable / @ts-ignore / @ts-expect-error directives."
         },
         "avgComplexity": {
@@ -2430,6 +3345,7 @@
           "direction": "lower",
           "category": "Architecture",
           "axis": "Change",
+          "scope": "variant",
           "description": "Mean per-function cyclomatic complexity (decision-point heuristic)."
         },
         "maxComplexity": {
@@ -2440,6 +3356,7 @@
           "direction": "lower",
           "category": "Architecture",
           "axis": "Change",
+          "scope": "variant",
           "description": "Worst single-function cyclomatic complexity found."
         },
         "fnsOverComplexity": {
@@ -2450,6 +3367,7 @@
           "direction": "lower",
           "category": "Architecture",
           "axis": "Change",
+          "scope": "variant",
           "description": "Functions whose cyclomatic complexity exceeds 10."
         },
         "filesOverSize": {
@@ -2460,6 +3378,7 @@
           "direction": "lower",
           "category": "Architecture",
           "axis": "Change",
+          "scope": "variant",
           "description": "Source files longer than 300 lines."
         },
         "businessRatio": {
@@ -2470,6 +3389,7 @@
           "direction": "higher",
           "category": "Architecture",
           "axis": "Change",
+          "scope": "variant",
           "description": "Share of code that is product logic vs config/generated/barrel boilerplate. Higher = more signal per line."
         },
         "directDeps": {
@@ -2480,6 +3400,7 @@
           "direction": "lower",
           "category": "Architecture",
           "axis": "Change",
+          "scope": "variant",
           "description": "Distinct third-party runtime + dev dependencies declared across the variant's manifests."
         },
         "transitiveDeps": {
@@ -2491,6 +3412,7 @@
           "direction": "neutral",
           "category": "Other",
           "axis": null,
+          "scope": "variant",
           "description": null
         },
         "nxProjects": {
@@ -2501,6 +3423,7 @@
           "direction": "balance",
           "category": "Architecture",
           "axis": "Change",
+          "scope": "variant",
           "description": "Buildable projects (npm packages + Rust crates). Scored on balance: a monolith is under-modularized, dozens of projects is over-fragmented; the healthy band is in between."
         },
         "graphNodes": {
@@ -2511,6 +3434,7 @@
           "direction": "balance",
           "category": "Graph",
           "axis": "Change",
+          "scope": "variant",
           "description": "Projects in the variant's internal dependency graph. Scored on balance."
         },
         "graphEdges": {
@@ -2521,6 +3445,7 @@
           "direction": "lower",
           "category": "Graph",
           "axis": "Change",
+          "scope": "variant",
           "description": "Internal dependency edges between the variant's projects."
         },
         "graphDensity": {
@@ -2531,6 +3456,7 @@
           "direction": "lower",
           "category": "Graph",
           "axis": "Change",
+          "scope": "variant",
           "description": "Edges / possible-edges — how tangled the internal graph is."
         },
         "fanInAvg": {
@@ -2541,6 +3467,7 @@
           "direction": "neutral",
           "category": "Graph",
           "axis": "Change",
+          "scope": "variant",
           "description": "Average number of projects that depend on a given project."
         },
         "fanOutAvg": {
@@ -2551,6 +3478,7 @@
           "direction": "lower",
           "category": "Graph",
           "axis": "Change",
+          "scope": "variant",
           "description": "Average number of projects a given project depends on."
         },
         "fanInMax": {
@@ -2561,6 +3489,7 @@
           "direction": "lower",
           "category": "Graph",
           "axis": "Change",
+          "scope": "variant",
           "description": "Most-depended-upon project's fan-in — the blast radius of a change to the busiest hub."
         },
         "fanOutMax": {
@@ -2571,6 +3500,7 @@
           "direction": "lower",
           "category": "Graph",
           "axis": "Change",
+          "scope": "variant",
           "description": "Highest number of dependencies a single project pulls in."
         },
         "circularDeps": {
@@ -2581,6 +3511,7 @@
           "direction": "lower",
           "category": "Architecture",
           "axis": "Change",
+          "scope": "variant",
           "description": "Import cycles between the variant's own projects (detected from workspace manifests)."
         },
         "bundleJsKb": {
@@ -2591,6 +3522,7 @@
           "direction": "lower",
           "category": "Bundle",
           "axis": "Run",
+          "scope": "variant",
           "description": "Total uncompressed JavaScript shipped to the browser."
         },
         "bundleJsGzipKb": {
@@ -2601,6 +3533,7 @@
           "direction": "lower",
           "category": "Bundle",
           "axis": "Run",
+          "scope": "variant",
           "description": "Gzip-compressed JavaScript — the closest proxy to what users download."
         },
         "bundleJsBrotliKb": {
@@ -2611,6 +3544,7 @@
           "direction": "lower",
           "category": "Bundle",
           "axis": "Run",
+          "scope": "variant",
           "description": "Brotli-compressed JavaScript."
         },
         "bundleCssKb": {
@@ -2621,6 +3555,7 @@
           "direction": "lower",
           "category": "Bundle",
           "axis": "Run",
+          "scope": "variant",
           "description": "Total uncompressed CSS shipped to the browser."
         },
         "bundleCssGzipKb": {
@@ -2631,6 +3566,7 @@
           "direction": "lower",
           "category": "Bundle",
           "axis": "Run",
+          "scope": "variant",
           "description": "Gzip-compressed CSS."
         },
         "jsChunks": {
@@ -2641,6 +3577,7 @@
           "direction": "lower",
           "category": "Bundle",
           "axis": "Run",
+          "scope": "variant",
           "description": "Number of emitted JavaScript chunks."
         },
         "cssChunks": {
@@ -2651,6 +3588,7 @@
           "direction": "lower",
           "category": "Bundle",
           "axis": "Run",
+          "scope": "variant",
           "description": "Number of emitted CSS chunks."
         },
         "largestChunkKb": {
@@ -2661,6 +3599,7 @@
           "direction": "lower",
           "category": "Bundle",
           "axis": "Run",
+          "scope": "variant",
           "description": "Size of the single biggest JS chunk (a hydration-cost proxy)."
         },
         "imagesKb": {
@@ -2671,6 +3610,7 @@
           "direction": "lower",
           "category": "Bundle",
           "axis": "Run",
+          "scope": "variant",
           "description": "Total image weight in the build output."
         },
         "fontsKb": {
@@ -2681,6 +3621,7 @@
           "direction": "lower",
           "category": "Bundle",
           "axis": "Run",
+          "scope": "variant",
           "description": "Total font weight in the build output."
         },
         "distTotalKb": {
@@ -2691,6 +3632,7 @@
           "direction": "lower",
           "category": "Bundle",
           "axis": "Ship",
+          "scope": "variant",
           "description": "Total size of the deployable build output."
         },
         "buildTimeMs": {
@@ -2702,6 +3644,7 @@
           "direction": "lower",
           "category": "Build",
           "axis": "Build",
+          "scope": "variant",
           "description": "Wall-clock cold build time (opt-in: run with --timings)."
         },
         "typecheckTimeMs": {
@@ -2713,6 +3656,7 @@
           "direction": "lower",
           "category": "Build",
           "axis": "Build",
+          "scope": "variant",
           "description": "Time to run the type checker (opt-in)."
         },
         "testTimeMs": {
@@ -2724,6 +3668,7 @@
           "direction": "lower",
           "category": "Build",
           "axis": "Build",
+          "scope": "variant",
           "description": "Time to run the unit test suite (opt-in)."
         },
         "lintTimeMs": {
@@ -2735,7 +3680,248 @@
           "direction": "lower",
           "category": "Build",
           "axis": "Build",
+          "scope": "variant",
           "description": "Time to run the linter / boundary check (opt-in)."
+        },
+        "variant.ci.build.duration": {
+          "value": null,
+          "status": "unavailable",
+          "reason": "No CI artifact — run `pnpm metrics:variant --variant overfit` (or the CI matrix job) to produce tools/metrics/results/ci/overfit.json.",
+          "label": "Variant build time",
+          "unit": "ms",
+          "direction": "lower",
+          "category": "Build CI",
+          "axis": "Build",
+          "scope": "variant",
+          "description": "Wall-clock cold build of this variant's app(s), measured in the per-variant CI job."
+        },
+        "variant.ci.typecheck.duration": {
+          "value": null,
+          "status": "unavailable",
+          "reason": "No CI artifact — run `pnpm metrics:variant --variant overfit` (or the CI matrix job) to produce tools/metrics/results/ci/overfit.json.",
+          "label": "Variant typecheck time",
+          "unit": "ms",
+          "direction": "lower",
+          "category": "Build CI",
+          "axis": "Build",
+          "scope": "variant",
+          "description": "Wall-clock typecheck of this variant, from the per-variant CI job."
+        },
+        "variant.ci.lint.duration": {
+          "value": null,
+          "status": "unavailable",
+          "reason": "No CI artifact — run `pnpm metrics:variant --variant overfit` (or the CI matrix job) to produce tools/metrics/results/ci/overfit.json.",
+          "label": "Variant lint time",
+          "unit": "ms",
+          "direction": "lower",
+          "category": "Build CI",
+          "axis": "Build",
+          "scope": "variant",
+          "description": "Wall-clock lint / boundary check of this variant, from the per-variant CI job."
+        },
+        "variant.ci.test.duration": {
+          "value": null,
+          "status": "unavailable",
+          "reason": "No CI artifact — run `pnpm metrics:variant --variant overfit` (or the CI matrix job) to produce tools/metrics/results/ci/overfit.json.",
+          "label": "Variant test time",
+          "unit": "ms",
+          "direction": "lower",
+          "category": "Build CI",
+          "axis": "Build",
+          "scope": "variant",
+          "description": "Wall-clock unit-test run of this variant (vitest), from the per-variant CI job."
+        },
+        "variant.ci.tests.executed": {
+          "value": null,
+          "status": "unavailable",
+          "reason": "No CI artifact — run `pnpm metrics:variant --variant overfit` (or the CI matrix job) to produce tools/metrics/results/ci/overfit.json.",
+          "label": "Tests executed",
+          "unit": "count",
+          "direction": "neutral",
+          "category": "Build CI",
+          "axis": "Build",
+          "scope": "variant",
+          "description": "Number of unit tests executed by this variant's suite. Informational (not scored)."
+        },
+        "variant.ci.tests.passed": {
+          "value": null,
+          "status": "unavailable",
+          "reason": "No CI artifact — run `pnpm metrics:variant --variant overfit` (or the CI matrix job) to produce tools/metrics/results/ci/overfit.json.",
+          "label": "Tests passed",
+          "unit": "count",
+          "direction": "neutral",
+          "category": "Build CI",
+          "axis": "Build",
+          "scope": "variant",
+          "description": "Number of passing unit tests. Informational."
+        },
+        "variant.ci.tests.failed": {
+          "value": null,
+          "status": "unavailable",
+          "reason": "No CI artifact — run `pnpm metrics:variant --variant overfit` (or the CI matrix job) to produce tools/metrics/results/ci/overfit.json.",
+          "label": "Tests failed",
+          "unit": "count",
+          "direction": "lower",
+          "category": "Build CI",
+          "axis": "Build",
+          "scope": "variant",
+          "description": "Number of failing unit tests."
+        },
+        "variant.ci.tests.skipped": {
+          "value": null,
+          "status": "unavailable",
+          "reason": "No CI artifact — run `pnpm metrics:variant --variant overfit` (or the CI matrix job) to produce tools/metrics/results/ci/overfit.json.",
+          "label": "Tests skipped",
+          "unit": "count",
+          "direction": "lower",
+          "category": "Build CI",
+          "axis": "Build",
+          "scope": "variant",
+          "description": "Number of skipped unit tests."
+        },
+        "variant.ci.warnings.count": {
+          "value": null,
+          "status": "unavailable",
+          "reason": "No CI artifact — run `pnpm metrics:variant --variant overfit` (or the CI matrix job) to produce tools/metrics/results/ci/overfit.json.",
+          "label": "CI warnings",
+          "unit": "count",
+          "direction": "lower",
+          "category": "Build CI",
+          "axis": "Build",
+          "scope": "variant",
+          "description": "Warnings parsed from this variant's build/lint/typecheck output (heuristic across tsc/eslint/oxlint/cargo)."
+        },
+        "variant.ci.errors.count": {
+          "value": null,
+          "status": "unavailable",
+          "reason": "No CI artifact — run `pnpm metrics:variant --variant overfit` (or the CI matrix job) to produce tools/metrics/results/ci/overfit.json.",
+          "label": "CI errors",
+          "unit": "count",
+          "direction": "lower",
+          "category": "Build CI",
+          "axis": "Build",
+          "scope": "variant",
+          "description": "Errors parsed from this variant's build/lint/typecheck output (heuristic)."
+        },
+        "variant.ci.ramPeak.build": {
+          "value": null,
+          "status": "unavailable",
+          "reason": "No CI artifact — run `pnpm metrics:variant --variant overfit` (or the CI matrix job) to produce tools/metrics/results/ci/overfit.json.",
+          "label": "Build peak RAM",
+          "unit": "kb",
+          "direction": "lower",
+          "category": "Build CI",
+          "axis": "Build",
+          "scope": "variant",
+          "description": "Peak resident memory of the build step (from /usr/bin/time on the CI runner). Unavailable where the runner lacks GNU/BSD time."
+        },
+        "variant.ci.ramPeak.tests": {
+          "value": null,
+          "status": "unavailable",
+          "reason": "No CI artifact — run `pnpm metrics:variant --variant overfit` (or the CI matrix job) to produce tools/metrics/results/ci/overfit.json.",
+          "label": "Test peak RAM",
+          "unit": "kb",
+          "direction": "lower",
+          "category": "Build CI",
+          "axis": "Build",
+          "scope": "variant",
+          "description": "Peak resident memory of the test step (from /usr/bin/time)."
+        },
+        "variant.ci.artifact.distSize": {
+          "value": null,
+          "status": "unavailable",
+          "reason": "No CI artifact — run `pnpm metrics:variant --variant overfit` (or the CI matrix job) to produce tools/metrics/results/ci/overfit.json.",
+          "label": "Variant dist size (CI)",
+          "unit": "kb",
+          "direction": "lower",
+          "category": "Build CI",
+          "axis": "Ship",
+          "scope": "variant",
+          "description": "Build-output size measured in the CI job right after build. Informational — `distTotalKb` (bundle collector) is the scored artifact size."
+        },
+        "variant.docker.build.duration": {
+          "value": null,
+          "status": "unavailable",
+          "reason": "No CI artifact — run `pnpm metrics:variant --variant overfit` (or the CI matrix job) to produce tools/metrics/results/ci/overfit.json.",
+          "label": "Docker build time",
+          "unit": "ms",
+          "direction": "lower",
+          "category": "Docker",
+          "axis": "Ship",
+          "scope": "variant",
+          "description": "Wall-clock `docker build --no-cache` for this variant's image. Best-effort: `unavailable` if Docker isn't present or has no Dockerfile."
+        },
+        "variant.docker.image.size": {
+          "value": null,
+          "status": "unavailable",
+          "reason": "No CI artifact — run `pnpm metrics:variant --variant overfit` (or the CI matrix job) to produce tools/metrics/results/ci/overfit.json.",
+          "label": "Docker image size",
+          "unit": "kb",
+          "direction": "lower",
+          "category": "Docker",
+          "axis": "Ship",
+          "scope": "variant",
+          "description": "Final image size via `docker image inspect`. The user-facing (web) image where a variant ships several."
+        },
+        "variant.docker.layers.count": {
+          "value": null,
+          "status": "unavailable",
+          "reason": "No CI artifact — run `pnpm metrics:variant --variant overfit` (or the CI matrix job) to produce tools/metrics/results/ci/overfit.json.",
+          "label": "Docker layers",
+          "unit": "count",
+          "direction": "lower",
+          "category": "Docker",
+          "axis": "Ship",
+          "scope": "variant",
+          "description": "RootFS content layers in the image — a proxy for build-cache friendliness."
+        },
+        "variant.docker.layer.maxSize": {
+          "value": null,
+          "status": "unavailable",
+          "reason": "No CI artifact — run `pnpm metrics:variant --variant overfit` (or the CI matrix job) to produce tools/metrics/results/ci/overfit.json.",
+          "label": "Largest Docker layer",
+          "unit": "kb",
+          "direction": "lower",
+          "category": "Docker",
+          "axis": "Ship",
+          "scope": "variant",
+          "description": "Biggest single layer (from `docker history`). Informational."
+        },
+        "variant.docker.startup.duration": {
+          "value": null,
+          "status": "unavailable",
+          "reason": "No CI artifact — run `pnpm metrics:variant --variant overfit` (or the CI matrix job) to produce tools/metrics/results/ci/overfit.json.",
+          "label": "Container startup",
+          "unit": "ms",
+          "direction": "lower",
+          "category": "Docker",
+          "axis": "Ship",
+          "scope": "variant",
+          "description": "Time from `docker run` to the container answering its health endpoint. Best-effort."
+        },
+        "variant.docker.healthcheck.status": {
+          "value": null,
+          "status": "unavailable",
+          "reason": "No CI artifact — run `pnpm metrics:variant --variant overfit` (or the CI matrix job) to produce tools/metrics/results/ci/overfit.json.",
+          "label": "Container healthcheck",
+          "unit": "status",
+          "direction": "neutral",
+          "category": "Docker",
+          "axis": "Ship",
+          "scope": "variant",
+          "description": "Whether the started container served its health endpoint (ok/fail). Informational."
+        },
+        "variant.docker.healthcheck.duration": {
+          "value": null,
+          "status": "unavailable",
+          "reason": "No CI artifact — run `pnpm metrics:variant --variant overfit` (or the CI matrix job) to produce tools/metrics/results/ci/overfit.json.",
+          "label": "Healthcheck latency",
+          "unit": "ms",
+          "direction": "lower",
+          "category": "Docker",
+          "axis": "Ship",
+          "scope": "variant",
+          "description": "Latency of the first successful health request once the container is up. Informational."
         },
         "lighthousePerformance": {
           "value": null,
@@ -2746,6 +3932,7 @@
           "direction": "higher",
           "category": "UX",
           "axis": "Run",
+          "scope": "variant",
           "description": "Lighthouse performance score (0–100)."
         },
         "lighthouseAccessibility": {
@@ -2757,6 +3944,7 @@
           "direction": "higher",
           "category": "Accessibility",
           "axis": "Run",
+          "scope": "variant",
           "description": "Lighthouse accessibility score (0–100)."
         },
         "lighthouseBestPractices": {
@@ -2768,6 +3956,7 @@
           "direction": "higher",
           "category": "UX",
           "axis": "Run",
+          "scope": "variant",
           "description": "Lighthouse best-practices score (0–100)."
         },
         "lcpMs": {
@@ -2779,6 +3968,7 @@
           "direction": "lower",
           "category": "UX",
           "axis": "Run",
+          "scope": "variant",
           "description": "Largest Contentful Paint."
         },
         "cls": {
@@ -2790,6 +3980,7 @@
           "direction": "lower",
           "category": "UX",
           "axis": "Run",
+          "scope": "variant",
           "description": "Cumulative Layout Shift."
         },
         "tbtMs": {
@@ -2801,6 +3992,7 @@
           "direction": "lower",
           "category": "UX",
           "axis": "Run",
+          "scope": "variant",
           "description": "Total Blocking Time."
         },
         "speedIndexMs": {
@@ -2812,6 +4004,7 @@
           "direction": "lower",
           "category": "UX",
           "axis": "Run",
+          "scope": "variant",
           "description": "Lighthouse Speed Index."
         },
         "fcpMs": {
@@ -2823,6 +4016,7 @@
           "direction": "lower",
           "category": "UX",
           "axis": "Run",
+          "scope": "variant",
           "description": "First Contentful Paint."
         },
         "requests": {
@@ -2834,6 +4028,7 @@
           "direction": "lower",
           "category": "Sustainability",
           "axis": "Run",
+          "scope": "variant",
           "description": "Number of network requests to load the main route."
         },
         "transferredKb": {
@@ -2845,6 +4040,7 @@
           "direction": "lower",
           "category": "Sustainability",
           "axis": "Run",
+          "scope": "variant",
           "description": "Total bytes transferred over the wire for the main route."
         },
         "co2PerViewMg": {
@@ -2856,6 +4052,7 @@
           "direction": "lower",
           "category": "Sustainability",
           "axis": "Run",
+          "scope": "variant",
           "description": "Estimated CO₂ per page view (SWD model from transferred bytes)."
         }
       },
@@ -3462,18 +4659,17 @@
           "label": "Build",
           "kind": "axis",
           "value": null,
-          "coverage": "1/5",
-          "coverageFrac": 0.1,
+          "coverage": "0/4",
+          "coverageFrac": 0,
           "complete": false,
           "gated": true
         },
         "ship": {
-          "label": "Ship",
           "kind": "axis",
           "value": 7.5,
-          "coverage": "2/2",
-          "coverageFrac": 1,
-          "complete": true,
+          "coverage": "2/10",
+          "coverageFrac": 0.44,
+          "complete": false,
           "gated": false
         },
         "run": {
@@ -3486,12 +4682,11 @@
           "gated": true
         },
         "change": {
-          "label": "Change",
           "kind": "axis",
           "value": 59.9,
-          "coverage": "9/9",
-          "coverageFrac": 1,
-          "complete": true,
+          "coverage": "9/11",
+          "coverageFrac": 0.93,
+          "complete": false,
           "gated": false
         },
         "uxQuality": {
@@ -3533,7 +4728,7 @@
         "totalDeliveryScore": {
           "label": "Total Delivery Score",
           "kind": "headline",
-          "value": 51.8,
+          "value": 47.8,
           "method": "weighted-mean-over-measured-axes",
           "axesUsed": [
             "Ship",
@@ -3543,7 +4738,7 @@
       },
       "statuses": {
         "ok": 37,
-        "unavailable": 16,
+        "unavailable": 36,
         "error": 0
       }
     }
@@ -3729,6 +4924,96 @@
       "friction": null,
       "overfit": null
     },
+    "$comment_variant_ci": {
+      "flow": null,
+      "friction": null,
+      "overfit": null
+    },
+    "variant.ci.build.duration": {
+      "flow": null,
+      "friction": null,
+      "overfit": null
+    },
+    "variant.ci.typecheck.duration": {
+      "flow": null,
+      "friction": null,
+      "overfit": null
+    },
+    "variant.ci.lint.duration": {
+      "flow": null,
+      "friction": null,
+      "overfit": null
+    },
+    "variant.ci.test.duration": {
+      "flow": null,
+      "friction": null,
+      "overfit": null
+    },
+    "variant.ci.tests.failed": {
+      "flow": null,
+      "friction": null,
+      "overfit": null
+    },
+    "variant.ci.tests.skipped": {
+      "flow": null,
+      "friction": null,
+      "overfit": null
+    },
+    "variant.ci.warnings.count": {
+      "flow": null,
+      "friction": null,
+      "overfit": null
+    },
+    "variant.ci.errors.count": {
+      "flow": null,
+      "friction": null,
+      "overfit": null
+    },
+    "variant.ci.ramPeak.build": {
+      "flow": null,
+      "friction": null,
+      "overfit": null
+    },
+    "variant.ci.ramPeak.tests": {
+      "flow": null,
+      "friction": null,
+      "overfit": null
+    },
+    "variant.ci.artifact.distSize": {
+      "flow": null,
+      "friction": null,
+      "overfit": null
+    },
+    "variant.docker.build.duration": {
+      "flow": null,
+      "friction": null,
+      "overfit": null
+    },
+    "variant.docker.image.size": {
+      "flow": null,
+      "friction": null,
+      "overfit": null
+    },
+    "variant.docker.layers.count": {
+      "flow": null,
+      "friction": null,
+      "overfit": null
+    },
+    "variant.docker.layer.maxSize": {
+      "flow": null,
+      "friction": null,
+      "overfit": null
+    },
+    "variant.docker.startup.duration": {
+      "flow": null,
+      "friction": null,
+      "overfit": null
+    },
+    "variant.docker.healthcheck.duration": {
+      "flow": null,
+      "friction": null,
+      "overfit": null
+    },
     "lighthousePerformance": {
       "flow": 100,
       "friction": null,
@@ -3783,6 +5068,66 @@
       "flow": 100,
       "friction": null,
       "overfit": null
+    },
+    "$comment_github": {
+      "flow": null,
+      "friction": null,
+      "overfit": null
+    },
+    "ship.ci.wallTime.avg": {
+      "flow": null,
+      "friction": null,
+      "overfit": null
+    },
+    "ship.ci.wallTime.p95": {
+      "flow": null,
+      "friction": null,
+      "overfit": null
+    },
+    "ship.ci.successRate.lastN": {
+      "flow": null,
+      "friction": null,
+      "overfit": null
+    },
+    "ship.ci.flakyProxy.rate": {
+      "flow": null,
+      "friction": null,
+      "overfit": null
+    },
+    "ship.ci.artifacts.totalSize": {
+      "flow": null,
+      "friction": null,
+      "overfit": null
+    },
+    "ship.deploy.avgDuration": {
+      "flow": null,
+      "friction": null,
+      "overfit": null
+    },
+    "change.pr.avgChangedFiles": {
+      "flow": null,
+      "friction": null,
+      "overfit": null
+    },
+    "change.pr.avgAdditions": {
+      "flow": null,
+      "friction": null,
+      "overfit": null
+    },
+    "change.pr.avgDeletions": {
+      "flow": null,
+      "friction": null,
+      "overfit": null
+    },
+    "change.pr.avgTimeToMerge": {
+      "flow": null,
+      "friction": null,
+      "overfit": null
+    },
+    "change.pr.avgReviewCount": {
+      "flow": null,
+      "friction": null,
+      "overfit": null
     }
   },
   "winners": {
@@ -3831,75 +5176,6 @@
     "co2PerViewMg": "flow"
   },
   "notMeasured": {
-    "docker": {
-      "status": "unavailable",
-      "reason": "Docker not run in this pass (not available in the collection sandbox).",
-      "seam": "tools/metrics/collectors/docker.mjs — time `docker build`, read image size/layers via `docker inspect`.",
-      "metrics": {
-        "dockerBuildTimeMs": {
-          "value": null,
-          "status": "unavailable",
-          "reason": "Docker build not executed."
-        },
-        "dockerImageKb": {
-          "value": null,
-          "status": "unavailable",
-          "reason": "Docker image not built."
-        },
-        "dockerLayers": {
-          "value": null,
-          "status": "unavailable",
-          "reason": "Docker image not built."
-        },
-        "containerStartMs": {
-          "value": null,
-          "status": "unavailable",
-          "reason": "Container not started."
-        },
-        "healthcheckOk": {
-          "value": null,
-          "status": "unavailable",
-          "reason": "Container not started."
-        }
-      }
-    },
-    "ci": {
-      "status": "unavailable",
-      "reason": "CI provider API not queried in this pass.",
-      "seam": "tools/metrics/collectors/ci.mjs — read GITHUB_* env + GitHub Actions API for per-job timings, success/flaky rate over last 10 runs.",
-      "metrics": {
-        "ciWallTimeMs": {
-          "value": null,
-          "status": "unavailable",
-          "reason": "CI API not queried."
-        },
-        "ciJobs": {
-          "value": null,
-          "status": "unavailable",
-          "reason": "CI API not queried."
-        },
-        "ciSuccessRate10": {
-          "value": null,
-          "status": "unavailable",
-          "reason": "CI API not queried."
-        },
-        "flakyRate10": {
-          "value": null,
-          "status": "unavailable",
-          "reason": "CI API not queried."
-        },
-        "deployTimeMs": {
-          "value": null,
-          "status": "unavailable",
-          "reason": "CI API not queried."
-        },
-        "lastDeployStatus": {
-          "value": null,
-          "status": "unavailable",
-          "reason": "CI API not queried."
-        }
-      }
-    },
     "runtime": {
       "status": "unavailable",
       "reason": "No deployed URLs configured; live probing skipped.",
@@ -4001,5 +5277,256 @@
         }
       }
     }
-  }
+  },
+  "sources": {
+    "github": {
+      "status": "unavailable",
+      "repository": "BigZoo92/dx-memory",
+      "tokenSource": null,
+      "runLimit": 20,
+      "prLimit": 20,
+      "workflows": [],
+      "collectedAt": "2026-07-03T09:16:11.074Z",
+      "reason": "No GitHub token found (set METRICS_GITHUB_TOKEN / GITHUB_TOKEN / GH_TOKEN)."
+    }
+  },
+  "githubMetrics": {
+    "ship.ci.wallTime.avg": {
+      "value": null,
+      "status": "unavailable",
+      "reason": "No GitHub token found (set METRICS_GITHUB_TOKEN / GITHUB_TOKEN / GH_TOKEN).",
+      "label": "CI wall time (avg)",
+      "unit": "ms",
+      "direction": "lower",
+      "category": "Delivery",
+      "axis": "Ship",
+      "scope": "repo",
+      "description": "Mean wall-clock time of the last N completed workflow runs (updated_at − run_started_at). Repo-level."
+    },
+    "ship.ci.wallTime.p95": {
+      "value": null,
+      "status": "unavailable",
+      "reason": "No GitHub token found (set METRICS_GITHUB_TOKEN / GITHUB_TOKEN / GH_TOKEN).",
+      "label": "CI wall time (p95)",
+      "unit": "ms",
+      "direction": "lower",
+      "category": "Delivery",
+      "axis": "Ship",
+      "scope": "repo",
+      "description": "95th-percentile wall-clock run time — the tail a developer occasionally waits through. Repo-level (display only)."
+    },
+    "ship.ci.successRate.lastN": {
+      "value": null,
+      "status": "unavailable",
+      "reason": "No GitHub token found (set METRICS_GITHUB_TOKEN / GITHUB_TOKEN / GH_TOKEN).",
+      "label": "CI success rate",
+      "unit": "%",
+      "direction": "higher",
+      "category": "Delivery",
+      "axis": "Ship",
+      "scope": "repo",
+      "description": "Successful ÷ completed runs over the last N. Repo-level."
+    },
+    "ship.ci.flakyProxy.rate": {
+      "value": null,
+      "status": "unavailable",
+      "reason": "No GitHub token found (set METRICS_GITHUB_TOKEN / GITHUB_TOKEN / GH_TOKEN).",
+      "label": "CI instability proxy",
+      "unit": "ratio",
+      "direction": "lower",
+      "category": "Delivery",
+      "axis": "Ship",
+      "scope": "repo",
+      "description": "Share of jobs that both passed AND failed across the sampled runs. A job-level instability proxy — NOT a test-level flaky rate. Repo-level."
+    },
+    "ship.ci.artifacts.totalSize": {
+      "value": null,
+      "status": "unavailable",
+      "reason": "No GitHub token found (set METRICS_GITHUB_TOKEN / GITHUB_TOKEN / GH_TOKEN).",
+      "label": "CI artifacts (total)",
+      "unit": "kb",
+      "direction": "lower",
+      "category": "Delivery",
+      "axis": "Ship",
+      "scope": "repo",
+      "description": "Total size of non-expired workflow artifacts. Repo-level."
+    },
+    "ship.deploy.avgDuration": {
+      "value": null,
+      "status": "unavailable",
+      "reason": "No GitHub token found (set METRICS_GITHUB_TOKEN / GITHUB_TOKEN / GH_TOKEN).",
+      "label": "Deploy duration (avg)",
+      "unit": "ms",
+      "direction": "lower",
+      "category": "Delivery",
+      "axis": "Ship",
+      "scope": "repo",
+      "description": "Average deployment duration (GitHub Deployments API, else deploy-named Actions jobs). Repo-level; unavailable if neither exists."
+    },
+    "change.pr.avgChangedFiles": {
+      "value": null,
+      "status": "unavailable",
+      "reason": "No GitHub token found (set METRICS_GITHUB_TOKEN / GITHUB_TOKEN / GH_TOKEN).",
+      "label": "PR changed files (avg)",
+      "unit": "count",
+      "direction": "lower",
+      "category": "Pull requests",
+      "axis": "Change",
+      "scope": "repo",
+      "description": "Average files touched per merged PR — a proxy for change surface. Repo-level, mixes all chantiers; not a controlled per-variant scenario."
+    },
+    "change.pr.avgAdditions": {
+      "value": null,
+      "status": "unavailable",
+      "reason": "No GitHub token found (set METRICS_GITHUB_TOKEN / GITHUB_TOKEN / GH_TOKEN).",
+      "label": "PR additions (avg)",
+      "unit": "loc",
+      "direction": "lower",
+      "category": "Pull requests",
+      "axis": "Change",
+      "scope": "repo",
+      "description": "Average lines added per merged PR. Repo-level (display only)."
+    },
+    "change.pr.avgDeletions": {
+      "value": null,
+      "status": "unavailable",
+      "reason": "No GitHub token found (set METRICS_GITHUB_TOKEN / GITHUB_TOKEN / GH_TOKEN).",
+      "label": "PR deletions (avg)",
+      "unit": "loc",
+      "direction": "lower",
+      "category": "Pull requests",
+      "axis": "Change",
+      "scope": "repo",
+      "description": "Average lines deleted per merged PR. Repo-level (display only)."
+    },
+    "change.pr.avgTimeToMerge": {
+      "value": null,
+      "status": "unavailable",
+      "reason": "No GitHub token found (set METRICS_GITHUB_TOKEN / GITHUB_TOKEN / GH_TOKEN).",
+      "label": "PR time to merge (avg)",
+      "unit": "ms",
+      "direction": "lower",
+      "category": "Pull requests",
+      "axis": "Change",
+      "scope": "repo",
+      "description": "Average created→merged duration for merged PRs — a proxy for review/merge latency. Repo-level."
+    },
+    "change.pr.avgReviewCount": {
+      "value": null,
+      "status": "unavailable",
+      "reason": "No GitHub token found (set METRICS_GITHUB_TOKEN / GITHUB_TOKEN / GH_TOKEN).",
+      "label": "PR reviews (avg)",
+      "unit": "count",
+      "direction": "higher",
+      "category": "Pull requests",
+      "axis": "Change",
+      "scope": "repo",
+      "description": "Average number of reviews per merged PR. Repo-level (display only)."
+    }
+  },
+  "github": {
+    "runs": [],
+    "runsSummary": null,
+    "jobs": {
+      "queriedRuns": 0,
+      "count": 0,
+      "byName": [],
+      "slowestJob": null,
+      "heatmap": []
+    },
+    "flakyProxy": {
+      "unstableJobsCount": 0,
+      "unstableJobs": [],
+      "rate": null
+    },
+    "artifacts": {
+      "count": 0,
+      "totalSizeBytes": 0,
+      "avgSizeBytes": 0,
+      "metricsArtifactsCount": 0,
+      "dashboardArtifactsCount": 0,
+      "latest": []
+    },
+    "pullRequests": {
+      "count": 0,
+      "mergedCount": 0,
+      "detailed": 0,
+      "list": [],
+      "buckets": null
+    },
+    "deploy": {
+      "source": "unavailable",
+      "latestStatus": null,
+      "latestDurationMs": null,
+      "avgDurationMs": null,
+      "successRateLastN": null,
+      "deployments": []
+    }
+  },
+  "history": [
+    {
+      "at": "2026-07-02T15:26:34.409Z",
+      "commit": "4e748c5",
+      "totalDeliveryScore": {
+        "flow": 63.9,
+        "friction": 54,
+        "overfit": 51.8
+      },
+      "shipScore": {
+        "flow": 0,
+        "friction": 100,
+        "overfit": 7.5
+      },
+      "ciWallTimeMs": null,
+      "flowBundleGzipKb": 216.1
+    },
+    {
+      "at": "2026-07-02T15:45:07.563Z",
+      "commit": "4e748c5",
+      "totalDeliveryScore": {
+        "flow": 63.9,
+        "friction": 54,
+        "overfit": 51.8
+      },
+      "shipScore": {
+        "flow": 0,
+        "friction": 100,
+        "overfit": 7.5
+      },
+      "ciWallTimeMs": null,
+      "flowBundleGzipKb": 216.1
+    },
+    {
+      "at": "2026-07-02T16:23:04.005Z",
+      "commit": "59e363d",
+      "totalDeliveryScore": {
+        "flow": 63.9,
+        "friction": 54,
+        "overfit": 51.8
+      },
+      "shipScore": {
+        "flow": 0,
+        "friction": 100,
+        "overfit": 7.5
+      },
+      "ciWallTimeMs": null,
+      "flowBundleGzipKb": 216.1
+    },
+    {
+      "at": "2026-07-03T09:16:11.074Z",
+      "commit": "59e363d",
+      "totalDeliveryScore": {
+        "flow": 59.1,
+        "friction": 58.2,
+        "overfit": 47.8
+      },
+      "shipScore": {
+        "flow": 0,
+        "friction": 100,
+        "overfit": 7.5
+      },
+      "ciWallTimeMs": null,
+      "flowBundleGzipKb": 216.1
+    }
+  ]
 }

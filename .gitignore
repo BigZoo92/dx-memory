@@ -60,6 +60,9 @@ apps/metrics-dashboard/dist/
 .env
 .env.*
 !.env.example
+# Local-only GitHub metrics token/config (never committed; matched by .env.* above but
+# listed explicitly — see tools/metrics/README.md → GitHub API integration).
+.env.metrics.local
 
 # OS / editor
 .DS_Store

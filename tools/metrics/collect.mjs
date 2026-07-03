@@ -14,17 +14,21 @@
  *
  * Usage:  node tools/metrics/collect.mjs [--timings] [--no-history]
  */
-import { mkdirSync, writeFileSync, readFileSync } from 'node:fs'
+import { mkdirSync, writeFileSync, readFileSync, existsSync, readdirSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { buildProjectGraph } from './lib/projectgraph.mjs'
 import { guard } from './lib/metric.mjs'
+import { capture } from './lib/exec.mjs'
+import { resolveGithubConfig } from './lib/env.mjs'
 import { collectMetadata } from './collectors/metadata.mjs'
+import { collectGithub } from './collectors/github.mjs'
 import { collectArchitecture } from './collectors/architecture.mjs'
 import { collectDependencies } from './collectors/dependencies.mjs'
 import { collectGraph } from './collectors/graph.mjs'
 import { collectBundle } from './collectors/bundle.mjs'
 import { collectBuild } from './collectors/build.mjs'
+import { collectVariantCi } from './collectors/variant-ci.mjs'
 import { collectLighthouse } from './collectors/lighthouse.mjs'
 import { collectNotMeasured } from './collectors/placeholders.mjs'
 import { scoreAll } from './score.mjs'
@@ -75,6 +79,7 @@ function enrich(flat) {
       direction: c?.direction ?? 'neutral',
       category: c?.category ?? 'Other',
       axis: c?.axis ?? null,
+      scope: c?.scope ?? 'variant',
       description: c?.description ?? null
     }
   }
@@ -87,13 +92,35 @@ function countStatuses(flat) {
   return s
 }
 
-function main() {
+async function main() {
   const started = nowIso()
   log(`\n◆ SignalOps metrics — dynamic collection${withTimings ? ' (with timings)' : ''}`)
   log(`  repo: ${repoRoot}`)
 
   const projects = buildProjectGraph(repoRoot)
   log(`  workspace projects discovered: ${projects.size}`)
+
+  // --- GitHub Actions / delivery pipeline (repo-level, best-effort) ------------
+  // Resolves a token from METRICS_GITHUB_TOKEN → GITHUB_TOKEN → GH_TOKEN (else unavailable).
+  // Never throws: a missing token, rate limit, or API error degrades to `unavailable`.
+  const ghConfig = resolveGithubConfig(capture, repoRoot)
+  const variantRoots = Object.fromEntries(variantsCfg.variants.map((v) => [v.id, v.roots]))
+  let github
+  try {
+    github = await collectGithub(ghConfig, { variantRoots, now: started })
+  } catch (e) {
+    github = {
+      source: { status: 'error', repository: ghConfig.repository ?? null, reason: `github collector crashed: ${e?.message ?? e}` },
+      metrics: {},
+      raw: null
+    }
+  }
+  log(
+    `  github: ${github.source.status}` +
+      (github.source.status === 'ok'
+        ? ` · ${github.raw?.runs?.length ?? 0} runs · ${github.raw?.jobs?.byName?.length ?? 0} jobs`
+        : ` (${github.source.reason ?? 'no data'})`)
+  )
 
   const collected = []
   for (const variant of variantsCfg.variants) {
@@ -112,9 +139,11 @@ function main() {
     const bundleRes = guard('bundle', () => collectBundle(variant, repoRoot))
     const bundleMetrics = bundleRes.__error ? bundleRes : bundleRes.metrics
     const build = guard('build', () => collectBuild(variant, repoRoot, { timings: withTimings }))
+    // Variant-level CI/Docker metrics (scope:'variant') read from the CI matrix artifact, if present.
+    const variantCi = guard('variant-ci', () => collectVariantCi(variant, repoRoot))
     const lh = guard('lighthouse', () => collectLighthouse(variant, repoRoot))
 
-    const { flat, errors } = assembleMetrics(arch, deps, graphMetrics, bundleMetrics, build, lh)
+    const { flat, errors } = assembleMetrics(arch, deps, graphMetrics, bundleMetrics, build, variantCi, lh)
     const statuses = countStatuses(flat)
     log(`  metrics: ${statuses.ok} ok · ${statuses.unavailable} unavailable · ${statuses.error} error`)
     if (errors.length) log(`  collector errors: ${errors.join('; ')}`)
@@ -130,9 +159,10 @@ function main() {
     })
   }
 
-  // scoring across variants
-  const { perVariantScores, normScores, winners } = scoreAll(scoringCfg, collected)
+  // scoring across variants (repo-level GitHub metrics are shared by all three)
+  const { perVariantScores, normScores, winners } = scoreAll(scoringCfg, collected, github.metrics)
   const notMeasured = collectNotMeasured()
+  const githubMetrics = enrich(github.metrics)
 
   // write per-variant files
   mkdirSync(join(resultsDir, 'latest'), { recursive: true })
@@ -174,17 +204,23 @@ function main() {
     })),
     normScores,
     winners,
-    notMeasured
+    notMeasured,
+    // --- GitHub delivery pipeline ------------------------------------------
+    sources: { github: github.source },
+    githubMetrics, // enriched, repo-level (fed to Ship/Change scoring; tie across variants)
+    github: github.raw, // raw data for the dashboard's Actions / PR / deploy visualizations
+    history: buildHistory(resultsDir, started, collected, perVariantScores, github)
   }
   mkdirSync(join(resultsDir, 'summary'), { recursive: true })
   writeJson(join('summary', 'latest.json'), summary)
 
-  // history snapshot (immutable)
+  // history snapshot (immutable). Drop the reconstructed `history` array to keep snapshots
+  // lean (it is derived from the snapshots themselves — storing it would grow quadratically).
   if (!noHistory) {
     const stamp = `${started.replace(/[:.]/g, '-')}_${collected[0]?.meta.commitShort ?? 'nogit'}`
     const histDir = join('history', stamp)
     mkdirSync(join(resultsDir, histDir), { recursive: true })
-    writeJson(join(histDir, 'summary.json'), summary)
+    writeJson(join(histDir, 'summary.json'), { ...summary, history: undefined })
   }
 
   // headline
@@ -203,4 +239,66 @@ function writeJson(rel, data) {
   log(`  ✓ ${rel}`)
 }
 
-main()
+/**
+ * Reconstruct a compact trend series from the immutable history snapshots plus the current
+ * run. Only tiny, stable fields are pulled so it works across snapshot format versions:
+ * headline + ship scores per variant, CI wall time and Flow's gzip bundle. Missing fields
+ * degrade to null — the dashboard renders whatever exists.
+ */
+function buildHistory(resultsDir, started, collected, perVariantScores, github) {
+  const point = (generatedAt, commitShort, sum) => {
+    const variantScore = (id, group) => {
+      if (sum) {
+        const v = sum.variants?.find((x) => x.meta?.variant === id)
+        return v?.scores?.[group]?.value ?? null
+      }
+      return perVariantScores[id]?.[group]?.value ?? null
+    }
+    const ciWall = sum
+      ? sum.githubMetrics?.['ship.ci.wallTime.avg']?.value ?? null
+      : github.metrics?.['ship.ci.wallTime.avg']?.value ?? null
+    const flowBundle = sum
+      ? sum.variants?.find((v) => v.meta?.variant === 'flow')?.metrics?.bundleJsGzipKb?.value ?? null
+      : collected.find((c) => c.id === 'flow')?.metricsFlat?.bundleJsGzipKb?.value ?? null
+    return {
+      at: generatedAt,
+      commit: commitShort ?? null,
+      totalDeliveryScore: {
+        flow: variantScore('flow', 'totalDeliveryScore'),
+        friction: variantScore('friction', 'totalDeliveryScore'),
+        overfit: variantScore('overfit', 'totalDeliveryScore')
+      },
+      shipScore: {
+        flow: variantScore('flow', 'ship'),
+        friction: variantScore('friction', 'ship'),
+        overfit: variantScore('overfit', 'ship')
+      },
+      ciWallTimeMs: typeof ciWall === 'number' ? ciWall : null,
+      flowBundleGzipKb: typeof flowBundle === 'number' ? flowBundle : null
+    }
+  }
+
+  const points = []
+  const histRoot = join(resultsDir, 'history')
+  if (existsSync(histRoot)) {
+    for (const dir of readdirSync(histRoot)) {
+      const file = join(histRoot, dir, 'summary.json')
+      if (!existsSync(file)) continue
+      try {
+        const sum = JSON.parse(readFileSync(file, 'utf8'))
+        points.push(point(sum.generatedAt ?? dir, sum.commitShort, sum))
+      } catch {
+        /* skip unreadable snapshot */
+      }
+    }
+  }
+  // Add the run currently being written (not yet on disk).
+  points.push(point(started, collected[0]?.meta.commitShort))
+  points.sort((a, b) => new Date(a.at).getTime() - new Date(b.at).getTime())
+  // De-dupe by timestamp (a re-run at the same instant) and cap to a sane window.
+  const seen = new Set()
+  const deduped = points.filter((p) => (seen.has(p.at) ? false : seen.add(p.at)))
+  return deduped.slice(-50)
+}
+
+await main()

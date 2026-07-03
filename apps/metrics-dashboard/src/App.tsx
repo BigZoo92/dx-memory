@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { summary, variants, VARIANT_ORDER } from './data'
 import type { VariantId } from './types'
 import { VARIANT_COLOR, VARIANT_LABEL } from './lib/theme'
-import { TooltipHost, Reveal, SectionHead, Legend } from './components/ui'
+import { TooltipHost, Reveal, SectionHead, Legend, ScopeBadge } from './components/ui'
 import { Hero } from './components/Hero'
 import { AxisTracks } from './components/charts/AxisTracks'
 import { PositioningPlot } from './components/charts/PositioningPlot'
@@ -10,6 +10,9 @@ import { ForceGraph } from './components/charts/ForceGraph'
 import { BundleTreemap } from './components/charts/Treemap'
 import { MetricBarGroup } from './components/charts/MetricBars'
 import { MetricTable } from './components/MetricTable'
+import { GitHubActions } from './components/GitHubActions'
+import { PullRequests } from './components/PullRequests'
+import { HistoryLines } from './components/charts/HistoryLines'
 
 const NAV = [
   { id: 'overview', label: 'Overview' },
@@ -17,9 +20,13 @@ const NAV = [
   { id: 'axes', label: 'Build·Ship·Run·Change' },
   { id: 'architecture', label: 'Architecture' },
   { id: 'build', label: 'Build & CI' },
+  { id: 'docker', label: 'Docker' },
+  { id: 'ship', label: 'GitHub Actions' },
   { id: 'bundle', label: 'Bundle' },
   { id: 'runtime', label: 'Runtime & UX' },
   { id: 'sustainability', label: 'Sustainability' },
+  { id: 'pull-requests', label: 'Pull requests' },
+  { id: 'history', label: 'History' },
   { id: 'table', label: 'All metrics' }
 ]
 
@@ -164,28 +171,102 @@ export default function App() {
         <section id="build">
           <SectionHead
             kicker="Build & CI"
-            title="What it costs to compile, check and ship"
+            badge={<ScopeBadge scope="variant" />}
+            title="What it costs to compile, check and test — per variant"
             lede={
               <>
-                Build, typecheck, test and lint <i>timings</i> are opt-in (they cost minutes and need the full toolchain) so they
-                run in CI, not in the static pass — shown here honestly as “pending” rather than guessed. The deployable artifact
-                size is measured now.
+                Real per-variant wall-clock from the <b>CI matrix</b> (one job per variant): build, typecheck, lint and unit
+                tests, each measured on the same runner so the three are directly comparable. These are the numbers that
+                differentiate Flow / Friction / Overfit on delivery cost — not the shared repo pipeline below. Bars fill in once
+                the matrix has run; until then they read “pending”, never a guessed value.
+              </>
+            }
+          />
+          <div className="grid cols-2">
+            <Reveal className="card">
+              <div className="card-title" style={{ marginBottom: 16 }}>
+                CI step durations
+              </div>
+              <MetricBarGroup
+                metricKeys={[
+                  'variant.ci.build.duration',
+                  'variant.ci.typecheck.duration',
+                  'variant.ci.lint.duration',
+                  'variant.ci.test.duration'
+                ]}
+              />
+            </Reveal>
+            <Reveal className="card">
+              <div className="card-title" style={{ marginBottom: 16 }}>
+                Test suite &amp; footprint
+              </div>
+              <MetricBarGroup
+                metricKeys={['variant.ci.tests.executed', 'variant.ci.warnings.count', 'variant.ci.ramPeak.build', 'variant.ci.artifact.distSize']}
+              />
+            </Reveal>
+          </div>
+          <p className="chart-note">
+            Produced by <code className="mono">pnpm metrics:variant --variant &lt;flow|friction|overfit&gt;</code> (each writes{' '}
+            <code className="mono">tools/metrics/results/ci/&lt;variant&gt;.json</code>), then folded in by{' '}
+            <code className="mono">pnpm metrics:dynamic</code>. A failed step degrades to “pending” — its duration is never
+            counted as a good number.
+          </p>
+        </section>
+
+        {/* ------------------------------------------------------------ DOCKER ---- */}
+        <section id="docker">
+          <SectionHead
+            kicker="Containerisation"
+            badge={<ScopeBadge scope="variant" />}
+            title="What each variant costs to ship as an image"
+            lede={
+              <>
+                Real Docker numbers from the CI matrix: image size, cold <code className="mono">docker build</code> time, RootFS
+                layer count and time-to-healthy for each variant’s user-facing image. Best-effort — where Docker isn’t available
+                or a Dockerfile is missing, the metric reads “pending” rather than a faked size.
               </>
             }
           />
           <Reveal className="card">
-            <MetricBarGroup metricKeys={['buildTimeMs', 'typecheckTimeMs', 'testTimeMs', 'lintTimeMs', 'distTotalKb']} />
+            <MetricBarGroup
+              metricKeys={[
+                'variant.docker.image.size',
+                'variant.docker.build.duration',
+                'variant.docker.layers.count',
+                'variant.docker.startup.duration'
+              ]}
+            />
             <p className="chart-note">
-              Run <code className="mono">pnpm metrics:dynamic:timings</code> (or the CI job) to replace the pending build bars
-              with real wall-clock numbers.
+              Variants that ship several images (Friction, Overfit) are measured on their user-facing web image for a comparable
+              single-image signal. Startup = time from <code className="mono">docker run</code> to the container answering its
+              health endpoint.
             </p>
           </Reveal>
+        </section>
+
+        {/* -------------------------------------------------- GITHUB ACTIONS ---- */}
+        <section id="ship">
+          <SectionHead
+            kicker="Ship · delivery pipeline"
+            badge={<ScopeBadge scope="repo" />}
+            title="What it really costs to ship, read from GitHub Actions"
+            lede={
+              <>
+                Straight from the GitHub API — CI wall time, success rate, an honest job-level instability proxy, artifacts and
+                deployments. This turns the dashboard from a static photo of the repo into a read of the live delivery chain.
+                It’s <b>repo-level</b>: the three variants share one monorepo pipeline, so it enriches Ship without faking
+                per-variant differences. Tokens live only in the collector, never in this static site.
+              </>
+            }
+          />
+          <GitHubActions />
         </section>
 
         {/* ------------------------------------------------------------ BUNDLE ---- */}
         <section id="bundle">
           <SectionHead
             kicker="Frontend delivery"
+            badge={<ScopeBadge scope="variant" />}
             title="Every kilobyte the browser downloads"
             lede="Real gzip and brotli sizes, computed from each variant’s actual build output. The treemaps show chunk composition — one giant chunk means poor code-splitting; a spread means the router lazy-loads."
           />
@@ -243,6 +324,41 @@ export default function App() {
               CO₂ is a Sustainable-Web-Design order-of-magnitude estimate from transferred bytes (≈0.5 g/MB) — directional, not
               a certified figure.
             </p>
+          </Reveal>
+        </section>
+
+        {/* ----------------------------------------------------- PULL REQUESTS ---- */}
+        <section id="pull-requests">
+          <SectionHead
+            kicker="Change · pull requests"
+            badge={<ScopeBadge scope="repo" />}
+            title="The shape of merged changes"
+            lede={
+              <>
+                Change surface, additions/deletions, time-to-merge and review count from recent merged PRs — a proxy for the
+                cost of review. These are <b>repo-level</b> and mix every chantier; they’re deliberately kept separate from the
+                future human/AI change-cost scenarios, not blended into them.
+              </>
+            }
+          />
+          <PullRequests />
+        </section>
+
+        {/* ----------------------------------------------------------- HISTORY ---- */}
+        <section id="history">
+          <SectionHead
+            kicker="Trends over time"
+            title="How the numbers move between runs"
+            lede={
+              <>
+                Each collector run writes an immutable snapshot; these charts replay them — the Total Delivery Score and Ship
+                score per variant, CI wall time and Flow’s gzip bundle. The series fill in as the metrics workflow runs more
+                often.
+              </>
+            }
+          />
+          <Reveal>
+            <HistoryLines />
           </Reveal>
         </section>
 

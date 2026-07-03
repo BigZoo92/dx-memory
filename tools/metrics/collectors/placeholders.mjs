@@ -8,31 +8,8 @@ import { unavailable } from '../lib/metric.mjs'
 export function collectNotMeasured() {
   const u = (reason) => unavailable(reason)
   return {
-    docker: {
-      status: 'unavailable',
-      reason: 'Docker not run in this pass (not available in the collection sandbox).',
-      seam: 'tools/metrics/collectors/docker.mjs — time `docker build`, read image size/layers via `docker inspect`.',
-      metrics: {
-        dockerBuildTimeMs: u('Docker build not executed.'),
-        dockerImageKb: u('Docker image not built.'),
-        dockerLayers: u('Docker image not built.'),
-        containerStartMs: u('Container not started.'),
-        healthcheckOk: u('Container not started.')
-      }
-    },
-    ci: {
-      status: 'unavailable',
-      reason: 'CI provider API not queried in this pass.',
-      seam: 'tools/metrics/collectors/ci.mjs — read GITHUB_* env + GitHub Actions API for per-job timings, success/flaky rate over last 10 runs.',
-      metrics: {
-        ciWallTimeMs: u('CI API not queried.'),
-        ciJobs: u('CI API not queried.'),
-        ciSuccessRate10: u('CI API not queried.'),
-        flakyRate10: u('CI API not queried.'),
-        deployTimeMs: u('CI API not queried.'),
-        lastDeployStatus: u('CI API not queried.')
-      }
-    },
+    // Docker was a pass-1 placeholder; it is now REAL and variant-level — see the
+    // `variant.docker.*` metrics (collector: variant-ci, produced by the CI matrix).
     runtime: {
       status: 'unavailable',
       reason: 'No deployed URLs configured; live probing skipped.',

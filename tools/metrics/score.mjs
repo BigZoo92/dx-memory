@@ -43,7 +43,21 @@ function metricValue(variant, key) {
   return m && m.status === 'ok' && typeof m.value === 'number' ? m.value : null
 }
 
-export function scoreAll(config, variants) {
+/**
+ * Repo-level metrics (catalog `scope:'repo'`, e.g. the shared GitHub Actions pipeline) are
+ * identical for every variant. They are read from `repoMetrics` and applied to all three, so
+ * they tie at 100 during min-max normalization: they enrich an axis with the real delivery
+ * chain without ever faking per-variant differentiation.
+ */
+function readValue(variant, key, catalog, repoMetrics) {
+  if (catalog[key]?.scope === 'repo') {
+    const m = repoMetrics[key]
+    return m && m.status === 'ok' && typeof m.value === 'number' ? m.value : null
+  }
+  return metricValue(variant, key)
+}
+
+export function scoreAll(config, variants, repoMetrics = {}) {
   const catalog = config.metrics
   const normalizers = {}
   const normScores = {} // key -> variantId -> 0..100
@@ -52,11 +66,11 @@ export function scoreAll(config, variants) {
   for (const key of Object.keys(catalog)) {
     const dir = catalog[key].direction
     if (dir === 'neutral') continue
-    const values = variants.map((v) => metricValue(v, key))
+    const values = variants.map((v) => readValue(v, key, catalog, repoMetrics))
     const nz = makeNormalizer(values, dir, config.balanceBands?.[key])
     normalizers[key] = nz
     normScores[key] = {}
-    for (const v of variants) normScores[key][v.id] = nz(metricValue(v, key))
+    for (const v of variants) normScores[key][v.id] = nz(readValue(v, key, catalog, repoMetrics))
   }
 
   const groups = config.scoreGroups
@@ -118,10 +132,10 @@ export function scoreAll(config, variants) {
     perVariantScores[v.id] = scores
   }
 
-  // per-metric winners
+  // per-metric winners (repo-level metrics tie across variants — never crown a "winner")
   const winners = {}
   for (const key of Object.keys(catalog)) {
-    if (catalog[key].direction === 'neutral') continue
+    if (catalog[key].direction === 'neutral' || catalog[key].scope === 'repo') continue
     let best = null
     let bestScore = -1
     for (const v of variants) {

@@ -40,6 +40,10 @@ those metrics show as `pending` with the exact command to reproduce.
 
 ```
 tools/metrics/results/
+├── ci/
+│   ├── flow.json        # variant-level CI artifact (build/test/docker) — produced by the CI matrix
+│   ├── friction.json    #   or `pnpm metrics:variant --variant <id>`; read back by collectors/variant-ci
+│   └── overfit.json
 ├── latest/
 │   ├── flow.json        # full, self-describing per-variant metrics + scores
 │   ├── friction.json
@@ -72,10 +76,13 @@ Every metric entry is self-describing:
 
 ```
 collect.mjs ── orchestrates everything, writes results, prints the ranking
+├── collect-variant.mjs   CLI: run ONE variant's real CI + Docker → results/ci/<variant>.json
 ├── lib/
 │   ├── fsutil.mjs        walk + classify files (git-free, works sandboxed)
 │   ├── projectgraph.mjs  workspace graph from package.json + Cargo.toml (no `nx graph` — it times out)
-│   ├── exec.mjs          timed command runner (timings collector only)
+│   ├── exec.mjs          timed command runner (timings + variant runner)
+│   ├── variant-runner.mjs  runs a variant's build/typecheck/lint/test, parses tests/warnings/RAM, sizes dist, drives Docker
+│   ├── docker.mjs        best-effort docker build / image inspect / run+health probe
 │   └── metric.mjs        ok()/unavailable()/error() helpers, real gzip/brotli
 ├── collectors/
 │   ├── metadata.mjs      commit, branch, CI ids, environment, URLs
@@ -84,11 +91,13 @@ collect.mjs ── orchestrates everything, writes results, prints the ranking
 │   ├── graph.mjs         nodes/edges/density/fan-in-out, circular deps, central projects
 │   ├── bundle.mjs        JS/CSS/img/font sizes + REAL gzip & brotli, chunks
 │   ├── build.mjs         opt-in build/typecheck/test/lint timings
+│   ├── variant-ci.mjs    reads results/ci/<variant>.json → variant.* metrics (scope:'variant')
+│   ├── github.mjs        GitHub Actions / PR / deploy pipeline (scope:'repo')
 │   ├── lighthouse.mjs    parses .lighthouseci reports (perf, a11y, LCP, CLS, TBT, CO₂…)
-│   └── placeholders.mjs  docker/ci/runtime/axe → declared pending with wiring seam
+│   └── placeholders.mjs  runtime/axe → declared pending with wiring seam
 ├── score.mjs             normalization + score groups + headline
 └── config/
-    ├── variants.config.json   per-variant source roots, dist, docker, URLs, timing cmds
+    ├── variants.config.json   per-variant source roots, dist, URLs, timing cmds + `ci` block (commands + docker)
     └── scoring.config.json    metric catalog + weights (the single source of truth)
 ```
 
@@ -128,13 +137,16 @@ Derived scores: `build`, `ship`, `run`, `change` (axes) + `uxQuality`, `accessib
 | **Bundle** (JS/CSS raw + **real gzip/brotli**, chunk counts, largest chunk, images, fonts, dist total, top chunks) | ✅ (needs a build) |
 | **Dependencies** (direct) | ✅ · transitive = documented `unavailable` |
 | **Runtime UX** (Lighthouse perf/a11y/best-practices, LCP, CLS, TBT, Speed Index, FCP, requests, transferred, CO₂ est.) | ✅ for variants with a Lighthouse report · `pending` otherwise |
-| **Build/CI timings** (build, typecheck, test, lint) | ⏳ opt-in `--timings` |
+| **GitHub delivery pipeline** (CI wall/queue time avg·median·p95, success rate, per-job durations, job-level flaky proxy, artifacts, PR shape, deployments) — `scope:'repo'` | ✅ with a token · `unavailable` otherwise — see [GitHub API integration](#github-api-integration) |
+| **Variant-level CI** (per-variant build/typecheck/lint/test duration + peak RAM, tests executed/passed/failed/skipped, warning/error counts, dist size) — `scope:'variant'` | ✅ with a CI artifact · `pending` otherwise — see [Variant-level CI metrics](#variant-level-ci-metrics) |
+| **Variant-level Docker** (image size, build time, layer count + largest layer, startup, healthcheck) — `scope:'variant'` | ✅ best-effort with Docker · `pending` otherwise |
+| **Build/CI timings** (build, typecheck, test, lint) via the static collector | ⏳ opt-in `--timings` (superseded by the variant CI matrix for scoring) |
 
 ## Intentionally **not** measured in this pass (declared `pending`, with wiring seam)
 
-`docker` · `ci` (provider API) · `runtime` (live probing) · `frontendErrors` (Playwright) ·
+`runtime` (live probing of a deployed URL) · `frontendErrors` (Playwright) ·
 `axe` (axe-core). See [`collectors/placeholders.mjs`](collectors/placeholders.mjs) — each lists
-the exact file/approach to wire it. Also out of scope by design (pass 2, manual): human
+the exact file/approach to wire it. Also out of scope by design (manual): human
 comprehension/debug time, add-a-field scenarios, AI-task benchmarks, subjective scores.
 
 ---
@@ -149,5 +161,172 @@ comprehension/debug time, add-a-field scenarios, AI-task benchmarks, subjective 
 
 ## CI
 
-`.github/workflows/metrics.yml` runs the collector on push/PR, builds the dashboard, and
-uploads both as artifacts. The heavy `--timings` pass runs on `workflow_dispatch`.
+`.github/workflows/metrics.yml` has four jobs:
+
+- **`shared-metrics`** — socle acceptance (typecheck/test/seed metrics).
+- **`variant-metrics`** — a **matrix over `[flow, friction, overfit]`** (`fail-fast: false`): each
+  job runs that variant's real build/typecheck/lint/test + Docker probe and uploads
+  `metrics-variant-<variant>` (its `results/ci/<variant>.json`).
+- **`aggregate-metrics`** — depends on the matrix, downloads the three artifacts back into
+  `results/ci/`, runs `pnpm metrics:dynamic` (folding variant-level + repo-level GitHub
+  metrics), builds the dashboard, uploads `metrics-results` + `metrics-dashboard`.
+- **`dynamic-timings`** — the heavy `--timings` pass, on `workflow_dispatch`.
+
+The matrix is **measurement-only and non-gating**: a variant that fails records the failure in
+its JSON (read as `unavailable`) without cancelling the others — the real gates are the
+per-variant `*-ci.yml` workflows.
+
+---
+
+## Variant-level CI metrics
+
+The [GitHub API metrics](#github-api-integration) are **`scope:'repo'`**: the three variants
+share one monorepo CI pipeline, so those numbers describe the *shared* delivery chain and
+**tie across variants** (they enrich context but can't compare Flow vs Friction vs Overfit).
+
+To get numbers that *do* compare the variants, a **matrix job per variant** runs that variant's
+own commands and Docker build, and writes a self-describing artifact
+(`results/ci/<variant>.json`) that the [`variant-ci`](collectors/variant-ci.mjs) collector reads
+back as **`scope:'variant'`** metrics. Those are what the scoring uses to differentiate the
+Build and Ship axes.
+
+**Which metrics become comparable** (all `scope:'variant'`):
+
+| Group | Keys |
+|---|---|
+| Build / validation | `variant.ci.build.duration`, `variant.ci.typecheck.duration`, `variant.ci.lint.duration`, `variant.ci.test.duration`, `variant.ci.tests.{executed,passed,failed,skipped}`, `variant.ci.{warnings,errors}.count`, `variant.ci.ramPeak.{build,tests}`, `variant.ci.artifact.distSize` |
+| Docker | `variant.docker.build.duration`, `variant.docker.image.size`, `variant.docker.layers.count`, `variant.docker.layer.maxSize`, `variant.docker.startup.duration`, `variant.docker.healthcheck.{status,duration}` |
+
+The per-variant commands + Docker descriptor live in
+[`config/variants.config.json → ci`](config/variants.config.json) — the abstraction layer that
+smooths over the heterogeneous toolchains (nx, pnpm filters, next/cargo).
+
+**Run a variant collection locally** (no token needed — it just executes the scripts):
+
+```bash
+pnpm metrics:variant --variant flow          # build + typecheck + lint + test + docker probe
+pnpm metrics:variant --variant friction --no-docker   # skip the Docker steps
+pnpm metrics:variant --variant overfit --steps typecheck,lint   # only some steps
+pnpm metrics:variant:all                      # all three, sequentially
+# then fold the artifacts into the summary:
+pnpm metrics:dynamic
+```
+
+Peak-RAM numbers need GNU/BSD `/usr/bin/time`; where it's absent they read `unavailable`.
+Docker is strictly best-effort: no daemon or no Dockerfile ⇒ the Docker metrics are `pending`,
+never a faked size.
+
+**Read the artifacts** — in CI, download `metrics-variant-flow` / `-friction` / `-overfit`
+(each contains one `<variant>.json`), or after `aggregate-metrics`, the merged
+`metrics-results` (which includes `results/ci/*.json`).
+
+**Verify in the JSON:**
+
+```bash
+# the raw per-variant CI artifact
+cat tools/metrics/results/ci/flow.json | jq '.steps.build.durationMs, .docker.imageStats.sizeKb'
+
+# after metrics:dynamic — confirm it landed as a scored, variant-scoped metric
+jq '.variants[] | {v: .meta.variant, build: .metrics["variant.ci.build.duration"].value, scope: .metrics["variant.ci.build.duration"].scope}' \
+  tools/metrics/results/summary/latest.json
+
+# confirm the repo-level GitHub metrics stayed scope:'repo'
+jq '.githubMetrics["ship.ci.wallTime.avg"].scope' tools/metrics/results/summary/latest.json
+```
+
+Winners and normalization only ever compare `scope:'variant'` metrics; `scope:'repo'` metrics
+are applied identically to all three (they tie), so they never fake per-variant differentiation.
+
+---
+
+## GitHub API integration
+
+The `github` collector ([`collectors/github.mjs`](collectors/github.mjs)) reads the **real
+delivery pipeline** from the GitHub REST API and enriches the **Ship** and **Change** axes. It
+is **repo-level**: the three variants share one monorepo pipeline, so these numbers describe the
+shared delivery chain — they tie across variants when scored (never faking per-variant
+differences) and are surfaced as repo-level in the dashboard.
+
+### What it collects
+
+| Group | Metrics (raw + normalized) |
+|---|---|
+| **Workflow runs** | count, success/failure/cancelled/skipped, `successRate`, wall time latest·avg·median·p95, queue time avg, latest run status/conclusion/url |
+| **Jobs** | per-job avg·median·p95·max duration, success/failure rate, slowest job, run×job matrix |
+| **Flaky proxy** | job-level *instability* proxy — a job that both passed **and** failed across the sampled runs. **Not** a test-level flaky rate (documented as such). |
+| **Artifacts** | count, total/avg size, metrics- & dashboard-artifact counts, latest list |
+| **Pull requests** | merged count, avg/median changed files, additions/deletions, time-to-merge, review count/comments, best-effort file-path buckets (flow/friction/overfit/dashboard/config) |
+| **Deployments** | latest status, avg duration, success rate — from the Deployments API, else derived from `deploy`-named jobs (`source: deployments_api \| actions_jobs \| unavailable`) |
+
+Normalized metric keys fed to scoring: `ship.ci.wallTime.avg`, `ship.ci.wallTime.p95`,
+`ship.ci.successRate.lastN`, `ship.ci.flakyProxy.rate`, `ship.ci.artifacts.totalSize`,
+`ship.deploy.avgDuration`, `change.pr.avgChangedFiles`, `change.pr.avgAdditions`,
+`change.pr.avgDeletions`, `change.pr.avgTimeToMerge`, `change.pr.avgReviewCount`
+(all `scope: "repo"` in `scoring.config.json`). Raw data lands under `github` in
+`summary/latest.json`; the run-over-run trend lands under `history`.
+
+### Failure policy (never breaks the pipeline)
+
+- **No token** → every GitHub metric is `unavailable` with a reason; the rest of the run is
+  unaffected and the Ship/Change scores fall back to their differentiating members.
+- **Rate limit / API error / timeout** → partial data is kept, the missing pieces are
+  `unavailable`, and the collector never throws.
+- The token is used **only** inside [`lib/github-client.mjs`](lib/github-client.mjs) — it is
+  never logged, returned, or written to any results file.
+
+### Permissions
+
+The workflow declares the read-only scopes the collector needs:
+
+```yaml
+permissions:
+  contents: read
+  actions: read        # workflow runs, jobs, artifacts
+  pull-requests: read  # PR shape
+  packages: read       # not used yet — documented seam for a future GHCR image-size read
+```
+
+### Running in CI
+
+`github.token` already carries those scopes for the current repo — **no repo secret needed**.
+`metrics.yml` passes:
+
+```yaml
+env:
+  METRICS_GITHUB_TOKEN: ${{ github.token }}
+  METRICS_GITHUB_REPOSITORY: ${{ github.repository }}
+  METRICS_GITHUB_RUN_LIMIT: '20'
+  METRICS_GITHUB_PR_LIMIT: '20'
+```
+
+### Running locally
+
+Create an un-committed **`.env.metrics.local`** at the repo root (already git-ignored):
+
+```bash
+METRICS_GITHUB_TOKEN=github_pat_xxx        # fine-grained PAT, read-only Actions + PRs
+METRICS_GITHUB_REPOSITORY=owner/repo       # else derived from the git origin remote
+METRICS_GITHUB_RUN_LIMIT=20
+METRICS_GITHUB_PR_LIMIT=20
+METRICS_GITHUB_WORKFLOWS=ci.yml,metrics.yml,deploy.yml   # optional focus list
+```
+
+Then `pnpm metrics:dynamic`. Token resolution order:
+`METRICS_GITHUB_TOKEN` → `GITHUB_TOKEN` → `GH_TOKEN` → *unavailable*. Repository resolution:
+`METRICS_GITHUB_REPOSITORY` → `GITHUB_REPOSITORY` → parsed from `git remote get-url origin`.
+
+### Secrets: where they go (and don't)
+
+| Place | What |
+|---|---|
+| **Local** | `.env.metrics.local` (never committed). |
+| **GitHub Actions** | Nothing to create for the current repo — `github.token` is enough. A cross-repo read would need a PAT stored as a repo/org **secret**. |
+| **Dokploy / static host** | **Nothing.** The dashboard is a static build with the data baked in at CI time. A token must never reach the frontend, and there are no `VITE_*` token vars — the browser bundle contains only the collected JSON. |
+
+### GitHub Packages / GHCR (optional seam, not required here)
+
+`lib/env.mjs` reads `METRICS_GHCR_TOKEN` / `METRICS_GHCR_PACKAGES` but nothing depends on them
+yet. Docker image size stays computed via Docker locally/in CI (`docker image inspect`,
+`docker history`, `docker buildx imagetools inspect`). The GitHub **Packages** API needs a
+*classic* PAT with `read:packages` (fine-grained tokens don't cover it) — wire that only if a
+future pass reads GHCR image sizes.

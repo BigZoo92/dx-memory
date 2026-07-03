@@ -1,7 +1,13 @@
 name: metrics
 
-# Shared-foundation pipeline. Exercises the socle acceptance commands and publishes the
-# collected (seed, for now) DX metrics as an artifact.
+# DX-metrics pipeline. Two kinds of signal, kept honestly separate:
+#   • repo-level  — the shared GitHub Actions delivery chain (CI wall time, PRs, deploys),
+#                   read from the GitHub API by the collector. Ties across the three variants.
+#   • variant-level — real per-variant build / typecheck / lint / test / Docker cost, produced
+#                   by the `variant-metrics` matrix below (one job per variant) and aggregated.
+# The matrix is measurement-only and non-gating: a variant that fails records the failure in
+# its JSON (status: unavailable) without taking down the others. The real gates are the
+# per-variant *-ci.yml workflows.
 
 on:
   push:
@@ -10,49 +16,126 @@ on:
     branches: [main]
   workflow_dispatch:
 
+# Read-only scopes the GitHub metrics collector needs. `github.token` (passed below as
+# METRICS_GITHUB_TOKEN) is granted exactly these, so no repo secret is required.
+permissions:
+  contents: read
+  actions: read
+  pull-requests: read
+  packages: read
+
 jobs:
+  # --- socle acceptance (shared foundation) ----------------------------------
   shared-metrics:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
-      # Version is inferred from the "packageManager" field in package.json.
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
-
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: pnpm
-
       - name: Install
         run: pnpm install --frozen-lockfile
+      - name: Generate fixtures
+        run: pnpm fixtures:generate
+      - name: Typecheck shared packages
+        run: pnpm typecheck
+      - name: Test shared packages
+        run: pnpm test
+      - name: Collect metrics (seed socle pipeline)
+        run: pnpm metrics:collect
+      - name: Upload seed metrics
+        uses: actions/upload-artifact@v4
+        with:
+          name: metrics-seed
+          path: packages/metrics/results/*.json
+          if-no-files-found: warn
 
+  # --- variant-level CI matrix -----------------------------------------------
+  # One job per variant. Runs the variant's real build/typecheck/lint/test + Docker probe and
+  # writes tools/metrics/results/ci/<variant>.json, uploaded as `metrics-variant-<variant>`.
+  # fail-fast:false so one variant can't cancel the others; continue-on-error so a genuine
+  # variant failure is recorded (not raised) — the collector reads it as `unavailable`.
+  variant-metrics:
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    strategy:
+      fail-fast: false
+      matrix:
+        variant: [flow, friction, overfit]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - name: Install
+        run: pnpm install --frozen-lockfile
+      - name: Generate fixtures
+        run: pnpm fixtures:generate
+      # Docker is preinstalled on ubuntu runners; the runner probes for it and degrades to
+      # `unavailable` if absent. GNU `time` (/usr/bin/time) provides the peak-RAM numbers.
+      - name: Ensure GNU time (peak-RAM sampling)
+        run: sudo apt-get update && sudo apt-get install -y time
+        continue-on-error: true
+      - name: Collect variant-level CI metrics
+        run: pnpm metrics:variant --variant ${{ matrix.variant }}
+      - name: Upload variant metrics
+        uses: actions/upload-artifact@v4
+        with:
+          name: metrics-variant-${{ matrix.variant }}
+          path: tools/metrics/results/ci/${{ matrix.variant }}.json
+          if-no-files-found: error
+
+  # --- aggregate + build dashboard -------------------------------------------
+  # Depends on the matrix, pulls the three variant artifacts back into results/ci/, folds them
+  # (scope:'variant') plus the repo-level GitHub API metrics into the summary, builds the site.
+  aggregate-metrics:
+    needs: variant-metrics
+    if: always() # even if a variant job failed — missing artifacts just read as `unavailable`.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - name: Install
+        run: pnpm install --frozen-lockfile
       - name: Generate fixtures
         run: pnpm fixtures:generate
 
-      - name: Typecheck shared packages
-        run: pnpm typecheck
+      # Pull the per-variant CI artifacts back into tools/metrics/results/ci/.
+      - name: Download variant metrics
+        uses: actions/download-artifact@v4
+        with:
+          pattern: metrics-variant-*
+          merge-multiple: true
+          path: tools/metrics/results/ci
 
-      - name: Test shared packages
-        run: pnpm test
-
-      - name: Collect metrics (seed socle pipeline)
-        run: pnpm metrics:collect
-
-      # --- Dynamic metrics + dashboard --------------------------------------
-      # Build the three variants first so the bundle collector has real dist output to
-      # measure (best-effort: a build failure must not fail the metrics job).
-      - name: Build variants for bundle metrics (best-effort)
+      # Best-effort: build Flow so the bundle collector has real dist output to size.
+      - name: Build Flow for bundle metrics (best-effort)
         run: pnpm build:flow || true
         continue-on-error: true
 
-      - name: Collect dynamic metrics
+      - name: Collect dynamic metrics (variant-level + repo-level GitHub)
         run: pnpm metrics:dynamic
         env:
-          # commit / branch / run id are read from these automatically
           CI: 'true'
+          # github.token carries the read-only scopes declared above — no repo secret needed.
+          METRICS_GITHUB_TOKEN: ${{ github.token }}
+          METRICS_GITHUB_REPOSITORY: ${{ github.repository }}
+          METRICS_GITHUB_RUN_LIMIT: '20'
+          METRICS_GITHUB_PR_LIMIT: '20'
 
       - name: Build metrics dashboard
         run: pnpm --filter @signalops/metrics-dashboard build
@@ -62,7 +145,7 @@ jobs:
         with:
           name: metrics-results
           path: |
-            packages/metrics/results/*.json
+            tools/metrics/results/ci/*.json
             tools/metrics/results/latest/*.json
             tools/metrics/results/summary/latest.json
             tools/metrics/results/history/**
@@ -75,8 +158,8 @@ jobs:
           path: apps/metrics-dashboard/dist
           if-no-files-found: warn
 
-  # Optional: wall-clock build/test/typecheck/lint timings for all variants. Heavy, so it
-  # runs only on demand (workflow_dispatch) and writes into the same results tree.
+  # Optional: wall-clock build/test/typecheck/lint timings for all variants via the static
+  # collector's opt-in path. Heavy; on-demand only.
   dynamic-timings:
     if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest

@@ -35,6 +35,25 @@ export function scoreColor(v: number | null): string {
   return STATUS.critical
 }
 
+/** Color a GitHub Actions run/job conclusion (shared by timeline + heatmap). */
+export function conclusionColor(conclusion: string | null | undefined): string {
+  switch (conclusion) {
+    case 'success':
+      return STATUS.good
+    case 'failure':
+      return STATUS.critical
+    case 'cancelled':
+      return STATUS.serious
+    case 'skipped':
+      return STATUS.muted
+    case null:
+    case undefined:
+      return STATUS.warning // in-progress / no conclusion yet
+    default:
+      return STATUS.warning
+  }
+}
+
 export const INK = {
   primary: 'rgba(255,255,255,0.92)',
   secondary: 'rgba(255,255,255,0.64)',

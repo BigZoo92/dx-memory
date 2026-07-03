@@ -21,6 +21,8 @@
     "metrics:all": "pnpm fixtures:generate && pnpm metrics:collect",
     "metrics:dynamic": "node tools/metrics/collect.mjs",
     "metrics:dynamic:timings": "node tools/metrics/collect.mjs --timings",
+    "metrics:variant": "node tools/metrics/collect-variant.mjs",
+    "metrics:variant:all": "node tools/metrics/collect-variant.mjs --all",
     "metrics:dashboard": "pnpm --filter @signalops/metrics-dashboard dev",
     "metrics:dashboard:build": "node tools/metrics/collect.mjs --no-history && pnpm --filter @signalops/metrics-dashboard build",
     "build:flow": "nx run flow-app:build",

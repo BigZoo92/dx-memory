@@ -16,14 +16,21 @@ export function MetricTable() {
   const [sort, setSort] = useState<{ key: SortKey; dir: 1 | -1 }>({ key: 'category', dir: 1 })
   const [selected, setSelected] = useState<VariantId[]>([...VARIANT_ORDER])
 
+  // Repo-level metrics (shared GitHub pipeline) tie across variants — they belong in the
+  // GitHub / History / PR sections, not this per-variant comparison table.
+  const perVariantKeys = useMemo(
+    () => Object.keys(summary.catalog).filter((k) => summary.catalog[k].scope !== 'repo'),
+    []
+  )
+
   const categories = useMemo(() => {
     const s = new Set<string>()
-    Object.values(summary.catalog).forEach((c) => s.add(c.category))
+    perVariantKeys.forEach((k) => s.add(summary.catalog[k].category))
     return ['all', ...Array.from(s).sort()]
-  }, [])
+  }, [perVariantKeys])
 
   const rows = useMemo(() => {
-    let keys = Object.keys(summary.catalog)
+    let keys = perVariantKeys.slice()
     if (cat !== 'all') keys = keys.filter((k) => summary.catalog[k].category === cat)
     if (query.trim()) {
       const q = query.toLowerCase()
@@ -46,7 +53,7 @@ export function MetricTable() {
       return d * sort.dir
     })
     return keys
-  }, [query, cat, sort])
+  }, [query, cat, sort, perVariantKeys])
 
   const toggle = (id: VariantId) =>
     setSelected((s) => (s.includes(id) ? s.filter((x) => x !== id) : [...VARIANT_ORDER].filter((v) => s.includes(v) || v === id)))
@@ -132,7 +139,19 @@ export function MetricTable() {
                 <tr key={k}>
                   <td>
                     <div className="metric-name">
-                      <span className="n">{c.label}</span>
+                      <span className="n">
+                        {c.label}
+                        <span
+                          className="scope-tag"
+                          title={
+                            c.scope === 'repo'
+                              ? 'Repo-level: shared monorepo pipeline (ties across variants)'
+                              : 'Variant-level: measured per app (compares the three)'
+                          }
+                        >
+                          {c.scope === 'repo' ? 'repo' : 'variant'}
+                        </span>
+                      </span>
                       <span className="m" title={directionLabel(c.direction)}>
                         {directionArrow(c.direction)} {c.unit} · {directionLabel(c.direction)}
                       </span>

@@ -56,3 +56,29 @@ export function relativeTime(iso: string): string {
   const d = new Date(iso)
   return d.toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' })
 }
+
+/** A human wall-clock duration from milliseconds: "42s", "3m 12s", "1h 04m". */
+export function formatDuration(ms: number | null | undefined): string {
+  if (ms == null || !Number.isFinite(ms)) return '—'
+  const s = Math.round(ms / 1000)
+  if (s < 60) return `${s}s`
+  const m = Math.floor(s / 60)
+  const rem = s % 60
+  if (m < 60) return `${m}m ${String(rem).padStart(2, '0')}s`
+  const h = Math.floor(m / 60)
+  return `${h}h ${String(m % 60).padStart(2, '0')}m`
+}
+
+/** Bytes → compact "1.2 MB" / "340 KB" / "512 B". */
+export function formatBytes(bytes: number | null | undefined): string {
+  if (bytes == null || !Number.isFinite(bytes)) return '—'
+  if (bytes >= 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
+  if (bytes >= 1024) return `${(bytes / 1024).toFixed(0)} KB`
+  return `${bytes} B`
+}
+
+/** Short, calendar-relative timestamp: "Jul 2, 14:32". */
+export function shortTime(iso: string): string {
+  const d = new Date(iso)
+  return d.toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
+}
