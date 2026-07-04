@@ -252,6 +252,9 @@ export async function collectGithub(config, { variantRoots = {}, now } = {}) {
   raw.jobs = {
     queriedRuns: jobsQueried,
     count: jobRecords.length,
+    // Flat per-job records (with runId) so downstream per-variant collectors can join jobs→runs
+    // and attribute real cached feedback time to a specific variant workflow's quality job(s).
+    records: jobRecords,
     byName: jobsByName,
     slowestJob: slowest ? { name: slowest.name, durationMs: slowest.avgDurationMs } : null,
     avgDurationMs: round(avg(jobRecords.map((j) => j.durationMs))),

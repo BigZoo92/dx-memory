@@ -140,7 +140,7 @@ async function main() {
     const bundleMetrics = bundleRes.__error ? bundleRes : bundleRes.metrics
     const build = guard('build', () => collectBuild(variant, repoRoot, { timings: withTimings }))
     // Variant-level CI/Docker metrics (scope:'variant') read from the CI matrix artifact, if present.
-    const variantCi = guard('variant-ci', () => collectVariantCi(variant, repoRoot))
+    const variantCi = guard('variant-ci', () => collectVariantCi(variant, repoRoot, github.raw))
     const lh = guard('lighthouse', () => collectLighthouse(variant, repoRoot))
 
     const { flat, errors } = assembleMetrics(arch, deps, graphMetrics, bundleMetrics, build, variantCi, lh)

@@ -35,14 +35,75 @@ export const VARIANT_CI_KEYS = [
   'variant.docker.layer.maxSize',
   'variant.docker.startup.duration',
   'variant.docker.healthcheck.status',
-  'variant.docker.healthcheck.duration'
+  'variant.docker.healthcheck.duration',
+  'variant.ci.feedback.duration',
+  'variant.ci.feedback.samples'
 ]
+
+/**
+ * Real cached CI feedback (scope:variant, OBSERVATIONAL — not scored).
+ *
+ * The mean wall-clock duration of the variant's OWN *-ci.yml quality job(s) on GitHub Actions,
+ * with that variant's real cache strategy in play. Sourced from the github collector's raw
+ * runs+jobs (started_at→completed_at of the named quality job(s)); side jobs (Flow's a11y,
+ * Overfit's warm-cache) are excluded by the `qualityJobs` allow-list in variants.config.json.
+ *
+ * Honesty: `unavailable` with a precise reason whenever the real signal does not (yet) exist —
+ * no token, no completed run of that workflow, or jobs not sampled. Never fabricated.
+ */
+export function computeFeedback(variant, githubRaw) {
+  const cfg = variant?.ci?.feedback
+  const none = (reason) => ({
+    'variant.ci.feedback.duration': unavailable(reason),
+    'variant.ci.feedback.samples': unavailable(reason)
+  })
+  if (!cfg?.workflow || !Array.isArray(cfg.qualityJobs) || cfg.qualityJobs.length === 0) {
+    return none('No ci.feedback descriptor for this variant in variants.config.json.')
+  }
+  if (!githubRaw?.runs?.length) {
+    return none('No GitHub Actions data (no token, or no workflow runs) — real CI feedback requires a completed run.')
+  }
+  // Map run id → workflow file, keeping only completed runs of THIS variant's workflow.
+  const wf = cfg.workflow.toLowerCase()
+  const runIds = new Set(
+    githubRaw.runs
+      .filter((r) => (r.workflow || '').toLowerCase() === wf && r.status === 'completed')
+      .map((r) => r.id)
+  )
+  if (runIds.size === 0) {
+    return none(`No completed run of ${cfg.workflow} found yet — pending a real GitHub Actions run.`)
+  }
+  const jobRecords = githubRaw.jobs?.records ?? []
+  if (jobRecords.length === 0) {
+    return none('GitHub jobs were not sampled (API budget/rate limit) — cannot attribute feedback time.')
+  }
+  const wanted = new Set(cfg.qualityJobs)
+  const durations = jobRecords
+    .filter((j) => runIds.has(j.runId) && wanted.has(j.name) && typeof j.durationMs === 'number' && j.durationMs >= 0)
+    .map((j) => j.durationMs)
+  if (durations.length === 0) {
+    return none(`No sampled ${cfg.workflow} quality job (${cfg.qualityJobs.join('/')}) with a duration yet.`)
+  }
+  const avg = Math.round(durations.reduce((a, b) => a + b, 0) / durations.length)
+  return {
+    'variant.ci.feedback.duration': ok(avg, { workflow: cfg.workflow, qualityJobs: cfg.qualityJobs, samples: durations.length }),
+    'variant.ci.feedback.samples': ok(durations.length, {})
+  }
+}
 
 function allUnavailable(reason) {
   return Object.fromEntries(VARIANT_CI_KEYS.map((k) => [k, unavailable(reason)]))
 }
 
-export function collectVariantCi(variant, repoRoot) {
+/**
+ * Public entry: cold artifact metrics (local CI matrix JSON) overlaid with the real cached
+ * feedback metric (GitHub Actions). `githubRaw` is the github collector's raw output, or null.
+ */
+export function collectVariantCi(variant, repoRoot, githubRaw = null) {
+  return { ...collectArtifactCi(variant, repoRoot), ...computeFeedback(variant, githubRaw) }
+}
+
+function collectArtifactCi(variant, repoRoot) {
   const file = join(repoRoot, 'tools', 'metrics', 'results', 'ci', `${variant.id}.json`)
   if (!existsSync(file)) {
     return allUnavailable(

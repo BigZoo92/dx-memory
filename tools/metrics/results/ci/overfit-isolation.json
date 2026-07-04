@@ -1,7 +1,7 @@
 {
   "variant": "overfit",
   "manifestVersion": "1.0.0",
-  "generatedAt": "2026-07-04T14:49:49.210Z",
+  "generatedAt": "2026-07-04T15:33:23.159Z",
   "roots": [
     "overfit-web",
     "overfit-api"

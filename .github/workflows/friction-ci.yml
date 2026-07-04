@@ -71,8 +71,12 @@ jobs:
       - name: Build (frontend)
         run: pnpm --filter @signalops/friction-web build
 
+      # Docker is a ship-time gate: main-only, like Flow and Overfit, so PR feedback stays
+      # trigger-comparable across the three variants (PR = format/lint/typecheck/test/build only).
       - name: Docker build (api)
+        if: github.event_name == 'push'
         run: docker build -f apps/friction-api/Dockerfile -t signalops-friction-api:ci .
 
       - name: Docker build (web)
+        if: github.event_name == 'push'
         run: docker build -f apps/friction-web/Dockerfile -t signalops-friction-web:ci .

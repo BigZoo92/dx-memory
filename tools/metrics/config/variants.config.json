@@ -35,6 +35,11 @@
           "image": "signalops-metrics-flow:ci",
           "port": 3000,
           "healthPath": "/api/health"
+        },
+        "feedback": {
+          "$comment": "Real cached CI feedback source: the quality job(s) of flow-ci.yml on GitHub Actions. Excludes the advisory a11y job.",
+          "workflow": "flow-ci.yml",
+          "qualityJobs": ["affected", "main"]
         }
       }
     },
@@ -72,6 +77,11 @@
           "image": "signalops-metrics-friction-web:ci",
           "port": 3100,
           "healthPath": "/"
+        },
+        "feedback": {
+          "$comment": "Real cached CI feedback source: the single quality job of friction-ci.yml on GitHub Actions.",
+          "workflow": "friction-ci.yml",
+          "qualityJobs": ["friction"]
         }
       }
     },
@@ -110,6 +120,11 @@
           "image": "signalops-metrics-overfit-web:ci",
           "port": 3300,
           "healthPath": "/"
+        },
+        "feedback": {
+          "$comment": "Real cached CI feedback source: the quality job (gate) of overfit-ci.yml on GitHub Actions. Excludes the warm-cache priming job.",
+          "workflow": "overfit-ci.yml",
+          "qualityJobs": ["gate"]
         }
       }
     }

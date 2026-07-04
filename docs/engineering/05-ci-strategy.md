@@ -48,6 +48,21 @@ Selection is by tag selector, verified against the real graph closure:
   sophisticated — materializes the graph, proves `closure == scope:overfit`, detects any
   foreign-scope node or cross-variant edge, emits `overfit-isolation.json`).
 
+### Isolation is enforced on EVERY blocking step, not just the Nx commands
+
+Two subtle traps were fixed here:
+
+1. **`nx affected` ignores `--projects`.** In Nx 20.8.4, `nx affected -t … --projects=tag:…` silently
+   drops the filter and runs *all* affected projects (incl. other variants). The correct tag filter
+   for `affected` is `--exclude='*,!tag:scope:flow,!tag:scope:shared'`, which yields
+   `affected ∩ (scope:flow ∪ scope:shared)`. (`nx run-many` *does* honor `--projects`.)
+2. **`audit:flow:knip` must be Flow-scoped too.** `knip.flow.json` originally analyzed the whole
+   root workspace, so dead code in `apps/metrics-dashboard`, `tools/metrics` and `infra/gateway`
+   (none in Flow's closure) failed Flow CI. It now ignores the non-Flow workspaces and scopes the
+   root workspace to `scripts/flow/**`. A dead export in metrics-dashboard can no longer fail Flow.
+
+The rule: a `flow:*` / `audit:flow:*` command must audit **Flow**, not "the whole repo from Flow's CI".
+
 ## Parity of quality gates
 
 All three variant CIs run the **same five gate categories** so the CI signal is comparable, even
@@ -65,6 +80,26 @@ Durations, project counts and test counts differ by design — that difference i
 lab. The **structure** of the signal is what stays constant. Variant-level measurement (build /
 typecheck / lint / test cost + Docker probe) is owned by `metrics.yml`'s matrix and is comparable
 across all three (see `tools/metrics/config/variants.config.json`).
+
+### Common protocol vs variant-specific practices, and trigger parity
+
+The **common experimental protocol** (compared across variants, and the only thing folded into the
+scored `variant.ci.*` metrics) is: **format · lint · typecheck · test · build**. Everything else is
+a **variant-specific engineering practice**, clearly labelled as such and NOT part of the compared
+cold metric:
+
+- Flow: knip (dead-code) · dependency-cruiser boundaries · madge cycles · AI-PR governance · a11y (advisory).
+- Friction: none beyond the common protocol (its cost story is the tangle, not extra gates).
+- Overfit: contract-determinism · schema/docs/policy/bundle quality gates · graph-closure isolation proof · Rust `cargo fmt`/`clippy`/`test`/`build`.
+
+**Trigger parity.** Per trigger, the common protocol is identical across variants:
+
+- **Pull request:** format/lint/typecheck/test/build for all three (Flow via `nx affected ∩ flow`, Friction/Overfit full). No Docker on PR for any variant.
+- **Push to main:** the same five gates + a Docker build for all three.
+
+Docker is a `main`-only ship-time gate for **all three** variants (Flow already did this; Friction
+and Overfit were building images on every PR — that asymmetry was removed so PR feedback stays
+trigger-comparable).
 
 ## Cache strategy — two philosophies, on purpose
 
@@ -102,13 +137,29 @@ reach excellent build performance — but the number of moving parts to understa
 objectively far higher than Flow's two blocks. Compare `overfit-ci.yml` to `flow-ci.yml` to see the
 cost. See `tools/overfit-ci/README.md` for the full restoration cascade.
 
-## Measurement fairness
+## Measurement fairness — two distinct duration metrics
 
-The variant workflows run on the same runner type, Node version and pnpm version. Variant-level build
-/ typecheck / lint / test durations are measured **cold** (`--skip-nx-cache`) by `metrics.yml` so
-they reflect intrinsic per-variant cost, independent of CI caching. The *cache effect* shows in the
-repo-level CI wall-time signal (GitHub API), which is exactly where Flow's pragmatic cache and
-Overfit's excessive cache are meant to differ. No duration is ever mocked or hard-coded.
+There are two, deliberately separate, duration signals. Confusing them would bias the lab.
+
+1. **Cold validation duration** (`variant.ci.*.duration`, scope:variant, **scored**). Measured by
+   `metrics.yml`'s matrix with the build cache **disabled** (Flow `--skip-nx-cache`; Friction/Overfit
+   run pnpm/cargo/next outside the Nx cache). This is the *intrinsic* cost of the validation protocol,
+   cache-immune and directly comparable across variants. Labelled "… (cold)" with the cache-disabled
+   nature stated in every description — it is **not** the real CI feedback time.
+
+2. **Real CI feedback duration** (`variant.ci.feedback.duration`, scope:variant, **observational —
+   not scored**). The mean wall-clock time of the variant's own `*-ci.yml` **quality job(s)** on
+   GitHub Actions (`started_at → completed_at`), *with* that variant's real cache strategy in play
+   (Flow: pnpm+Nx; Overfit: 6-layer + BuildKit; Friction: pnpm store only). Side jobs are excluded
+   (Flow's `a11y`, Overfit's `warm-cache`) via the `qualityJobs` allow-list in `variants.config.json`.
+   Sourced purely from the GitHub Actions runs/jobs API — never a local stopwatch. It is `unavailable`
+   (with a precise reason) until a completed real run of that workflow exists, and is **not folded
+   into any score** so it can never advantage a variant.
+
+The pair answers the lab's core question: *how much cache complexity buys how much feedback speed?*
+Cold (1) is the protocol cost; feedback (2) is what the developer actually waits for. The
+repo-level `ship.ci.wallTime.avg` (GitHub, scope:repo) remains the shared-pipeline signal and ties
+across variants. No duration is ever mocked or hard-coded.
 
 Non-automated metrics (error reproduction steps, docs pages needed) are logged by hand in
 [`docs/results-log.md`](../results-log.md).

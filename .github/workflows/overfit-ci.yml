@@ -246,10 +246,13 @@ jobs:
         run: cargo build -p overfit-api --release
 
       # ---- Docker: two images, two dedicated BuildKit GHA cache scopes ----------------------
+      # main-only ship-time gate (like Flow and Friction) so PR feedback stays trigger-comparable.
       - name: Setup Docker Buildx
+        if: github.event_name == 'push'
         uses: docker/setup-buildx-action@v3
 
       - name: Docker build (web) - scope overfit-web
+        if: github.event_name == 'push'
         uses: docker/build-push-action@v6
         with:
           context: .
@@ -260,6 +263,7 @@ jobs:
           cache-to: type=gha,scope=overfit-web,mode=max
 
       - name: Docker build (api) - scope overfit-api
+        if: github.event_name == 'push'
         uses: docker/build-push-action@v6
         with:
           context: .

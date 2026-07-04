@@ -6,10 +6,10 @@
     "thesis": "Technically impressive, dangerously expensive — over-engineered past its payoff.",
     "stack": "Next.js · Rust/Axum · CQRS · 17 crates + 14 packages",
     "accent": "#a98bff",
-    "commit": "59e363d1a5a85fe22721f3d1a5b1913d55ac8b09",
-    "commitShort": "59e363d",
+    "commit": "a1fc6c986bfc0151d3779957557dcdd88107ae0d",
+    "commitShort": "a1fc6c9",
     "branch": "main",
-    "timestamp": "2026-07-03T09:16:11.074Z",
+    "timestamp": "2026-07-04T15:32:10.008Z",
     "ciPipelineId": null,
     "ciRunNumber": null,
     "environment": "local",
@@ -40,7 +40,7 @@
       "description": "Number of configuration files (json/yaml/toml/rc/*.config.*)."
     },
     "locTotal": {
-      "value": 7320,
+      "value": 7632,
       "status": "ok",
       "label": "Total LOC",
       "unit": "loc",
@@ -51,7 +51,7 @@
       "description": "Non-empty lines of source code. Scored on balance — too little means missing structure, too much means bloat."
     },
     "locFrontend": {
-      "value": 3044,
+      "value": 3356,
       "status": "ok",
       "label": "Frontend LOC",
       "unit": "loc",
@@ -73,7 +73,7 @@
       "description": "Lines of back-end / server code (heuristic classification, includes Rust)."
     },
     "locTests": {
-      "value": 231,
+      "value": 247,
       "status": "ok",
       "label": "Test LOC",
       "unit": "loc",
@@ -139,7 +139,7 @@
       "description": "eslint-disable / oxlint-disable / @ts-ignore / @ts-expect-error directives."
     },
     "avgComplexity": {
-      "value": 1.62,
+      "value": 1.63,
       "status": "ok",
       "label": "Avg cyclomatic complexity",
       "unit": "index",
@@ -172,7 +172,7 @@
       "description": "Functions whose cyclomatic complexity exceeds 10."
     },
     "filesOverSize": {
-      "value": 3,
+      "value": 4,
       "status": "ok",
       "label": "Files over 300 LOC",
       "unit": "count",
@@ -183,7 +183,7 @@
       "description": "Source files longer than 300 lines."
     },
     "businessRatio": {
-      "value": 0.564,
+      "value": 0.547,
       "status": "ok",
       "label": "Business/boilerplate ratio",
       "unit": "ratio",
@@ -316,7 +316,7 @@
       "description": "Import cycles between the variant's own projects (detected from workspace manifests)."
     },
     "bundleJsKb": {
-      "value": 686.6,
+      "value": 687.3,
       "status": "ok",
       "label": "JS bundle (raw)",
       "unit": "kb",
@@ -327,7 +327,7 @@
       "description": "Total uncompressed JavaScript shipped to the browser."
     },
     "bundleJsGzipKb": {
-      "value": 206.5,
+      "value": 206.8,
       "status": "ok",
       "label": "JS bundle (gzip)",
       "unit": "kb",
@@ -338,7 +338,7 @@
       "description": "Gzip-compressed JavaScript — the closest proxy to what users download."
     },
     "bundleJsBrotliKb": {
-      "value": 179.3,
+      "value": 179.5,
       "status": "ok",
       "label": "JS bundle (brotli)",
       "unit": "kb",
@@ -426,7 +426,7 @@
       "description": "Total font weight in the build output."
     },
     "distTotalKb": {
-      "value": 703.6,
+      "value": 704.4,
       "status": "ok",
       "label": "Build artifact",
       "unit": "kb",
@@ -488,49 +488,49 @@
       "value": null,
       "status": "unavailable",
       "reason": "No CI artifact — run `pnpm metrics:variant --variant overfit` (or the CI matrix job) to produce tools/metrics/results/ci/overfit.json.",
-      "label": "Variant build time",
+      "label": "Variant build time (cold)",
       "unit": "ms",
       "direction": "lower",
-      "category": "Build CI",
+      "category": "Cold validation",
       "axis": "Build",
       "scope": "variant",
-      "description": "Wall-clock cold build of this variant's app(s), measured in the per-variant CI job."
+      "description": "Cache-DISABLED cold build of this variant's app(s) (Flow: nx --skip-nx-cache; Friction/Overfit: pnpm/cargo/next). Intrinsic build cost, independent of CI cache strategy. NOT the real cached CI feedback time."
     },
     "variant.ci.typecheck.duration": {
       "value": null,
       "status": "unavailable",
       "reason": "No CI artifact — run `pnpm metrics:variant --variant overfit` (or the CI matrix job) to produce tools/metrics/results/ci/overfit.json.",
-      "label": "Variant typecheck time",
+      "label": "Variant typecheck time (cold)",
       "unit": "ms",
       "direction": "lower",
-      "category": "Build CI",
+      "category": "Cold validation",
       "axis": "Build",
       "scope": "variant",
-      "description": "Wall-clock typecheck of this variant, from the per-variant CI job."
+      "description": "Cache-disabled cold typecheck of this variant. Intrinsic cost, cache-immune."
     },
     "variant.ci.lint.duration": {
       "value": null,
       "status": "unavailable",
       "reason": "No CI artifact — run `pnpm metrics:variant --variant overfit` (or the CI matrix job) to produce tools/metrics/results/ci/overfit.json.",
-      "label": "Variant lint time",
+      "label": "Variant lint time (cold)",
       "unit": "ms",
       "direction": "lower",
-      "category": "Build CI",
+      "category": "Cold validation",
       "axis": "Build",
       "scope": "variant",
-      "description": "Wall-clock lint / boundary check of this variant, from the per-variant CI job."
+      "description": "Cache-disabled cold lint / boundary check of this variant. Intrinsic cost, cache-immune."
     },
     "variant.ci.test.duration": {
       "value": null,
       "status": "unavailable",
       "reason": "No CI artifact — run `pnpm metrics:variant --variant overfit` (or the CI matrix job) to produce tools/metrics/results/ci/overfit.json.",
-      "label": "Variant test time",
+      "label": "Variant test time (cold)",
       "unit": "ms",
       "direction": "lower",
-      "category": "Build CI",
+      "category": "Cold validation",
       "axis": "Build",
       "scope": "variant",
-      "description": "Wall-clock unit-test run of this variant (vitest), from the per-variant CI job."
+      "description": "Cache-disabled cold unit-test run of this variant (vitest). Intrinsic cost, cache-immune."
     },
     "variant.ci.tests.executed": {
       "value": null,
@@ -723,6 +723,30 @@
       "axis": "Ship",
       "scope": "variant",
       "description": "Latency of the first successful health request once the container is up. Informational."
+    },
+    "variant.ci.feedback.duration": {
+      "value": null,
+      "status": "unavailable",
+      "reason": "No GitHub Actions data (no token, or no workflow runs) — real CI feedback requires a completed run.",
+      "label": "Real CI feedback (cached)",
+      "unit": "ms",
+      "direction": "lower",
+      "category": "CI feedback",
+      "axis": null,
+      "scope": "variant",
+      "description": "Mean wall-clock duration of this variant's own *-ci.yml quality job(s) on GitHub Actions, with its real cache strategy. Observational only (not scored). `unavailable` with a reason until a completed real run exists."
+    },
+    "variant.ci.feedback.samples": {
+      "value": null,
+      "status": "unavailable",
+      "reason": "No GitHub Actions data (no token, or no workflow runs) — real CI feedback requires a completed run.",
+      "label": "CI feedback samples",
+      "unit": "count",
+      "direction": "neutral",
+      "category": "CI feedback",
+      "axis": null,
+      "scope": "variant",
+      "description": "Number of completed workflow runs the feedback duration was averaged over. Informational."
     },
     "lighthousePerformance": {
       "value": null,
@@ -1400,7 +1424,7 @@
       "gzipKb": 69.3
     },
     {
-      "name": "3gc31oy8dthgo.js",
+      "name": "3-ym8m_b13wvp.js",
       "kb": 138.3,
       "gzipKb": 37.7
     },
@@ -1420,9 +1444,9 @@
       "gzipKb": 10.8
     },
     {
-      "name": "0smnfto7r66oi.js",
-      "kb": 24.9,
-      "gzipKb": 8.6
+      "name": "0m9a5y-jnrnem.js",
+      "kb": 25.2,
+      "gzipKb": 8.8
     },
     {
       "name": "296g9q5ul_fii.js",
@@ -1430,7 +1454,7 @@
       "gzipKb": 7.3
     },
     {
-      "name": "turbopack-0posvhwsnacx7.js",
+      "name": "turbopack-3r3xz_45qiwbg.js",
       "kb": 10.3,
       "gzipKb": 4.1
     },
@@ -1440,8 +1464,8 @@
       "gzipKb": 2.9
     },
     {
-      "name": "38qp74o3iy7j3.js",
-      "kb": 8.5,
+      "name": "2yike4nol0d_7.js",
+      "kb": 8.6,
       "gzipKb": 2.8
     },
     {
@@ -1450,7 +1474,7 @@
       "gzipKb": 2
     },
     {
-      "name": "0y04r_9zvh77e.js",
+      "name": "00bw_cecfujs1.js",
       "kb": 6,
       "gzipKb": 1.9
     }
@@ -1467,7 +1491,7 @@
     },
     "ship": {
       "kind": "axis",
-      "value": 7.5,
+      "value": 7.3,
       "coverage": "2/10",
       "coverageFrac": 0.44,
       "complete": false,
@@ -1484,7 +1508,7 @@
     },
     "change": {
       "kind": "axis",
-      "value": 59.9,
+      "value": 57.4,
       "coverage": "9/11",
       "coverageFrac": 0.93,
       "complete": false,
@@ -1511,7 +1535,7 @@
     "sustainability": {
       "label": "Sustainability",
       "kind": "derived",
-      "value": 7.1,
+      "value": 6.9,
       "coverage": "1/4",
       "coverageFrac": 0.2,
       "complete": false,
@@ -1529,7 +1553,7 @@
     "totalDeliveryScore": {
       "label": "Total Delivery Score",
       "kind": "headline",
-      "value": 47.8,
+      "value": 45.8,
       "method": "weighted-mean-over-measured-axes",
       "axesUsed": [
         "Ship",
@@ -1539,7 +1563,7 @@
   },
   "statuses": {
     "ok": 37,
-    "unavailable": 36,
+    "unavailable": 38,
     "error": 0
   },
   "collectorErrors": [],

@@ -6,10 +6,10 @@
     "thesis": "Locally fast, globally expensive — fewer parts, tangled and harder to trust.",
     "stack": "Vite · React · Express-style API · TypeScript",
     "accent": "#ff7a5c",
-    "commit": "59e363d1a5a85fe22721f3d1a5b1913d55ac8b09",
-    "commitShort": "59e363d",
+    "commit": "a1fc6c986bfc0151d3779957557dcdd88107ae0d",
+    "commitShort": "a1fc6c9",
     "branch": "main",
-    "timestamp": "2026-07-03T09:16:11.074Z",
+    "timestamp": "2026-07-04T15:32:10.008Z",
     "ciPipelineId": null,
     "ciRunNumber": null,
     "environment": "local",
@@ -40,7 +40,7 @@
       "description": "Number of configuration files (json/yaml/toml/rc/*.config.*)."
     },
     "locTotal": {
-      "value": 3862,
+      "value": 3864,
       "status": "ok",
       "label": "Total LOC",
       "unit": "loc",
@@ -51,7 +51,7 @@
       "description": "Non-empty lines of source code. Scored on balance — too little means missing structure, too much means bloat."
     },
     "locFrontend": {
-      "value": 2747,
+      "value": 2749,
       "status": "ok",
       "label": "Frontend LOC",
       "unit": "loc",
@@ -139,7 +139,7 @@
       "description": "eslint-disable / oxlint-disable / @ts-ignore / @ts-expect-error directives."
     },
     "avgComplexity": {
-      "value": 2.21,
+      "value": 2.22,
       "status": "ok",
       "label": "Avg cyclomatic complexity",
       "unit": "index",
@@ -183,7 +183,7 @@
       "description": "Source files longer than 300 lines."
     },
     "businessRatio": {
-      "value": 0.934,
+      "value": 0.932,
       "status": "ok",
       "label": "Business/boilerplate ratio",
       "unit": "ratio",
@@ -338,7 +338,7 @@
       "description": "Gzip-compressed JavaScript — the closest proxy to what users download."
     },
     "bundleJsBrotliKb": {
-      "value": 69.3,
+      "value": 69.4,
       "status": "ok",
       "label": "JS bundle (brotli)",
       "unit": "kb",
@@ -488,49 +488,49 @@
       "value": null,
       "status": "unavailable",
       "reason": "No CI artifact — run `pnpm metrics:variant --variant friction` (or the CI matrix job) to produce tools/metrics/results/ci/friction.json.",
-      "label": "Variant build time",
+      "label": "Variant build time (cold)",
       "unit": "ms",
       "direction": "lower",
-      "category": "Build CI",
+      "category": "Cold validation",
       "axis": "Build",
       "scope": "variant",
-      "description": "Wall-clock cold build of this variant's app(s), measured in the per-variant CI job."
+      "description": "Cache-DISABLED cold build of this variant's app(s) (Flow: nx --skip-nx-cache; Friction/Overfit: pnpm/cargo/next). Intrinsic build cost, independent of CI cache strategy. NOT the real cached CI feedback time."
     },
     "variant.ci.typecheck.duration": {
       "value": null,
       "status": "unavailable",
       "reason": "No CI artifact — run `pnpm metrics:variant --variant friction` (or the CI matrix job) to produce tools/metrics/results/ci/friction.json.",
-      "label": "Variant typecheck time",
+      "label": "Variant typecheck time (cold)",
       "unit": "ms",
       "direction": "lower",
-      "category": "Build CI",
+      "category": "Cold validation",
       "axis": "Build",
       "scope": "variant",
-      "description": "Wall-clock typecheck of this variant, from the per-variant CI job."
+      "description": "Cache-disabled cold typecheck of this variant. Intrinsic cost, cache-immune."
     },
     "variant.ci.lint.duration": {
       "value": null,
       "status": "unavailable",
       "reason": "No CI artifact — run `pnpm metrics:variant --variant friction` (or the CI matrix job) to produce tools/metrics/results/ci/friction.json.",
-      "label": "Variant lint time",
+      "label": "Variant lint time (cold)",
       "unit": "ms",
       "direction": "lower",
-      "category": "Build CI",
+      "category": "Cold validation",
       "axis": "Build",
       "scope": "variant",
-      "description": "Wall-clock lint / boundary check of this variant, from the per-variant CI job."
+      "description": "Cache-disabled cold lint / boundary check of this variant. Intrinsic cost, cache-immune."
     },
     "variant.ci.test.duration": {
       "value": null,
       "status": "unavailable",
       "reason": "No CI artifact — run `pnpm metrics:variant --variant friction` (or the CI matrix job) to produce tools/metrics/results/ci/friction.json.",
-      "label": "Variant test time",
+      "label": "Variant test time (cold)",
       "unit": "ms",
       "direction": "lower",
-      "category": "Build CI",
+      "category": "Cold validation",
       "axis": "Build",
       "scope": "variant",
-      "description": "Wall-clock unit-test run of this variant (vitest), from the per-variant CI job."
+      "description": "Cache-disabled cold unit-test run of this variant (vitest). Intrinsic cost, cache-immune."
     },
     "variant.ci.tests.executed": {
       "value": null,
@@ -724,6 +724,30 @@
       "scope": "variant",
       "description": "Latency of the first successful health request once the container is up. Informational."
     },
+    "variant.ci.feedback.duration": {
+      "value": null,
+      "status": "unavailable",
+      "reason": "No GitHub Actions data (no token, or no workflow runs) — real CI feedback requires a completed run.",
+      "label": "Real CI feedback (cached)",
+      "unit": "ms",
+      "direction": "lower",
+      "category": "CI feedback",
+      "axis": null,
+      "scope": "variant",
+      "description": "Mean wall-clock duration of this variant's own *-ci.yml quality job(s) on GitHub Actions, with its real cache strategy. Observational only (not scored). `unavailable` with a reason until a completed real run exists."
+    },
+    "variant.ci.feedback.samples": {
+      "value": null,
+      "status": "unavailable",
+      "reason": "No GitHub Actions data (no token, or no workflow runs) — real CI feedback requires a completed run.",
+      "label": "CI feedback samples",
+      "unit": "count",
+      "direction": "neutral",
+      "category": "CI feedback",
+      "axis": null,
+      "scope": "variant",
+      "description": "Number of completed workflow runs the feedback duration was averaged over. Informational."
+    },
     "lighthousePerformance": {
       "value": null,
       "status": "unavailable",
@@ -894,7 +918,7 @@
   },
   "topChunks": [
     {
-      "name": "index-DlQi7mwI.js",
+      "name": "index-CJ5nwtca.js",
       "kb": 264.8,
       "gzipKb": 80.1
     }
@@ -983,7 +1007,7 @@
   },
   "statuses": {
     "ok": 37,
-    "unavailable": 36,
+    "unavailable": 38,
     "error": 0
   },
   "collectorErrors": [],

@@ -7,6 +7,8 @@
     "apps/friction-web",
     "apps/overfit-api",
     "apps/overfit-web",
+    "apps/metrics-dashboard",
+    "apps/lab-web",
     "packages/overfit/*",
     "packages/contracts",
     "packages/fixtures",
@@ -17,7 +19,9 @@
   "workspaces": {
     ".": {
       "nx": false,
-      "ignore": ["packages/overfit/**", "maquettes/**"],
+      "entry": ["scripts/flow/**/*.mjs"],
+      "project": ["scripts/flow/**/*.mjs"],
+      "ignore": ["packages/overfit/**"],
       "ignoreDependencies": ["oxlint"]
     },
     "apps/flow-app": {
