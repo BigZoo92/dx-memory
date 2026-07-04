@@ -72,27 +72,48 @@ It only adds `127.0.0.1:18080:8080` for the gateway and replaces the external Do
 Required secrets in GitHub Actions:
 
 ```text
-DOKPLOY_URL
-DOKPLOY_API_KEY
-DOKPLOY_COMPOSE_ID
+DOKPLOY_URL        origin of the Dokploy instance (https://host). A trailing /api is fine —
+                   the script normalizes it, so /api/api can never happen.
+DOKPLOY_API_KEY    sent as the x-api-key header
+DOKPLOY_COMPOSE_ID fallback identity (validated; used only if DOKPLOY_COMPOSE_NAME is unset)
 ```
 
-Required GitHub repository variable:
+Required GitHub repository variables:
 
 ```text
 GHCR_IMAGE_NAME=ghcr.io/bigzoo92/dx-memory
+DOKPLOY_COMPOSE_NAME=<the Dokploy Compose service name>   # recommended, stable identity
 ```
 
-The workflow calls Dokploy in this order:
+Compose resolution is deterministic (`scripts/release/dokploy.mjs`):
+
+1. If `DOKPLOY_COMPOSE_NAME` is set, the script calls `GET /api/project.all` and resolves the
+   `composeId` by an EXACT match on the compose `name` (or `appName`). This survives a compose
+   being removed/recreated (the id changes; the name does not) — the least-maintenance option.
+2. Otherwise it validates `DOKPLOY_COMPOSE_ID` via `GET /api/compose.one`.
+3. On a 404 (stale id) it prints the available composes (names + masked ids) so you can set
+   `DOKPLOY_COMPOSE_NAME`. It never guesses or picks arbitrarily; 0 or >1 matches fail loudly.
+
+> If you don't know the exact compose name, run the release once — the 404 diagnostic prints the
+> inventory of visible composes; copy the right `name` into the `DOKPLOY_COMPOSE_NAME` variable.
+
+The workflow then calls the current Dokploy API in this order:
 
 ```text
-compose.one
-compose.update
-compose.loadServices
-compose.deploy
+project.all (resolve, if NAME) OR compose.one (validate, if ID)
+compose.one         # read current env
+compose.update      # patch ONLY the release env keys + push docker-compose.prod.yml (sourceType: raw)
+compose.one         # verify the release env persisted
+compose.deploy      # trigger a fresh deployment (re-pulls the new immutable APP_IMAGE_TAG)
+deployment.allByCompose   # best-effort: fail fast on an explicit deployment error
 ```
 
-`scripts/release/dokploy.mjs` updates only these env keys and preserves unknown Dokploy env lines:
+Success is then gated authoritatively by the public gateway serving the expected release
+(`wait-public`: polls `/health` + `/release.json` until `version === APP_VERSION`, 15-min timeout →
+fail), after which `pnpm smoke:prod` runs. `compose.deploy` alone is never treated as success.
+
+`scripts/release/dokploy.mjs` updates only these env keys and preserves every other Dokploy env
+line (secrets, domains, internal URLs):
 
 ```text
 GHCR_IMAGE_NAME

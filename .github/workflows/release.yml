@@ -51,6 +51,12 @@ jobs:
             echo "BUILD_TIME=$build_time"
             echo "IS_REDEPLOY=$is_redeploy"
             echo "GHCR_IMAGE_NAME=${{ vars.GHCR_IMAGE_NAME }}"
+            # Release metadata the Dokploy steps need — set for BOTH new releases and redeploys
+            # (the build step is skipped on redeploy, so these must live here to support rollback).
+            echo "APP_IMAGE_TAG=$release_tag"
+            echo "APP_VERSION=$release_tag"
+            echo "APP_COMMIT_SHA=$source_sha"
+            echo "APP_BUILD_TIME=$build_time"
           } >> "$GITHUB_ENV"
           if [[ -z "${{ vars.GHCR_IMAGE_NAME }}" ]]; then
             echo "Repository variable GHCR_IMAGE_NAME is required." >&2
@@ -170,6 +176,8 @@ jobs:
         env:
           DOKPLOY_URL: ${{ secrets.DOKPLOY_URL }}
           DOKPLOY_API_KEY: ${{ secrets.DOKPLOY_API_KEY }}
+          # Preferred stable identity (repo variable). Falls back to DOKPLOY_COMPOSE_ID if unset.
+          DOKPLOY_COMPOSE_NAME: ${{ vars.DOKPLOY_COMPOSE_NAME }}
           DOKPLOY_COMPOSE_ID: ${{ secrets.DOKPLOY_COMPOSE_ID }}
         run: node scripts/release/dokploy.mjs sync
 
@@ -177,6 +185,7 @@ jobs:
         env:
           DOKPLOY_URL: ${{ secrets.DOKPLOY_URL }}
           DOKPLOY_API_KEY: ${{ secrets.DOKPLOY_API_KEY }}
+          DOKPLOY_COMPOSE_NAME: ${{ vars.DOKPLOY_COMPOSE_NAME }}
           DOKPLOY_COMPOSE_ID: ${{ secrets.DOKPLOY_COMPOSE_ID }}
         run: node scripts/release/dokploy.mjs deploy
 
