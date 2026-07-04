@@ -6,10 +6,10 @@
     "thesis": "Technically impressive, dangerously expensive — over-engineered past its payoff.",
     "stack": "Next.js · Rust/Axum · CQRS · 17 crates + 14 packages",
     "accent": "#a98bff",
-    "commit": "a1fc6c986bfc0151d3779957557dcdd88107ae0d",
-    "commitShort": "a1fc6c9",
+    "commit": "562e38a696999b1f0fba61fceb4a2d183eff71ab",
+    "commitShort": "562e38a",
     "branch": "main",
-    "timestamp": "2026-07-04T15:32:10.008Z",
+    "timestamp": "2026-07-04T15:56:05.998Z",
     "ciPipelineId": null,
     "ciRunNumber": null,
     "environment": "local",
@@ -728,13 +728,13 @@
       "value": null,
       "status": "unavailable",
       "reason": "No GitHub Actions data (no token, or no workflow runs) — real CI feedback requires a completed run.",
-      "label": "Real CI feedback (cached)",
+      "label": "CI feedback to signal (main)",
       "unit": "ms",
       "direction": "lower",
       "category": "CI feedback",
       "axis": null,
       "scope": "variant",
-      "description": "Mean wall-clock duration of this variant's own *-ci.yml quality job(s) on GitHub Actions, with its real cache strategy. Observational only (not scored). `unavailable` with a reason until a completed real run exists."
+      "description": "Mean delay from a push-to-main run starting to this variant's primary quality signal (its *-ci.yml quality job), with its real cache strategy: max(quality_job.completed_at) − run.run_started_at, over push-to-main runs (conclusions success|failure|timed_out; cancelled/skipped excluded). Observational only (not scored). Interpret with nxProjects / sourceFiles / locTotal — the scopes differ (Friction 2 projects vs Flow 15 vs Overfit 31). `unavailable` until a real push-to-main run exists."
     },
     "variant.ci.feedback.samples": {
       "value": null,
@@ -746,7 +746,7 @@
       "category": "CI feedback",
       "axis": null,
       "scope": "variant",
-      "description": "Number of completed workflow runs the feedback duration was averaged over. Informational."
+      "description": "Number of push-to-main runs the feedback duration was averaged over. Informational."
     },
     "lighthousePerformance": {
       "value": null,

@@ -43,14 +43,35 @@ export const VARIANT_CI_KEYS = [
 /**
  * Real cached CI feedback (scope:variant, OBSERVATIONAL — not scored).
  *
- * The mean wall-clock duration of the variant's OWN *-ci.yml quality job(s) on GitHub Actions,
- * with that variant's real cache strategy in play. Sourced from the github collector's raw
- * runs+jobs (started_at→completed_at of the named quality job(s)); side jobs (Flow's a11y,
- * Overfit's warm-cache) are excluded by the `qualityJobs` allow-list in variants.config.json.
+ * Measures, per variant, the delay from a CI run starting to execute to that variant's PRIMARY
+ * quality signal being available, with the variant's real cache strategy in play. Precisely:
  *
- * Honesty: `unavailable` with a precise reason whenever the real signal does not (yet) exist —
- * no token, no completed run of that workflow, or jobs not sampled. Never fabricated.
+ *   per run:  max(quality_job.completed_at) − workflow_run.run_started_at         (Definition B)
+ *   metric :  mean over eligible runs
+ *
+ * Why these choices (all documented for the jury):
+ *  • Definition B (run_started_at → quality job completed), NOT job execution alone
+ *    (completed−started): B includes any pre-quality-job orchestration, so it reflects the
+ *    "time to the quality signal". It excludes only the GitHub QUEUE (created_at → run_started_at),
+ *    which is runner-availability noise unrelated to the variant.
+ *  • Population = PUSH-to-default-branch runs only. On main every variant runs its FULL scope
+ *    (Flow nx run-many 19, Friction 2 apps, Overfit 15 JS + Rust) — so samples are comparable
+ *    AND structurally free of the PR `nx affected` no-op problem (a cross-variant PR triggers
+ *    flow-ci but affected selects 0 flow projects; such PR runs are NOT counted here).
+ *  • Conclusions: success / failure / timed_out are real feedback and counted; cancelled &
+ *    skipped are excluded (a `cancel-in-progress` supersede or a skipped job is not a feedback).
+ *  • Reruns: one sample per run id (the GitHub runs list + jobs endpoint yield the LATEST attempt),
+ *    i.e. the feedback that ultimately validated the change. `runAttempt` is kept for transparency.
+ *  • Side jobs (Flow `a11y`, Overfit `warm-cache`) are excluded by the `qualityJobs` allow-list.
+ *
+ * Interpret alongside the scope/size context (already collected, observational): `nxProjects`,
+ * `sourceFiles`, `locTotal`, `variant.ci.tests.executed`. Same categories != same work.
+ *
+ * Honesty: `unavailable` with a precise reason whenever the real signal does not (yet) exist.
  */
+const FEEDBACK_DEFAULT_BRANCH = 'main' // matches nx.json defaultBase
+const FEEDBACK_INCLUDED_CONCLUSIONS = new Set(['success', 'failure', 'timed_out'])
+
 export function computeFeedback(variant, githubRaw) {
   const cfg = variant?.ci?.feedback
   const none = (reason) => ({
@@ -63,31 +84,51 @@ export function computeFeedback(variant, githubRaw) {
   if (!githubRaw?.runs?.length) {
     return none('No GitHub Actions data (no token, or no workflow runs) — real CI feedback requires a completed run.')
   }
-  // Map run id → workflow file, keeping only completed runs of THIS variant's workflow.
+  // Eligible runs: THIS variant's workflow, triggered by push to the default branch (full-scope,
+  // no-op-free, comparable). PR runs are excluded on purpose (variable affected scope + no-op).
   const wf = cfg.workflow.toLowerCase()
-  const runIds = new Set(
-    githubRaw.runs
-      .filter((r) => (r.workflow || '').toLowerCase() === wf && r.status === 'completed')
-      .map((r) => r.id)
-  )
-  if (runIds.size === 0) {
-    return none(`No completed run of ${cfg.workflow} found yet — pending a real GitHub Actions run.`)
+  const runsById = new Map()
+  for (const r of githubRaw.runs) {
+    if ((r.workflow || '').toLowerCase() !== wf) continue
+    if (r.event !== 'push') continue
+    if (r.branch !== FEEDBACK_DEFAULT_BRANCH) continue
+    if (!r.runStartedAt) continue
+    runsById.set(r.id, r) // keyed by run id → one sample per run (latest attempt)
+  }
+  if (runsById.size === 0) {
+    return none(`No push-to-${FEEDBACK_DEFAULT_BRANCH} run of ${cfg.workflow} found yet — pending a real GitHub Actions run.`)
   }
   const jobRecords = githubRaw.jobs?.records ?? []
   if (jobRecords.length === 0) {
     return none('GitHub jobs were not sampled (API budget/rate limit) — cannot attribute feedback time.')
   }
   const wanted = new Set(cfg.qualityJobs)
-  const durations = jobRecords
-    .filter((j) => runIds.has(j.runId) && wanted.has(j.name) && typeof j.durationMs === 'number' && j.durationMs >= 0)
-    .map((j) => j.durationMs)
-  if (durations.length === 0) {
-    return none(`No sampled ${cfg.workflow} quality job (${cfg.qualityJobs.join('/')}) with a duration yet.`)
+  const perRun = []
+  for (const [id, run] of runsById) {
+    const runStart = new Date(run.runStartedAt).getTime()
+    const completes = jobRecords
+      .filter((j) => j.runId === id && wanted.has(j.name) && FEEDBACK_INCLUDED_CONCLUSIONS.has(j.conclusion) && j.completedAt)
+      .map((j) => new Date(j.completedAt).getTime())
+      .filter((t) => Number.isFinite(t))
+    if (completes.length === 0) continue
+    const dur = Math.max(...completes) - runStart // Definition B
+    if (Number.isFinite(dur) && dur >= 0) perRun.push(dur)
   }
-  const avg = Math.round(durations.reduce((a, b) => a + b, 0) / durations.length)
+  if (perRun.length === 0) {
+    return none(
+      `No eligible push-to-${FEEDBACK_DEFAULT_BRANCH} ${cfg.workflow} quality job (${cfg.qualityJobs.join('/')}, conclusion success|failure|timed_out) sampled yet.`
+    )
+  }
+  const avg = Math.round(perRun.reduce((a, b) => a + b, 0) / perRun.length)
   return {
-    'variant.ci.feedback.duration': ok(avg, { workflow: cfg.workflow, qualityJobs: cfg.qualityJobs, samples: durations.length }),
-    'variant.ci.feedback.samples': ok(durations.length, {})
+    'variant.ci.feedback.duration': ok(avg, {
+      workflow: cfg.workflow,
+      qualityJobs: cfg.qualityJobs,
+      samples: perRun.length,
+      population: `push-to-${FEEDBACK_DEFAULT_BRANCH}, latest attempt, conclusions success|failure|timed_out`,
+      timing: 'max(quality_job.completed_at) − run.run_started_at (excludes GitHub queue)'
+    }),
+    'variant.ci.feedback.samples': ok(perRun.length, {})
   }
 }
 

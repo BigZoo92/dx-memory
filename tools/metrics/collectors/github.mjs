@@ -156,6 +156,7 @@ export async function collectGithub(config, { variantRoots = {}, now } = {}) {
       status: r.status,
       conclusion: r.conclusion,
       runNumber: r.run_number,
+      runAttempt: r.run_attempt ?? null,
       branch: r.head_branch,
       createdAt: r.created_at,
       runStartedAt: r.run_started_at,
@@ -216,6 +217,8 @@ export async function collectGithub(config, { variantRoots = {}, now } = {}) {
         runNumber: r.runNumber,
         name: j.name,
         conclusion: j.conclusion,
+        startedAt: j.started_at,
+        completedAt: j.completed_at,
         durationMs: msBetween(j.completed_at, j.started_at)
       })
     }

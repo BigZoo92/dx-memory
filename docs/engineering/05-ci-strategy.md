@@ -148,18 +148,33 @@ There are two, deliberately separate, duration signals. Confusing them would bia
    nature stated in every description — it is **not** the real CI feedback time.
 
 2. **Real CI feedback duration** (`variant.ci.feedback.duration`, scope:variant, **observational —
-   not scored**). The mean wall-clock time of the variant's own `*-ci.yml` **quality job(s)** on
-   GitHub Actions (`started_at → completed_at`), *with* that variant's real cache strategy in play
-   (Flow: pnpm+Nx; Overfit: 6-layer + BuildKit; Friction: pnpm store only). Side jobs are excluded
-   (Flow's `a11y`, Overfit's `warm-cache`) via the `qualityJobs` allow-list in `variants.config.json`.
-   Sourced purely from the GitHub Actions runs/jobs API — never a local stopwatch. It is `unavailable`
-   (with a precise reason) until a completed real run of that workflow exists, and is **not folded
-   into any score** so it can never advantage a variant.
+   not scored**). Definition **B**: `max(quality_job.completed_at) − run.run_started_at`, averaged
+   over the variant's **push-to-main** runs of its own `*-ci.yml`, *with* that variant's real cache
+   strategy (Flow: pnpm+Nx; Overfit: 6-layer + BuildKit; Friction: pnpm store only). Sourced purely
+   from the GitHub Actions runs/jobs API — never a local stopwatch.
+   - **Population = push-to-main only.** On `main` every variant runs its *full* scope (Flow
+     `nx run-many` 19, Friction 2 apps, Overfit 15 JS + Rust), so samples are comparable AND free of
+     the PR `nx affected` **no-op** problem (a cross-variant PR triggers flow-ci but affected selects
+     0 flow projects; those PR runs are *not* counted — all PRs trigger all three CIs, there is no
+     `paths` filter on `pull_request`).
+   - **Timing B**, not job-execution-only: from run start to the quality signal; excludes only the
+     GitHub queue (runner-availability noise).
+   - **Conclusions:** success / failure / timed_out counted; cancelled / skipped excluded.
+   - **Reruns:** one sample per run (latest attempt). Side jobs (Flow `a11y`, Overfit `warm-cache`)
+     excluded via the `qualityJobs` allow-list in `variants.config.json`.
+   - `unavailable` (with a reason) until a real push-to-main run exists; **not folded into any score**.
+
+**Same categories ≠ same work.** A raw feedback duration cannot be read alone: the scopes differ by
+an order of magnitude (Friction 2 projects / 31 files, Flow 15 / 180, Overfit 31 / 78 + 18 Rust
+crates). Always read it next to the already-collected scope context: `nxProjects`, `sourceFiles`,
+`locTotal`, `variant.ci.tests.executed`. Friction's CI being shortest is a *perimeter* artifact
+(fewer projects, zero extra audits, no Rust), **not** evidence of better DX — consistent with the
+total-cost-of-delivery thesis, where a thin, guard-rail-free pipeline is itself a friction signal.
 
 The pair answers the lab's core question: *how much cache complexity buys how much feedback speed?*
-Cold (1) is the protocol cost; feedback (2) is what the developer actually waits for. The
-repo-level `ship.ci.wallTime.avg` (GitHub, scope:repo) remains the shared-pipeline signal and ties
-across variants. No duration is ever mocked or hard-coded.
+Cold (1) is the protocol cost; feedback (2) is what the developer waits for. The repo-level
+`ship.ci.wallTime.avg` (GitHub, scope:repo) remains the shared-pipeline signal and ties across
+variants. No duration is ever mocked or hard-coded.
 
 Non-automated metrics (error reproduction steps, docs pages needed) are logged by hand in
 [`docs/results-log.md`](../results-log.md).
