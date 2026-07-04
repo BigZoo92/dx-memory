@@ -1,6 +1,7 @@
 {
   "name": "@signalops/flow-feature-ops",
   "version": "0.0.0",
+  "nx": { "tags": ["scope:flow", "type:feature"] },
   "private": true,
   "description": "Flow variant — Operational health (/ops): error inbox, alerts, run health, breadcrumbs, diagnostic pack.",
   "type": "module",

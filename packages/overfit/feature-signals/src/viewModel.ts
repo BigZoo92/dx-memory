@@ -2,12 +2,7 @@
 // row VM first (the mandatory presentation seam in the Overfit frontend flow).
 
 import type { RiskTrend, Signal } from '@signalops/overfit-contracts-generated'
-import {
-  confidenceLabel,
-  formatSource,
-  riskColor,
-  riskTrendLabel
-} from '@signalops/overfit-ui'
+import { confidenceLabel, formatSource, riskColor, riskTrendLabel } from '@signalops/overfit-ui'
 
 export interface SignalRowVM {
   id: string

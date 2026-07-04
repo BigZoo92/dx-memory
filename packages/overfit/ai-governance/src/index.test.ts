@@ -8,12 +8,22 @@ describe('ai-governance', () => {
   })
 
   it('blocks changes touching forbidden files', () => {
-    const s = scoreChange({ filesTouched: 3, crossesLayers: 1, touchesGenerated: false, touchesForbidden: true })
+    const s = scoreChange({
+      filesTouched: 3,
+      crossesLayers: 1,
+      touchesGenerated: false,
+      touchesForbidden: true
+    })
     expect(s.level).toBe('blocked')
   })
 
   it('scores the risk-trend change as high cost', () => {
-    const s = scoreChange({ filesTouched: 41, crossesLayers: 5, touchesGenerated: true, touchesForbidden: false })
+    const s = scoreChange({
+      filesTouched: 41,
+      crossesLayers: 5,
+      touchesGenerated: true,
+      touchesForbidden: false
+    })
     expect(s.level).toBe('high')
     expect(s.reasons.length).toBeGreaterThan(0)
   })

@@ -76,12 +76,25 @@ export function DxMetricsPage() {
     const higher = key === 'lighthousePerformance'
     let best = data!.metrics[0]
     for (const m of data!.metrics) {
-      if (higher ? (m[key] as number) > (best[key] as number) : (m[key] as number) < (best[key] as number)) best = m
+      if (
+        higher
+          ? (m[key] as number) > (best[key] as number)
+          : (m[key] as number) < (best[key] as number)
+      )
+        best = m
     }
     return best.variant
   }
 
-  function CompareGroup({ title, metricKey, kind }: { title: string; metricKey: keyof DxMetric; kind: Kind }) {
+  function CompareGroup({
+    title,
+    metricKey,
+    kind
+  }: {
+    title: string
+    metricKey: keyof DxMetric
+    kind: Kind
+  }) {
     const values = data!.metrics.map((m) => ({ variant: m.variant, value: m[metricKey] as number }))
     const max = Math.max(...values.map((v) => v.value))
     return (
@@ -108,22 +121,40 @@ export function DxMetricsPage() {
       <div className="pageHead">
         <div>
           <h1 className="pageTitle">DX Metrics</h1>
-          <p className="pageSubtitle">Delivery cost and developer experience, compared across variants.</p>
+          <p className="pageSubtitle">
+            Delivery cost and developer experience, compared across variants.
+          </p>
         </div>
         <div className="row">
           <span className="badge badge-orange">Showing Overfit</span>
-          <button className="btn btn-secondary btn-sm" onClick={() => download('dx-metrics.csv', buildDxCsv(data), 'text/csv')}>
+          <button
+            className="btn btn-secondary btn-sm"
+            onClick={() => download('dx-metrics.csv', buildDxCsv(data), 'text/csv')}
+          >
             Export CSV
           </button>
-          <button className="btn btn-secondary btn-sm" onClick={() => download('dx-metrics.json', JSON.stringify(data, null, 2), 'application/json')}>
+          <button
+            className="btn btn-secondary btn-sm"
+            onClick={() =>
+              download('dx-metrics.json', JSON.stringify(data, null, 2), 'application/json')
+            }
+          >
             Export JSON
           </button>
         </div>
       </div>
 
       {data.source === 'seed' && (
-        <div className="banner" style={{ background: 'var(--so-amber-bg)', color: 'var(--so-amber-fg)', borderColor: '#f0dcae' }}>
-          These numbers are seed / demo values transcribed from the measurement protocol, not measured on this machine.
+        <div
+          className="banner"
+          style={{
+            background: 'var(--so-amber-bg)',
+            color: 'var(--so-amber-fg)',
+            borderColor: '#f0dcae'
+          }}
+        >
+          These numbers are seed / demo values transcribed from the measurement protocol, not
+          measured on this machine.
         </div>
       )}
 
@@ -156,7 +187,11 @@ export function DxMetricsPage() {
         <div className="row" style={{ alignItems: 'stretch', gap: 22 }}>
           <CompareGroup title="CI duration" metricKey="ciDurationMs" kind="time" />
           <CompareGroup title="Bundle size" metricKey="bundleSizeKb" kind="kb" />
-          <CompareGroup title="Files touched · AI task" metricKey="filesTouchedForAiTask" kind="num" />
+          <CompareGroup
+            title="Files touched · AI task"
+            metricKey="filesTouchedForAiTask"
+            kind="num"
+          />
         </div>
         <div className="row" style={{ marginTop: 10, fontSize: 12, color: 'var(--so-slate-500)' }}>
           <span>A · Friction · B · Flow · C · Overfit (highlighted)</span>
@@ -173,9 +208,10 @@ export function DxMetricsPage() {
         <div style={{ marginTop: 12 }}>
           <span className="badge badge-red">High cost</span>
           <span style={{ marginLeft: 10 }} className="muted">
-            One product column (Risk trend) forced coordinated edits across 41 files: Rust domain, DTOs, OpenAPI,
-            fixtures, read models, generated TS contracts, runtime schema, api-client, feature package, UI, docs, ADR
-            and governance manifests. See docs/overfit/change-management/risk-trend-change-surface.md.
+            One product column (Risk trend) forced coordinated edits across 41 files: Rust domain,
+            DTOs, OpenAPI, fixtures, read models, generated TS contracts, runtime schema,
+            api-client, feature package, UI, docs, ADR and governance manifests. See
+            docs/overfit/change-management/risk-trend-change-surface.md.
           </span>
         </div>
       </Card>
@@ -183,7 +219,11 @@ export function DxMetricsPage() {
       <div className="grid-kpis">
         <StatTile label="Bundle size" value={fmtKb(overfit.bundleSizeKb)} />
         <StatTile label="Main chunk" value={fmtKb(overfit.mainChunkSizeKb)} />
-        <StatTile label="Lighthouse" value={overfit.lighthousePerformance} barPercent={overfit.lighthousePerformance} />
+        <StatTile
+          label="Lighthouse"
+          value={overfit.lighthousePerformance}
+          barPercent={overfit.lighthousePerformance}
+        />
         <StatTile label="Table render" value={fmtMs(overfit.tableRenderTimeMs)} />
       </div>
 
@@ -205,8 +245,12 @@ export function DxMetricsPage() {
                 return (
                   <tr key={r.key as string}>
                     <td className="cellTitle">{r.label}</td>
-                    <td className={best === 'friction' ? 'best' : ''}>{fmt(r.kind, by('friction')[r.key] as number)}</td>
-                    <td className={best === 'flow' ? 'best' : ''}>{fmt(r.kind, by('flow')[r.key] as number)}</td>
+                    <td className={best === 'friction' ? 'best' : ''}>
+                      {fmt(r.kind, by('friction')[r.key] as number)}
+                    </td>
+                    <td className={best === 'flow' ? 'best' : ''}>
+                      {fmt(r.kind, by('flow')[r.key] as number)}
+                    </td>
                     <td className={'currentCol' + (best === 'overfit' ? ' best' : '')}>
                       {fmt(r.kind, by('overfit')[r.key] as number)}
                     </td>
@@ -243,7 +287,9 @@ export function DxMetricsPage() {
                   <td className="mono muted">{row[1] as string}</td>
                   <td className="mono">{row[2] as string}</td>
                   <td>
-                    <span className={`badge ${row[3] ? 'badge-green' : 'badge-red'}`}>{row[3] ? 'Passed' : 'Failed'}</span>
+                    <span className={`badge ${row[3] ? 'badge-green' : 'badge-red'}`}>
+                      {row[3] ? 'Passed' : 'Failed'}
+                    </span>
                   </td>
                 </tr>
               ))}
@@ -259,7 +305,12 @@ function bestOf(metrics: DxMetric[], key: keyof DxMetric): string {
   const higher = key === 'lighthousePerformance'
   let best = metrics[0]
   for (const m of metrics) {
-    if (higher ? (m[key] as number) > (best[key] as number) : (m[key] as number) < (best[key] as number)) best = m
+    if (
+      higher
+        ? (m[key] as number) > (best[key] as number)
+        : (m[key] as number) < (best[key] as number)
+    )
+      best = m
   }
   return best.variant
 }

@@ -144,7 +144,11 @@ export class OverfitApiClient {
     return this.request<LogRecord[]>('/logs')
   }
 
-  async postLog(entry: { level?: string; message: string; fields?: unknown }): Promise<{ accepted: boolean; requestId: string }> {
+  async postLog(entry: {
+    level?: string
+    message: string
+    fields?: unknown
+  }): Promise<{ accepted: boolean; requestId: string }> {
     return this.request('/logs', { method: 'POST', body: JSON.stringify(entry) })
   }
 

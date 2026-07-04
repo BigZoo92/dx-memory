@@ -44,8 +44,14 @@ export function AppShell({ children }: { children: ReactNode }) {
   const notifRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    overfitApi.getDashboardSummary().then(setSummary).catch(() => setSummary(null))
-    overfitApi.getHealth().then(setHealth).catch(() => setHealth(null))
+    overfitApi
+      .getDashboardSummary()
+      .then(setSummary)
+      .catch(() => setSummary(null))
+    overfitApi
+      .getHealth()
+      .then(setHealth)
+      .catch(() => setHealth(null))
   }, [pathname])
 
   useEffect(() => {
@@ -93,11 +99,16 @@ export function AppShell({ children }: { children: ReactNode }) {
           <ul className="navList">
             {NAV.map((item) => (
               <li key={item.to}>
-                <Link href={item.to} className={'navItem' + (isActive(item.to) ? ' navItemActive' : '')}>
+                <Link
+                  href={item.to}
+                  className={'navItem' + (isActive(item.to) ? ' navItemActive' : '')}
+                >
                   <Icon name={item.icon} size={18} className="navIcon" />
                   <span className="navLabel">{item.label}</span>
                   {item.label === 'Signals' && summary && (
-                    <span className="navCount">{summary.kpis.openSignals.value.toLocaleString()}</span>
+                    <span className="navCount">
+                      {summary.kpis.openSignals.value.toLocaleString()}
+                    </span>
                   )}
                   {item.label === 'Incidents' && summary && (
                     <span className="navCount">{summary.kpis.activeIncidents.value}</span>
@@ -144,7 +155,9 @@ export function AppShell({ children }: { children: ReactNode }) {
             <div className="menuWrap" ref={notifRef}>
               <button
                 className="btn btn-ghost btn-sm"
-                aria-label={critical.length > 0 ? `Notifications (${critical.length})` : 'Notifications'}
+                aria-label={
+                  critical.length > 0 ? `Notifications (${critical.length})` : 'Notifications'
+                }
                 aria-haspopup="true"
                 aria-expanded={notifOpen}
                 onClick={() => setNotifOpen((o) => !o)}
@@ -158,15 +171,25 @@ export function AppShell({ children }: { children: ReactNode }) {
                 <div className="menu" aria-label="Notifications">
                   <div className="menuHead">
                     <span>Notifications</span>
-                    {critical.length > 0 && <span className="menuCount">{critical.length} need triage</span>}
+                    {critical.length > 0 && (
+                      <span className="menuCount">{critical.length} need triage</span>
+                    )}
                   </div>
                   {critical.length === 0 ? (
                     <p className="menuEmpty">You are all caught up — no signals need attention.</p>
                   ) : (
                     <div className="menuList">
                       {critical.map((s) => (
-                        <Link key={s.id} href={`/signals/${s.id}`} className="menuRow" onClick={() => setNotifOpen(false)}>
-                          <span className="menuDot" style={{ background: SEVERITY_DOT[s.severity] }} />
+                        <Link
+                          key={s.id}
+                          href={`/signals/${s.id}`}
+                          className="menuRow"
+                          onClick={() => setNotifOpen(false)}
+                        >
+                          <span
+                            className="menuDot"
+                            style={{ background: SEVERITY_DOT[s.severity] }}
+                          />
                           <span className="menuRowText">
                             <span className="menuTitle">{s.title}</span>
                             <span className="menuMeta">
@@ -179,7 +202,11 @@ export function AppShell({ children }: { children: ReactNode }) {
                     </div>
                   )}
                   <div className="menuFoot">
-                    <Link href="/signals" className="linkAccent" onClick={() => setNotifOpen(false)}>
+                    <Link
+                      href="/signals"
+                      className="linkAccent"
+                      onClick={() => setNotifOpen(false)}
+                    >
                       View all signals
                     </Link>
                   </div>
@@ -197,7 +224,11 @@ export function AppShell({ children }: { children: ReactNode }) {
           {notice && (
             <div className="banner banner-ok" style={{ marginBottom: 16 }}>
               {notice}
-              <button className="btn btn-secondary btn-sm" style={{ marginLeft: 'auto' }} onClick={() => setNotice(null)}>
+              <button
+                className="btn btn-secondary btn-sm"
+                style={{ marginLeft: 'auto' }}
+                onClick={() => setNotice(null)}
+              >
                 Dismiss
               </button>
             </div>
@@ -210,15 +241,24 @@ export function AppShell({ children }: { children: ReactNode }) {
             {BUILD_INFO} · dataset {health?.datasetVersion ?? 'v2.4.0'}
           </span>
           <span className="statusDot">
-            <span className="dot" style={{ background: health ? 'var(--so-green-fg)' : 'var(--so-red-fg)' }} />
+            <span
+              className="dot"
+              style={{ background: health ? 'var(--so-green-fg)' : 'var(--so-red-fg)' }}
+            />
             API {health ? health.status : 'unreachable'}
           </span>
         </footer>
       </div>
 
       {dialogOpen && (
-        <div className="modalOverlay" onMouseDown={() => setDialogOpen(false)}>
-          <div className="modalCard" onMouseDown={(e) => e.stopPropagation()}>
+        <div
+          className="modalOverlay"
+          role="presentation"
+          onMouseDown={(e) => {
+            if (e.target === e.currentTarget) setDialogOpen(false)
+          }}
+        >
+          <div className="modalCard" role="dialog" aria-modal="true">
             <div className="modalHead">
               <h2 className="cardTitle" style={{ margin: 0 }}>
                 New signal
@@ -229,7 +269,8 @@ export function AppShell({ children }: { children: ReactNode }) {
             </div>
             <div className="modalBody">
               <p className="muted" style={{ fontSize: 12.5 }}>
-                Demo build — the dataset is read-only, so this signal is confirmed but not persisted.
+                Demo build — the dataset is read-only, so this signal is confirmed but not
+                persisted.
               </p>
             </div>
             <div className="modalFoot">
@@ -240,7 +281,9 @@ export function AppShell({ children }: { children: ReactNode }) {
                 className="btn btn-primary"
                 onClick={() => {
                   setDialogOpen(false)
-                  setNotice('New signal captured — demo build, so it is not persisted to the dataset.')
+                  setNotice(
+                    'New signal captured — demo build, so it is not persisted to the dataset.'
+                  )
                 }}
               >
                 Create signal

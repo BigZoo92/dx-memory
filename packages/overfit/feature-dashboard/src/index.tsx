@@ -85,7 +85,10 @@ export function DashboardPage() {
                 <div className="sevBarTrack">
                   <div
                     className="sevBarFill"
-                    style={{ width: `${(row.count / maxSev) * 100}%`, background: sevColor(row.severity) }}
+                    style={{
+                      width: `${(row.count / maxSev) * 100}%`,
+                      background: sevColor(row.severity)
+                    }}
                   />
                 </div>
                 <span className="mono">{row.count}</span>
@@ -100,7 +103,13 @@ export function DashboardPage() {
               <div
                 key={p.date}
                 title={`${p.date}: ${p.total} total, ${p.critical} critical`}
-                style={{ flex: 1, height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}
+                style={{
+                  flex: 1,
+                  height: '100%',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'flex-end'
+                }}
               >
                 <div
                   style={{
@@ -109,11 +118,19 @@ export function DashboardPage() {
                     borderRadius: '3px 3px 0 0'
                   }}
                 />
-                <div style={{ height: `${(p.critical / maxTs) * 100}%`, background: 'var(--so-accent)' }} />
+                <div
+                  style={{
+                    height: `${(p.critical / maxTs) * 100}%`,
+                    background: 'var(--so-accent)'
+                  }}
+                />
               </div>
             ))}
           </div>
-          <div className="row" style={{ marginTop: 10, fontSize: 12, color: 'var(--so-slate-500)' }}>
+          <div
+            className="row"
+            style={{ marginTop: 10, fontSize: 12, color: 'var(--so-slate-500)' }}
+          >
             <span>
               <Swatch color="var(--so-accent-tint-100)" /> All signals
             </span>
@@ -130,7 +147,14 @@ export function DashboardPage() {
             {data.mostCriticalSignals.map((s) => (
               <div key={s.id} className="listRow">
                 <div className="row" style={{ gap: 10 }}>
-                  <span style={{ width: 9, height: 9, borderRadius: '50%', background: sevColor(s.severity) }} />
+                  <span
+                    style={{
+                      width: 9,
+                      height: 9,
+                      borderRadius: '50%',
+                      background: sevColor(s.severity)
+                    }}
+                  />
                   <div>
                     <a href={overfitHref(`/signals/${s.id}`)} className="cellTitle">
                       {s.title}
@@ -169,8 +193,8 @@ export function DashboardPage() {
           <div className="aiCard">
             <span className="aiTag">AI · mock</span>
             <p style={{ margin: '10px 0' }}>
-              3 critical signals share the same partner source. Consider grouping them into one incident and
-              escalating.
+              3 critical signals share the same partner source. Consider grouping them into one
+              incident and escalating.
             </p>
             <div className="row">
               <button className="btn btn-primary btn-sm">Group signals</button>
@@ -229,6 +253,15 @@ function downloadJson(filename: string, data: unknown) {
 
 function Swatch({ color }: { color: string }) {
   return (
-    <span style={{ display: 'inline-block', width: 10, height: 10, background: color, borderRadius: 3, marginRight: 6 }} />
+    <span
+      style={{
+        display: 'inline-block',
+        width: 10,
+        height: 10,
+        background: color,
+        borderRadius: 3,
+        marginRight: 6
+      }}
+    />
   )
 }

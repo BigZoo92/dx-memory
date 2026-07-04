@@ -26,7 +26,9 @@ function formatTime(iso: string): string {
 /** The error inbox: grouped log rows with a real `<th scope>` header so the table stays accessible. */
 export function ErrorInboxTable({ rows }: { rows: readonly OpsLogRow[] }) {
   if (rows.length === 0) {
-    return <p className={styles.empty}>No errors captured yet. Trigger a demo error from Settings.</p>
+    return (
+      <p className={styles.empty}>No errors captured yet. Trigger a demo error from Settings.</p>
+    )
   }
   return (
     <div className={styles.tableWrap}>

@@ -87,7 +87,8 @@ export function SignalDetailPage({ id }: { id: string }) {
               {s.title}
             </h1>
             <p className="pageSubtitle">
-              Source {formatSource(s.source)} · Created {new Date(s.createdAt).toISOString().slice(0, 10)}
+              Source {formatSource(s.source)} · Created{' '}
+              {new Date(s.createdAt).toISOString().slice(0, 10)}
             </p>
           </div>
           <div className="row">
@@ -107,8 +108,16 @@ export function SignalDetailPage({ id }: { id: string }) {
         </div>
 
         <div className="grid-kpis" style={{ marginTop: 16 }}>
-          <StatTile label="Risk score" value={s.riskScore} barPercent={s.riskScore} barColor={riskColor(s.riskScore)} />
-          <StatTile label="Risk trend" value={s.riskTrend ? riskTrendLabel(s.riskTrend) : 'Unknown'} />
+          <StatTile
+            label="Risk score"
+            value={s.riskScore}
+            barPercent={s.riskScore}
+            barColor={riskColor(s.riskScore)}
+          />
+          <StatTile
+            label="Risk trend"
+            value={s.riskTrend ? riskTrendLabel(s.riskTrend) : 'Unknown'}
+          />
           <StatTile
             label="Confidence"
             value={confidenceLabel(s.confidence)}
@@ -148,7 +157,11 @@ export function SignalDetailPage({ id }: { id: string }) {
             {eventsError ? (
               <div className="banner banner-error">
                 Some widgets could not be refreshed.
-                <button className="btn btn-secondary btn-sm" style={{ marginLeft: 'auto' }} onClick={load}>
+                <button
+                  className="btn btn-secondary btn-sm"
+                  style={{ marginLeft: 'auto' }}
+                  onClick={load}
+                >
                   Retry
                 </button>
               </div>
@@ -162,7 +175,8 @@ export function SignalDetailPage({ id }: { id: string }) {
                     <div>
                       <div className="timelineLabel">{e.label}</div>
                       <div className="timelineMeta">
-                        {e.actor} · {new Date(e.createdAt).toISOString().slice(0, 16).replace('T', ' ')}
+                        {e.actor} ·{' '}
+                        {new Date(e.createdAt).toISOString().slice(0, 16).replace('T', ' ')}
                       </div>
                     </div>
                   </div>
@@ -177,13 +191,18 @@ export function SignalDetailPage({ id }: { id: string }) {
             <span className="aiTag">AI · mock</span>
             <p style={{ margin: '10px 0' }}>
               This signal matches a known pattern of {s.source} anomalies. Confidence is{' '}
-              {confidenceLabel(s.confidence).toLowerCase()}. Risk is {s.riskTrend ? riskTrendLabel(s.riskTrend).toLowerCase() : 'stable'}.
-              Review before escalation.
+              {confidenceLabel(s.confidence).toLowerCase()}. Risk is{' '}
+              {s.riskTrend ? riskTrendLabel(s.riskTrend).toLowerCase() : 'stable'}. Review before
+              escalation.
             </p>
           </div>
 
           <Card title="Recommended action">
-            <div className={s.severity === 'critical' ? 'callout callout-red' : 'callout callout-amber'}>
+            <div
+              className={
+                s.severity === 'critical' ? 'callout callout-red' : 'callout callout-amber'
+              }
+            >
               {s.severity === 'critical'
                 ? 'Escalate to an incident now — critical risk detected.'
                 : 'Review recommended before escalation.'}
@@ -192,7 +211,11 @@ export function SignalDetailPage({ id }: { id: string }) {
 
           <Card title="Linked incident">
             {detail.linkedIncident ? (
-              <a href={overfitHref('/incidents')} className="listRow" style={{ textDecoration: 'none' }}>
+              <a
+                href={overfitHref('/incidents')}
+                className="listRow"
+                style={{ textDecoration: 'none' }}
+              >
                 <div>
                   <div className="cellTitle">{detail.linkedIncident.title}</div>
                   <div className="cellSub mono">{detail.linkedIncident.id}</div>

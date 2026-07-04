@@ -58,7 +58,8 @@ function apiBaseUrl(): string {
 }
 
 function appBasePath(): string {
-  const base = import.meta.env.VITE_BASE_PATH ?? import.meta.env.VITE_APP_BASE_PATH ?? DEFAULT_APP_BASE
+  const base =
+    import.meta.env.VITE_BASE_PATH ?? import.meta.env.VITE_APP_BASE_PATH ?? DEFAULT_APP_BASE
   return base === '/' ? '/' : trimTrailingSlash(base)
 }
 

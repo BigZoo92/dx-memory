@@ -14,6 +14,8 @@
       "inputs": ["production", "^production"],
       "outputs": ["{projectRoot}/.next"],
       "cache": true,
+      "dependsOn": ["typecheck"],
+      "$comment_dependsOn": "next build rewrites .next/types while the standalone tsc typecheck reads them. Serializing build after typecheck removes that race so the gate is deterministic; next build still fully type-validates the generated route types.",
       "options": { "command": "next build", "cwd": "apps/overfit-web" }
     },
     "typecheck": {
@@ -30,7 +32,7 @@
     },
     "lint": {
       "executor": "nx:run-commands",
-      "options": { "command": "next lint", "cwd": "apps/overfit-web" }
+      "options": { "command": "oxlint app", "cwd": "apps/overfit-web" }
     }
   }
 }

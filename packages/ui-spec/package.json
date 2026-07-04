@@ -1,6 +1,7 @@
 {
   "name": "@signalops/ui-spec",
   "version": "0.0.0",
+  "nx": { "tags": ["scope:shared", "type:ui-spec"] },
   "private": true,
   "description": "Typed source of truth for SignalOps design tokens, routes, screens and components.",
   "type": "module",

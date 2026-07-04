@@ -1,7 +1,27 @@
 name: overfit-ci
 
-# Variant C — Overfit. SKELETON: the multi-language (pnpm + cargo) steps are added in the
-# Variant C pass. The job below validates the shared foundation the variant depends on.
+# Variant C - Overfit. The "over-engineered" variant, on purpose.
+#
+# ISOLATION: enforced by a declarative manifest + graph-closure proof
+# (tools/overfit-ci/scope-manifest.json + verify-isolation.mjs). Overfit is self-contained -
+# its Nx closure consumes NO @signalops shared socle package, so scope:shared is FORBIDDEN
+# here (see manifest). The verifier fails CI on any foreign scope, cross-variant edge, or
+# closure/tag drift, and emits tools/metrics/results/ci/overfit-isolation.json. Every JS/TS
+# task is scoped to `tag:scope:overfit`; the Rust side is the cargo workspace.
+#
+# PARITY: format -> lint -> typecheck -> test -> build (+ Docker). Same five categories as
+# Flow and Friction. Overfit just does each across BOTH toolchains (oxlint/tsc/vitest/next AND
+# cargo fmt/clippy/test/build) plus its own contract/schema/docs/policy/bundle quality gates.
+#
+# CACHE (deliberately excessive - this is Overfit's thesis): SIX explicit layers, each with a
+# content-hash primary key + a two-step restore-key cascade, all derived by a dedicated
+# calculator (tools/overfit-ci/cache-key.mjs), plus a `warm-cache` job that primes every layer
+# on main so PR runs restore warm. Layers: (1) pnpm store, (2) Nx local cache, (3) cargo
+# registry, (4) cargo git, (5) cargo target dir, (6) Next.js build cache. Docker adds two more
+# BuildKit GHA scopes (overfit-web, overfit-api). Every layer is real: none produces a stale or
+# invalid build (cargo/Nx/Next all key on their own lockfiles+sources). The cost is the point:
+# compare this file's moving parts to flow-ci.yml's two `actions/cache` blocks.
+# No `continue-on-error` on any quality gate.
 
 on:
   push:
@@ -9,41 +29,250 @@ on:
     paths:
       - 'apps/overfit-web/**'
       - 'apps/overfit-api/**'
-      - 'packages/**'
+      - 'packages/overfit/**'
+      - 'crates/**'
+      - 'Cargo.toml'
+      - 'Cargo.lock'
       - 'docker/overfit/**'
       - '.github/workflows/overfit-ci.yml'
+      - 'tools/overfit-ci/**'
   pull_request:
     branches: [main]
   workflow_dispatch:
 
+concurrency:
+  group: overfit-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: '22'
+  NX_DAEMON: 'false'
+  CARGO_TERM_COLOR: always
+
 jobs:
-  overfit:
+  # ---- Cache warm-up (main only): prime all six layers so future PR runs restore warm ------
+  warm-cache:
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      # Version is inferred from the "packageManager" field in package.json.
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 22
-          cache: pnpm
+          node-version: ${{ env.NODE_VERSION }}
 
-      - name: Install
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Derive composite cache keys
+        id: keys
+        run: node tools/overfit-ci/cache-key.mjs --github
+
+      - name: Resolve pnpm store dir
+        id: pnpm
+        run: echo "dir=$(pnpm store path --silent)" >> "$GITHUB_OUTPUT"
+
+      - name: Cache layer 1/6 - pnpm store
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.pnpm.outputs.dir }}
+          key: ${{ steps.keys.outputs.pnpm }}
+          restore-keys: ${{ steps.keys.outputs.pnpm_restore }}
+
+      - name: Cache layer 2/6 - Nx local cache
+        uses: actions/cache@v4
+        with:
+          path: .nx/cache
+          key: ${{ steps.keys.outputs.nx }}
+          restore-keys: ${{ steps.keys.outputs.nx_restore }}
+
+      - name: Cache layer 3/6 - cargo registry
+        uses: actions/cache@v4
+        with:
+          path: ~/.cargo/registry
+          key: ${{ steps.keys.outputs.cargoRegistry }}
+          restore-keys: ${{ steps.keys.outputs.cargoRegistry_restore }}
+
+      - name: Cache layer 4/6 - cargo git
+        uses: actions/cache@v4
+        with:
+          path: ~/.cargo/git
+          key: ${{ steps.keys.outputs.cargoGit }}
+          restore-keys: ${{ steps.keys.outputs.cargoGit_restore }}
+
+      - name: Cache layer 5/6 - cargo target
+        uses: actions/cache@v4
+        with:
+          path: target
+          key: ${{ steps.keys.outputs.cargoTarget }}
+          restore-keys: ${{ steps.keys.outputs.cargoTarget_restore }}
+
+      - name: Cache layer 6/6 - Next.js build cache
+        uses: actions/cache@v4
+        with:
+          path: apps/overfit-web/.next/cache
+          key: ${{ steps.keys.outputs.next }}
+          restore-keys: ${{ steps.keys.outputs.next_restore }}
+
+      - name: Install (frozen lockfile)
         run: pnpm install --frozen-lockfile
 
       - name: Generate fixtures
         run: pnpm fixtures:generate
 
-      # TODO(variant-c): setup Rust toolchain (cargo) for overfit-api
-      # TODO(variant-c): typecheck/lint/test overfit-web (Next.js) + cargo test overfit-api
-      # TODO(variant-c): generate the API client from OpenAPI / JSON Schema
-      # TODO(variant-c): build (web + rust) and measure build time
-      # TODO(variant-c): docker build (multi-stage, multi-language) and measure docker build time
-      # TODO(variant-c): run the @signalops/test-scenarios suite for this variant
-      # TODO(variant-c): collect per-variant metrics and upload as artifact
-      - name: Placeholder
-        run: pnpm ci:overfit
+      - name: Warm Nx cache (typecheck + build, overfit scope)
+        run: pnpm exec nx run-many -t typecheck build --projects=tag:scope:overfit --exclude=overfit-api
+
+      - name: Warm cargo caches (build + compile test binaries)
+        run: |
+          cargo build -p overfit-api --release
+          cargo test --workspace --no-run
+
+  # ---- Gate: the real quality gate across both toolchains ----------------------------------
+  gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+
+      - name: Derive composite cache keys
+        id: keys
+        run: node tools/overfit-ci/cache-key.mjs --github
+
+      - name: Resolve pnpm store dir
+        id: pnpm
+        run: echo "dir=$(pnpm store path --silent)" >> "$GITHUB_OUTPUT"
+
+      # ---- restore the six cache layers (cascade restore-keys from the warmed main run) ----
+      - name: Cache layer 1/6 - pnpm store
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.pnpm.outputs.dir }}
+          key: ${{ steps.keys.outputs.pnpm }}
+          restore-keys: ${{ steps.keys.outputs.pnpm_restore }}
+
+      - name: Cache layer 2/6 - Nx local cache
+        uses: actions/cache@v4
+        with:
+          path: .nx/cache
+          key: ${{ steps.keys.outputs.nx }}
+          restore-keys: ${{ steps.keys.outputs.nx_restore }}
+
+      - name: Cache layer 3/6 - cargo registry
+        uses: actions/cache@v4
+        with:
+          path: ~/.cargo/registry
+          key: ${{ steps.keys.outputs.cargoRegistry }}
+          restore-keys: ${{ steps.keys.outputs.cargoRegistry_restore }}
+
+      - name: Cache layer 4/6 - cargo git
+        uses: actions/cache@v4
+        with:
+          path: ~/.cargo/git
+          key: ${{ steps.keys.outputs.cargoGit }}
+          restore-keys: ${{ steps.keys.outputs.cargoGit_restore }}
+
+      - name: Cache layer 5/6 - cargo target
+        uses: actions/cache@v4
+        with:
+          path: target
+          key: ${{ steps.keys.outputs.cargoTarget }}
+          restore-keys: ${{ steps.keys.outputs.cargoTarget_restore }}
+
+      - name: Cache layer 6/6 - Next.js build cache
+        uses: actions/cache@v4
+        with:
+          path: apps/overfit-web/.next/cache
+          key: ${{ steps.keys.outputs.next }}
+          restore-keys: ${{ steps.keys.outputs.next_restore }}
+
+      - name: Install (frozen lockfile)
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate fixtures
+        run: pnpm fixtures:generate
+
+      - name: Isolation guard (graph-closure proof)
+        run: pnpm overfit:scope:guard
+
+      - name: Format - Rust (cargo fmt)
+        run: cargo fmt --all --check
+
+      - name: Format - TS/TSX (Prettier, Overfit scope)
+        run: pnpm format:check:overfit
+
+      - name: Lint - TS/TSX (oxlint via Nx, Overfit scope)
+        run: pnpm exec nx run-many -t lint --projects=tag:scope:overfit --exclude=overfit-api
+
+      - name: Lint - Rust (clippy)
+        run: cargo clippy --workspace --all-targets
+
+      - name: Typecheck (tsc via Nx, Overfit scope)
+        run: pnpm exec nx run-many -t typecheck --projects=tag:scope:overfit --exclude=overfit-api
+
+      - name: Overfit quality gates (contracts / schema / docs / policy / bundle)
+        run: |
+          pnpm overfit:contracts:check
+          pnpm overfit:quality
+
+      - name: Test - TS/TSX (vitest via Nx, Overfit scope)
+        run: pnpm exec nx run-many -t test --projects=tag:scope:overfit --exclude=overfit-api
+
+      - name: Test - Rust (cargo test)
+        run: cargo test --workspace
+
+      - name: Build - TS/TSX (next + tsc via Nx, Overfit scope)
+        run: pnpm exec nx run-many -t build --projects=tag:scope:overfit --exclude=overfit-api
+
+      - name: Build - Rust (release)
+        run: cargo build -p overfit-api --release
+
+      # ---- Docker: two images, two dedicated BuildKit GHA cache scopes ----------------------
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Docker build (web) - scope overfit-web
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: apps/overfit-web/Dockerfile
+          tags: signalops-overfit-web:ci
+          load: true
+          cache-from: type=gha,scope=overfit-web
+          cache-to: type=gha,scope=overfit-web,mode=max
+
+      - name: Docker build (api) - scope overfit-api
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: apps/overfit-api/Dockerfile
+          tags: signalops-overfit-api:ci
+          load: true
+          cache-from: type=gha,scope=overfit-api
+          cache-to: type=gha,scope=overfit-api,mode=max
+
+      - name: Upload isolation report (audit trail)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: overfit-isolation-report
+          path: tools/metrics/results/ci/overfit-isolation.json
+          if-no-files-found: ignore

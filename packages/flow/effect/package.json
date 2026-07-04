@@ -1,6 +1,7 @@
 {
   "name": "@signalops/flow-effect",
   "version": "0.0.0",
+  "nx": { "tags": ["scope:flow", "type:effect"] },
   "private": true,
   "description": "Flow variant — shared Effect primitives: typed Flow errors, request-id, ApiError mapping. Framework-free (effect + contracts only).",
   "type": "module",

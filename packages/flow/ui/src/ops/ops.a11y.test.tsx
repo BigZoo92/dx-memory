@@ -7,9 +7,7 @@ import type { OpsLogRow } from './types'
 describe('RequestIdBadge accessibility', () => {
   it('gives the copy button an accessible name that includes the request id', () => {
     render(<RequestIdBadge requestId="req_abc123" />)
-    expect(
-      screen.getByRole('button', { name: /copy request id req_abc123/i })
-    ).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /copy request id req_abc123/i })).toBeInTheDocument()
   })
 
   it('exposes a polite live region for the copy confirmation', () => {

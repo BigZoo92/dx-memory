@@ -38,10 +38,7 @@ function redactValue(value: unknown, depth: number): unknown {
   return String(value)
 }
 
-export function redactRecord(
-  record: Record<string, unknown>,
-  depth = 0
-): Record<string, unknown> {
+export function redactRecord(record: Record<string, unknown>, depth = 0): Record<string, unknown> {
   const out: Record<string, unknown> = {}
   for (const [key, value] of Object.entries(record)) {
     out[key] = SENSITIVE_KEY.test(key) ? REDACTED : redactValue(value, depth)

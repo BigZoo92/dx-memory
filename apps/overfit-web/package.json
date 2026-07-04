@@ -10,7 +10,7 @@
     "start": "next start -p 3300",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "test": "vitest run",
-    "lint": "next lint"
+    "lint": "oxlint app"
   },
   "dependencies": {
     "@signalops/overfit-api-client": "workspace:*",

@@ -1,0 +1,26 @@
+{
+  "$comment": "Declarative isolation contract for the Overfit variant CI. verify-isolation.mjs enforces every rule here against the REAL Nx project graph (not names). This manifest is deliberately explicit: Overfit's philosophy is that correctness is pinned down by configuration, at the cost of more moving parts to maintain.",
+  "manifestVersion": "1.0.0",
+  "variant": "overfit",
+  "roots": ["overfit-web", "overfit-api"],
+  "ownScope": "scope:overfit",
+  "allowedScopes": ["scope:overfit"],
+  "forbiddenScopes": ["scope:flow", "scope:friction", "scope:lab", "scope:metrics", "scope:shared"],
+  "$comment_shared": "Unlike Flow, Overfit is self-contained: it consumes NO @signalops shared socle package (it generates its own contracts via overfit-contracts-generated). So scope:shared is forbidden here — if a shared dependency ever appears in Overfit's closure it is a real architectural regression and CI must fail.",
+  "expectedProjectCount": { "min": 14, "max": 18 },
+  "requiredProjects": [
+    "overfit-web",
+    "overfit-api",
+    "overfit-ui",
+    "overfit-api-client",
+    "overfit-contracts-generated",
+    "overfit-generated-manifests",
+    "overfit-quality-gates",
+    "overfit-ai-governance"
+  ],
+  "rustWorkspace": {
+    "$comment": "The Rust side is validated by cargo, not Nx. Listed here so the report can assert the overfit-api Nx node maps to the cargo crate and nothing crosses variants at the crate level either.",
+    "cargoRoot": ".",
+    "apiCrate": "overfit-api"
+  }
+}

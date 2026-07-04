@@ -168,12 +168,16 @@ export function SettingsScreen({ variant }: { variant: SettingsVariant }) {
           subtitle="Errors, alerts and diagnostics captured during this demo session."
         />
         <p style={{ margin: '0 0 12px', color: 'var(--so-slate-600, #475467)', fontSize: 14 }}>
-          Inspect the error inbox, active alerts, run-health counters and breadcrumbs, and download a
-          redacted diagnostic pack.
+          Inspect the error inbox, active alerts, run-health counters and breadcrumbs, and download
+          a redacted diagnostic pack.
         </p>
         <a
           href={appHref('/ops')}
-          style={{ color: 'var(--so-accent-hover, #9a5100)', fontWeight: 600, textDecoration: 'none' }}
+          style={{
+            color: 'var(--so-accent-hover, #9a5100)',
+            fontWeight: 600,
+            textDecoration: 'none'
+          }}
         >
           Open operational health
         </a>

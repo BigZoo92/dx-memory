@@ -73,7 +73,9 @@ export function SignalsPage({ initialSearch = '' }: { initialSearch?: string }) 
       .then((d) => {
         setData(d)
         // Telemetry breadcrumb — the "too monitored" client step. Fire-and-forget.
-        void overfitApi.postLog({ level: 'info', message: `signals.page loaded ${d.items.length} rows` }).catch(() => {})
+        void overfitApi
+          .postLog({ level: 'info', message: `signals.page loaded ${d.items.length} rows` })
+          .catch(() => {})
       })
       .catch((e: ApiError) => setError(e))
       .finally(() => setLoading(false))
@@ -160,31 +162,61 @@ export function SignalsPage({ initialSearch = '' }: { initialSearch?: string }) 
               }}
             />
           </div>
-          <FilterSelect id="f-sev" label="Severity" value={severity} onChange={setSeverity} setPage={setPage}>
+          <FilterSelect
+            id="f-sev"
+            label="Severity"
+            value={severity}
+            onChange={setSeverity}
+            setPage={setPage}
+          >
             {SEVERITIES.map((s) => (
               <option key={s} value={s}>
                 {cap(s)}
               </option>
             ))}
           </FilterSelect>
-          <FilterSelect id="f-status" label="Status" value={status} onChange={setStatus} setPage={setPage}>
+          <FilterSelect
+            id="f-status"
+            label="Status"
+            value={status}
+            onChange={setStatus}
+            setPage={setPage}
+          >
             {STATUSES.map((s) => (
               <option key={s} value={s}>
                 {cap(s)}
               </option>
             ))}
           </FilterSelect>
-          <FilterSelect id="f-source" label="Source" value={source} onChange={setSource} setPage={setPage}>
+          <FilterSelect
+            id="f-source"
+            label="Source"
+            value={source}
+            onChange={setSource}
+            setPage={setPage}
+          >
             {SOURCES.map((s) => (
               <option key={s} value={s}>
                 {SOURCE_LABEL[s]}
               </option>
             ))}
           </FilterSelect>
-          <FilterSelect id="f-assigned" label="Assigned to" value={assignedTo} onChange={setAssignedTo} setPage={setPage}>
+          <FilterSelect
+            id="f-assigned"
+            label="Assigned to"
+            value={assignedTo}
+            onChange={setAssignedTo}
+            setPage={setPage}
+          >
             <option value="unassigned">Unassigned</option>
           </FilterSelect>
-          <FilterSelect id="f-trend" label="Risk trend" value={riskTrend} onChange={setRiskTrend} setPage={setPage}>
+          <FilterSelect
+            id="f-trend"
+            label="Risk trend"
+            value={riskTrend}
+            onChange={setRiskTrend}
+            setPage={setPage}
+          >
             {RISK_TRENDS.map((t) => (
               <option key={t.value} value={t.value}>
                 {t.label}
@@ -192,7 +224,7 @@ export function SignalsPage({ initialSearch = '' }: { initialSearch?: string }) 
             ))}
           </FilterSelect>
           <div className="field">
-            <label className="fieldLabel">Reset</label>
+            <span className="fieldLabel">Reset</span>
             <button className="btn btn-secondary" onClick={resetFilters}>
               Reset filters
             </button>
@@ -257,7 +289,9 @@ export function SignalsPage({ initialSearch = '' }: { initialSearch?: string }) 
                     Created
                   </th>
                   <th>Linked incident</th>
-                  <th></th>
+                  <th>
+                    <span className="visually-hidden">Actions</span>
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -287,7 +321,13 @@ export function SignalsPage({ initialSearch = '' }: { initialSearch?: string }) 
                     <td>
                       <RiskCell score={s.riskScore} />
                     </td>
-                    <td>{s.riskTrend ? <RiskTrendBadge trend={s.riskTrend} /> : <span className="muted">—</span>}</td>
+                    <td>
+                      {s.riskTrend ? (
+                        <RiskTrendBadge trend={s.riskTrend} />
+                      ) : (
+                        <span className="muted">—</span>
+                      )}
+                    </td>
                     <td>
                       {s.confidenceAvailable ? (
                         s.confidenceLabel
@@ -307,7 +347,10 @@ export function SignalsPage({ initialSearch = '' }: { initialSearch?: string }) 
                       )}
                     </td>
                     <td>
-                      <a href={overfitHref(`/signals/${s.id}`)} className="btn btn-secondary btn-sm">
+                      <a
+                        href={overfitHref(`/signals/${s.id}`)}
+                        className="btn btn-secondary btn-sm"
+                      >
                         View
                       </a>
                     </td>
@@ -372,7 +415,19 @@ function FilterSelect(props: {
 }
 
 function exportCsv(rows: SignalRowVM[]) {
-  const header = ['id', 'title', 'severity', 'status', 'source', 'riskScore', 'riskTrend', 'confidence', 'assignedTo', 'createdAt', 'hasLinkedIncident']
+  const header = [
+    'id',
+    'title',
+    'severity',
+    'status',
+    'source',
+    'riskScore',
+    'riskTrend',
+    'confidence',
+    'assignedTo',
+    'createdAt',
+    'hasLinkedIncident'
+  ]
   const lines = [header.join(',')]
   for (const s of rows) {
     lines.push(

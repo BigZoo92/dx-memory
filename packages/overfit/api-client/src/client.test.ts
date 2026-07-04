@@ -70,7 +70,13 @@ describe('OverfitApiClient', () => {
         throw new TypeError("Failed to execute 'fetch' on 'Window': Illegal invocation")
       }
       return Promise.resolve(
-        jsonResponse({ status: 'ok', version: '0.1.0', variant: 'Variant C', datasetVersion: 'v2.4.0', uptimeSeconds: 1 })
+        jsonResponse({
+          status: 'ok',
+          version: '0.1.0',
+          variant: 'Variant C',
+          datasetVersion: 'v2.4.0',
+          uptimeSeconds: 1
+        })
       )
     }
     globalThis.fetch = strictFetch as unknown as typeof fetch

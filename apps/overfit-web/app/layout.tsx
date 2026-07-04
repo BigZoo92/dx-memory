@@ -5,7 +5,8 @@ import { AppShell } from './components/AppShell'
 
 export const metadata: Metadata = {
   title: 'SignalOps — Variant C (Overfit)',
-  description: 'Operational signals dashboard. Overfit variant: over-engineered internals, identical product.'
+  description:
+    'Operational signals dashboard. Overfit variant: over-engineered internals, identical product.'
 }
 
 export default function RootLayout({ children }: { children: ReactNode }) {

@@ -1,0 +1,82 @@
+{
+  "variant": "overfit",
+  "manifestVersion": "1.0.0",
+  "generatedAt": "2026-07-04T14:49:49.210Z",
+  "roots": [
+    "overfit-web",
+    "overfit-api"
+  ],
+  "closureSize": 13,
+  "taggedSize": 16,
+  "members": [
+    "overfit-api",
+    "overfit-api-client",
+    "overfit-contracts-generated",
+    "overfit-feature-compare",
+    "overfit-feature-dashboard",
+    "overfit-feature-dx-metrics",
+    "overfit-feature-incidents",
+    "overfit-feature-ops",
+    "overfit-feature-settings",
+    "overfit-feature-signal-detail",
+    "overfit-feature-signals",
+    "overfit-ui",
+    "overfit-web"
+  ],
+  "scopes": [
+    {
+      "project": "overfit-api",
+      "scope": "scope:overfit"
+    },
+    {
+      "project": "overfit-api-client",
+      "scope": "scope:overfit"
+    },
+    {
+      "project": "overfit-contracts-generated",
+      "scope": "scope:overfit"
+    },
+    {
+      "project": "overfit-feature-compare",
+      "scope": "scope:overfit"
+    },
+    {
+      "project": "overfit-feature-dashboard",
+      "scope": "scope:overfit"
+    },
+    {
+      "project": "overfit-feature-dx-metrics",
+      "scope": "scope:overfit"
+    },
+    {
+      "project": "overfit-feature-incidents",
+      "scope": "scope:overfit"
+    },
+    {
+      "project": "overfit-feature-ops",
+      "scope": "scope:overfit"
+    },
+    {
+      "project": "overfit-feature-settings",
+      "scope": "scope:overfit"
+    },
+    {
+      "project": "overfit-feature-signal-detail",
+      "scope": "scope:overfit"
+    },
+    {
+      "project": "overfit-feature-signals",
+      "scope": "scope:overfit"
+    },
+    {
+      "project": "overfit-ui",
+      "scope": "scope:overfit"
+    },
+    {
+      "project": "overfit-web",
+      "scope": "scope:overfit"
+    }
+  ],
+  "status": "isolated",
+  "violations": []
+}

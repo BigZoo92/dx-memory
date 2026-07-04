@@ -57,10 +57,14 @@ export function IncidentsPage() {
     resolvedList.length === 0
       ? 0
       : Math.round(
-          resolvedList.reduce((sum, i) => sum + (Date.parse(i.resolvedAt as string) - Date.parse(i.createdAt)), 0) /
-            resolvedList.length
+          resolvedList.reduce(
+            (sum, i) => sum + (Date.parse(i.resolvedAt as string) - Date.parse(i.createdAt)),
+            0
+          ) / resolvedList.length
         )
-  const resolvedThisWeek = resolvedList.filter((i) => REFERENCE_NOW - Date.parse(i.resolvedAt as string) <= WEEK_MS).length
+  const resolvedThisWeek = resolvedList.filter(
+    (i) => REFERENCE_NOW - Date.parse(i.resolvedAt as string) <= WEEK_MS
+  ).length
 
   const rows = all.filter((i) => {
     if (status && i.status !== status) return false
@@ -84,7 +88,11 @@ export function IncidentsPage() {
       {notice && (
         <div className="banner banner-ok">
           {notice}
-          <button className="btn btn-secondary btn-sm" style={{ marginLeft: 'auto' }} onClick={() => setNotice(null)}>
+          <button
+            className="btn btn-secondary btn-sm"
+            style={{ marginLeft: 'auto' }}
+            onClick={() => setNotice(null)}
+          >
             Dismiss
           </button>
         </div>
@@ -97,8 +105,17 @@ export function IncidentsPage() {
       ) : (
         <>
           <div className="grid-kpis">
-            <KpiCard kpi={{ label: 'Active incidents', value: active, trend: 'flat', trendLabel: 'currently open' }} />
-            <KpiCard kpi={{ label: 'Critical', value: critical, trend: 'up', trendLabel: 'this month' }} />
+            <KpiCard
+              kpi={{
+                label: 'Active incidents',
+                value: active,
+                trend: 'flat',
+                trendLabel: 'currently open'
+              }}
+            />
+            <KpiCard
+              kpi={{ label: 'Critical', value: critical, trend: 'up', trendLabel: 'this month' }}
+            />
             <KpiCard
               kpi={{
                 label: 'Avg resolution time',
@@ -108,7 +125,14 @@ export function IncidentsPage() {
                 trendLabel: 'faster than avg'
               }}
             />
-            <KpiCard kpi={{ label: 'Resolved this week', value: resolvedThisWeek, trend: 'up', trendLabel: 'vs last week' }} />
+            <KpiCard
+              kpi={{
+                label: 'Resolved this week',
+                value: resolvedThisWeek,
+                trend: 'up',
+                trendLabel: 'vs last week'
+              }}
+            />
           </div>
 
           <Card>
@@ -135,7 +159,7 @@ export function IncidentsPage() {
                 ))}
               </Field>
               <div className="field">
-                <label className="fieldLabel">Reset</label>
+                <span className="fieldLabel">Reset</span>
                 <button
                   className="btn btn-secondary"
                   onClick={() => {
@@ -165,7 +189,9 @@ export function IncidentsPage() {
                       <th>Linked signals</th>
                       <th>Owner</th>
                       <th>Open for</th>
-                      <th></th>
+                      <th>
+                        <span className="visually-hidden">Actions</span>
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
@@ -186,10 +212,17 @@ export function IncidentsPage() {
                         </td>
                         <td className="mono">{inc.linkedSignalIds.length}</td>
                         <td className="mono">{inc.owner}</td>
-                        <td>{inc.status === 'resolved' ? 'Closed' : ageSince(inc.createdAt, REFERENCE_NOW)}</td>
+                        <td>
+                          {inc.status === 'resolved'
+                            ? 'Closed'
+                            : ageSince(inc.createdAt, REFERENCE_NOW)}
+                        </td>
                         <td>
                           {inc.linkedSignalIds[0] ? (
-                            <a className="btn btn-secondary btn-sm" href={overfitHref(`/signals/${inc.linkedSignalIds[0]}`)}>
+                            <a
+                              className="btn btn-secondary btn-sm"
+                              href={overfitHref(`/signals/${inc.linkedSignalIds[0]}`)}
+                            >
                               View
                             </a>
                           ) : null}
@@ -205,8 +238,14 @@ export function IncidentsPage() {
       )}
 
       {dialogOpen && (
-        <div className="modalOverlay" onMouseDown={() => setDialogOpen(false)}>
-          <div className="modalCard" onMouseDown={(e) => e.stopPropagation()}>
+        <div
+          className="modalOverlay"
+          role="presentation"
+          onMouseDown={(e) => {
+            if (e.target === e.currentTarget) setDialogOpen(false)
+          }}
+        >
+          <div className="modalCard" role="dialog" aria-modal="true">
             <div className="modalHead">
               <h2 className="cardTitle" style={{ margin: 0 }}>
                 New incident
@@ -217,7 +256,8 @@ export function IncidentsPage() {
             </div>
             <div className="modalBody">
               <p className="muted" style={{ fontSize: 12.5 }}>
-                Demo build — the dataset is read-only, so this incident is confirmed but not persisted.
+                Demo build — the dataset is read-only, so this incident is confirmed but not
+                persisted.
               </p>
             </div>
             <div className="modalFoot">
@@ -228,7 +268,9 @@ export function IncidentsPage() {
                 className="btn btn-primary"
                 onClick={() => {
                   setDialogOpen(false)
-                  setNotice('New incident created — demo build, so it is not persisted to the dataset.')
+                  setNotice(
+                    'New incident created — demo build, so it is not persisted to the dataset.'
+                  )
                 }}
               >
                 Create incident
@@ -250,7 +292,11 @@ function Field(props: {
   return (
     <div className="field">
       <label className="fieldLabel">{props.label}</label>
-      <select className="select" value={props.value} onChange={(e) => props.onChange(e.target.value)}>
+      <select
+        className="select"
+        value={props.value}
+        onChange={(e) => props.onChange(e.target.value)}
+      >
         <option value="">All</option>
         {props.children}
       </select>

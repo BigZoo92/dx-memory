@@ -83,7 +83,11 @@ export interface PolicyScore {
 export function scoreChange(change: ChangeDescriptor): PolicyScore {
   const reasons: string[] = []
   if (change.touchesForbidden) {
-    return { score: 100, level: 'blocked', reasons: ['touches forbidden files (another variant or product spec)'] }
+    return {
+      score: 100,
+      level: 'blocked',
+      reasons: ['touches forbidden files (another variant or product spec)']
+    }
   }
   let score = 0
   score += Math.min(40, change.filesTouched)

@@ -1,6 +1,7 @@
 {
   "name": "@signalops/contracts",
   "version": "0.0.0",
+  "nx": { "tags": ["scope:shared", "type:contracts"] },
   "private": true,
   "description": "Shared types and API contracts for every SignalOps variant.",
   "type": "module",

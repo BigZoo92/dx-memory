@@ -24,8 +24,18 @@ describe('toInboxRows', () => {
 
   it('groups identical signatures into one row with a count and a window', () => {
     const rows = toInboxRows([
-      event({ message: 'boom', route: '/api/signals', status: 500, timestamp: '2026-01-01T00:00:00.000Z' }),
-      event({ message: 'boom', route: '/api/signals', status: 500, timestamp: '2026-01-01T00:01:00.000Z' })
+      event({
+        message: 'boom',
+        route: '/api/signals',
+        status: 500,
+        timestamp: '2026-01-01T00:00:00.000Z'
+      }),
+      event({
+        message: 'boom',
+        route: '/api/signals',
+        status: 500,
+        timestamp: '2026-01-01T00:01:00.000Z'
+      })
     ])
     expect(rows).toHaveLength(1)
     expect(rows[0].count).toBe(2)

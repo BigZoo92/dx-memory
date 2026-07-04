@@ -1,6 +1,7 @@
 {
   "name": "@signalops/flow-observability",
   "version": "0.0.0",
+  "nx": { "tags": ["scope:flow", "type:observability"] },
   "private": true,
   "description": "Flow variant — local-first observability: structured log events, breadcrumbs, alert rules, redaction, diagnostic pack. Framework-free core; Effect logger adapter isolated under ./effect.",
   "type": "module",

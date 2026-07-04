@@ -32,7 +32,9 @@ export function SettingsPage() {
     setForced(v)
     setBanner({
       tone: v ? 'error' : 'ok',
-      text: v ? 'Simulated API error is ON — the demo error path is armed.' : 'Simulated API error cleared.'
+      text: v
+        ? 'Simulated API error is ON — the demo error path is armed.'
+        : 'Simulated API error cleared.'
     })
   }
 

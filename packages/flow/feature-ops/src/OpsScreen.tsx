@@ -9,7 +9,11 @@ import {
   RunHealthSummary,
   downloadTextFile
 } from '@signalops/flow-ui'
-import { buildDiagnosticPack, getDefaultStore, getDefaultTrail } from '@signalops/flow-observability'
+import {
+  buildDiagnosticPack,
+  getDefaultStore,
+  getDefaultTrail
+} from '@signalops/flow-observability'
 import { getDemoControls, useHealth } from '@signalops/flow-api-client'
 import { toInboxRows } from './grouping'
 import { useOpsData } from './useOpsData'

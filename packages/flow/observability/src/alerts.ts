@@ -40,8 +40,7 @@ export const DEFAULT_ALERT_RULES: readonly AlertRule[] = [
     title: 'Repeated validation failures',
     windowMs: 120_000,
     threshold: 5,
-    match: (event) =>
-      event.errorTag === 'FlowValidationError' || event.errorCode === 'bad_request',
+    match: (event) => event.errorTag === 'FlowValidationError' || event.errorCode === 'bad_request',
     message: (count) => `${count} validation failures in the last two minutes`
   },
   {

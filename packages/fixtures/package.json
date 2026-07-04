@@ -1,6 +1,7 @@
 {
   "name": "@signalops/fixtures",
   "version": "0.0.0",
+  "nx": { "tags": ["scope:shared", "type:fixtures"] },
   "private": true,
   "description": "Deterministic dataset generator shared by every SignalOps variant.",
   "type": "module",

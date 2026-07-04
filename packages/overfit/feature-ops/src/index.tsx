@@ -42,7 +42,9 @@ export function OpsPage() {
       overfitApi.getAuditEvents().then(setAudit),
       overfitApi.getSchemaRegistry().then(setRegistry),
       overfitApi.getFeatureFlags().then(setFlags),
-      overfitApi.checkPolicy('route_access', { method: 'GET', route: '/api/signals' }).then(setPolicy)
+      overfitApi
+        .checkPolicy('route_access', { method: 'GET', route: '/api/signals' })
+        .then(setPolicy)
     ]).finally(() => setLoading(false))
   }
 
@@ -72,7 +74,9 @@ export function OpsPage() {
       <div className="pageHead">
         <div>
           <h1 className="pageTitle">Operational health</h1>
-          <p className="pageSubtitle">Health, telemetry, audit, schema registry, policies and diagnostics.</p>
+          <p className="pageSubtitle">
+            Health, telemetry, audit, schema registry, policies and diagnostics.
+          </p>
         </div>
         <div className="row">
           <button className="btn btn-secondary" onClick={refresh}>
@@ -254,7 +258,8 @@ export function OpsPage() {
                 <dd>{registry?.entryCount ?? 0}</dd>
               </dl>
               <div className="muted" style={{ fontSize: 12, marginTop: 8 }}>
-                {(registry?.entries ?? []).length} endpoints registered with request/response schema versions.
+                {(registry?.entries ?? []).length} endpoints registered with request/response schema
+                versions.
               </div>
             </Card>
 
@@ -265,7 +270,9 @@ export function OpsPage() {
                     <span>
                       {f.label} <span className="muted mono">· {f.key}</span>
                     </span>
-                    <span className={f.enabled ? 'delta-good' : 'delta-bad'}>{f.enabled ? 'on' : 'off'}</span>
+                    <span className={f.enabled ? 'delta-good' : 'delta-bad'}>
+                      {f.enabled ? 'on' : 'off'}
+                    </span>
                   </div>
                 ))}
               </div>
@@ -281,7 +288,9 @@ export function OpsPage() {
                 <dt>Policy</dt>
                 <dd>{policy.policy}</dd>
                 <dt>Allowed</dt>
-                <dd className={policy.allowed ? 'delta-good' : 'delta-bad'}>{String(policy.allowed)}</dd>
+                <dd className={policy.allowed ? 'delta-good' : 'delta-bad'}>
+                  {String(policy.allowed)}
+                </dd>
                 <dt>Reason</dt>
                 <dd>{policy.reason}</dd>
                 <dt>Obligations</dt>

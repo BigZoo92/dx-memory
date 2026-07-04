@@ -2,6 +2,7 @@
   "name": "@signalops/friction-api",
   "version": "0.0.0",
   "private": true,
+  "nx": { "tags": ["scope:friction", "type:api"] },
   "description": "SignalOps Variant A (Friction) backend. NestJS API over a local copy of the shared dataset.",
   "scripts": {
     "dev": "tsc -p tsconfig.json && node dist/main.js",

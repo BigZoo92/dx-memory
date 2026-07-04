@@ -1,6 +1,7 @@
 {
   "name": "@signalops/test-scenarios",
   "version": "0.0.0",
+  "nx": { "tags": ["scope:shared", "type:test-scenarios"] },
   "private": true,
   "description": "Common, typed user scenarios shared by every SignalOps variant's tests.",
   "type": "module",

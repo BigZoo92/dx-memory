@@ -52,12 +52,10 @@ describe('SignalsTable accessibility', () => {
         onSortingChange={noop}
       />
     )
-    const sorted = screen
-      .getAllByRole('columnheader')
-      .filter((h) => {
-        const value = h.getAttribute('aria-sort')
-        return value === 'ascending' || value === 'descending'
-      })
+    const sorted = screen.getAllByRole('columnheader').filter((h) => {
+      const value = h.getAttribute('aria-sort')
+      return value === 'ascending' || value === 'descending'
+    })
     expect(sorted).toHaveLength(1)
     expect(sorted[0]).toHaveAttribute('aria-sort', 'ascending')
   })

@@ -1,9 +1,28 @@
 name: flow-ci
 
-# Variant B — Flow. Fast, fine-grained, but never green-by-accident:
-#  • PRs run `nx affected` over only the projects touched by the diff.
-#  • main runs the full `nx run-many` + the multi-stage Docker build.
-# No `continue-on-error` anywhere — lint, typecheck, test and build all gate the pipeline.
+# Variant B - Flow. The "good DX" variant: fast, fine-grained, isolated, and never
+# green-by-accident.
+#
+# ISOLATION (see scripts/flow/ci-scope-guard.mjs): every task is scoped to
+# `tag:scope:flow` + `tag:scope:shared` via Nx tags, so Flow CI validates ONLY Flow's
+# own projects and the shared socle packages Flow actually depends on. It never runs a
+# friction-* / overfit-* / lab / metrics project. The scope guard fails the build if one
+# ever leaks in.
+#  - PRs run `nx affected` (base->head) intersected with the Flow scope.
+#  - main runs `nx run-many` over the whole Flow scope + the Docker build.
+#
+# PARITY: format -> lint -> typecheck -> test -> build (+ Flow-specific boundary/cycle/dead-code
+# gates + Docker on main). Same five quality-gate categories as Friction and Overfit.
+#
+# CACHE (deliberately simple - this is Flow's thesis): two layers only.
+#  1. pnpm store         - via actions/setup-node `cache: pnpm` (keyed on pnpm-lock.yaml).
+#  2. Nx local cache     - .nx/cache restored across runs (keyed on lockfile + sha, with
+#                          restore-keys for warm partial hits). Nx invalidates per task by
+#                          input hash, so a stale entry is never replayed.
+# We deliberately stop here. No Docker layer cache, no remote cache, no warm-up jobs: the
+# docker build only runs on main (low frequency) and the extra machinery would cost more DX
+# than it returns. Knowing where to STOP optimizing is the point of the Flow variant.
+# No `continue-on-error` on any quality gate.
 
 on:
   push:
@@ -19,26 +38,24 @@ on:
     branches: [main]
   workflow_dispatch:
 
-# Cancel superseded runs on the same ref so CI never reports a stale result.
 concurrency:
   group: flow-ci-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 env:
   NODE_VERSION: '22'
+  NX_DAEMON: 'false'
 
 jobs:
-  # ---- Pull requests: only what the diff affects -------------------------------------------
+  # ---- Pull requests: only what the diff affects, bounded to the Flow scope ---------------
   affected:
     if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
-          # Full history so Nx can diff base→head accurately.
-          fetch-depth: 0
+          fetch-depth: 0 # full history so Nx can diff base->head
 
-      # Version is inferred from the "packageManager" field in package.json.
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
 
@@ -46,7 +63,17 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: pnpm
+          cache: pnpm # cache layer 1: the pnpm store
+
+      # cache layer 2: Nx local task cache, reused across CI runs.
+      - name: Restore Nx cache
+        uses: actions/cache@v4
+        with:
+          path: .nx/cache
+          key: nx-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}-${{ github.sha }}
+          restore-keys: |
+            nx-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}-
+            nx-${{ runner.os }}-
 
       - name: Install (frozen lockfile)
         run: pnpm install --frozen-lockfile
@@ -54,49 +81,37 @@ jobs:
       - name: Generate fixtures
         run: pnpm fixtures:generate
 
-      # Sets NX_BASE / NX_HEAD to (last successful main commit → HEAD).
-      # Fallback when no prior successful run exists: NX_BASE defaults to the merge-base with main.
       - name: Derive Nx base/head
         uses: nrwl/nx-set-shas@v4
 
-      - name: Nx affected — lint, typecheck, test, build
-        run: pnpm exec nx affected -t lint typecheck test build --base=$NX_BASE --head=$NX_HEAD
+      - name: Scope guard (no foreign-variant project in Flow CI)
+        run: pnpm flow:scope:guard
+
+      - name: Format (oxfmt, Flow scope)
+        run: pnpm format:check:flow
+
+      - name: Nx affected (Flow scope) - lint, typecheck, test, build
+        run: pnpm exec nx affected -t lint typecheck test build --projects=tag:scope:flow,tag:scope:shared --base=$NX_BASE --head=$NX_HEAD
 
       - name: Architecture boundaries (dependency-cruiser)
         run: pnpm audit:flow:boundaries
 
-      - name: Circular dependencies (madge, generated route tree excluded)
+      - name: Circular dependencies (madge)
         run: pnpm audit:flow:cycles
 
       - name: Dead code / unused deps (knip)
         run: pnpm audit:flow:knip
 
-      # AI governance gate: secrets / cross-variant / boundaries are blocking (diffs base->head via
-      # the NX_BASE/NX_HEAD set above); dependency/docs/TODO findings are advisory.
       - name: AI governance check
         run: pnpm flow:ai-pr-check
 
-      - name: Collect Flow metrics (builds flow-app if affected)
-        run: pnpm exec nx run flow-app:metrics
-
-      - name: Upload metrics artifact
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: flow-metrics-pr
-          path: |
-            apps/flow-app/metrics.flow.json
-            packages/metrics/results/*.json
-          if-no-files-found: ignore
-
-  # ---- main: full verification + Docker ----------------------------------------------------
+  # ---- main: full Flow-scope verification + Docker ----------------------------------------
   main:
     if: github.event_name == 'push'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      # Version is inferred from the "packageManager" field in package.json.
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
 
@@ -106,19 +121,34 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
 
+      - name: Restore Nx cache
+        uses: actions/cache@v4
+        with:
+          path: .nx/cache
+          key: nx-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}-${{ github.sha }}
+          restore-keys: |
+            nx-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}-
+            nx-${{ runner.os }}-
+
       - name: Install (frozen lockfile)
         run: pnpm install --frozen-lockfile
 
       - name: Generate fixtures
         run: pnpm fixtures:generate
 
-      - name: Nx run-many — lint, typecheck, test, build
-        run: pnpm exec nx run-many -t lint typecheck test build
+      - name: Scope guard (no foreign-variant project in Flow CI)
+        run: pnpm flow:scope:guard
+
+      - name: Format (oxfmt, Flow scope)
+        run: pnpm format:check:flow
+
+      - name: Nx run-many (Flow scope) - lint, typecheck, test, build
+        run: pnpm exec nx run-many -t lint typecheck test build --projects=tag:scope:flow,tag:scope:shared
 
       - name: Architecture boundaries (dependency-cruiser)
         run: pnpm audit:flow:boundaries
 
-      - name: Circular dependencies (madge, generated route tree excluded)
+      - name: Circular dependencies (madge)
         run: pnpm audit:flow:cycles
 
       - name: Dead code / unused deps (knip)
@@ -127,40 +157,11 @@ jobs:
       - name: Docker build (multi-stage)
         run: pnpm exec nx run flow-app:docker-build
 
-      - name: Collect Flow + shared metrics
-        run: |
-          pnpm exec nx run flow-app:metrics
-          pnpm metrics:collect
-
-      - name: Upload metrics artifact
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: flow-metrics-main
-          path: |
-            apps/flow-app/metrics.flow.json
-            packages/metrics/results/*.json
-          if-no-files-found: error
-
-      - name: Generate Nx project graph
-        run: pnpm exec nx graph --file=flow-graph.html
-
-      - name: Upload Nx graph artifact
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: flow-nx-graph
-          path: flow-graph.html
-          if-no-files-found: ignore
-
-  # ---- Accessibility: SEPARATE job so Chromium never slows the fast lint/typecheck/test loop -------
-  # Runs in parallel on PRs. Pa11y (axe + HTML_CodeSniffer) is the gate; Lighthouse perf budgets start
-  # advisory (the flow:a11y script treats lhci as non-blocking). Flip continue-on-error to false once
-  # the a11y results are stable to make accessibility violations block the merge.
+  # ---- Accessibility: separate job so Chromium never slows the gate loop ------------------
   a11y:
     if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
-    continue-on-error: true
+    continue-on-error: true # advisory only; NOT a quality gate (see mission: probe vs gate)
     steps:
       - uses: actions/checkout@v4
 

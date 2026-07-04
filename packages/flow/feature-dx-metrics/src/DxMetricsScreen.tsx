@@ -116,7 +116,10 @@ function RunReadinessCard() {
       </div>
       <p className={styles.outcome}>
         Diagnostic pack available —{' '}
-        <a href={appHref('/ops')} style={{ color: 'var(--so-accent-hover, #9a5100)', fontWeight: 600 }}>
+        <a
+          href={appHref('/ops')}
+          style={{ color: 'var(--so-accent-hover, #9a5100)', fontWeight: 600 }}
+        >
           open Operational health
         </a>
         .

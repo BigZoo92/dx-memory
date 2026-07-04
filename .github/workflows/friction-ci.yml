@@ -1,7 +1,17 @@
 name: friction-ci
 
-# Variant A - Friction. One job, runs everything every time: no affected, no targeting,
-# no caching beyond the pnpm store, no a11y / Lighthouse / dependency-graph checks.
+# Variant A - Friction. One job, runs the full gate every time.
+#
+# ISOLATION: Friction is standalone - its Nx dependency closure is empty (it ships a local
+# copy of the dataset and shares no @signalops socle package). Every step targets the two
+# Friction projects by exact package name via `pnpm --filter @signalops/friction-{api,web}`,
+# which cannot match a flow-* / overfit-* / lab / metrics project. No cross-variant leakage
+# is structurally possible.
+#
+# PARITY: format -> lint -> typecheck -> test -> build (+ Docker). Same five quality-gate
+# categories as Flow and Overfit. Deliberately no `nx affected`, no targeting, no Nx cache,
+# no a11y/Lighthouse: Friction's identity in the lab is "no build optimization", so its only
+# cache is the pnpm store. This is intentional, not an oversight.
 
 on:
   push:
@@ -29,17 +39,17 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: pnpm
+          cache: pnpm # the only cache layer Friction gets: the pnpm store
 
       - name: Install (whole workspace)
         run: pnpm install --frozen-lockfile
 
-      - name: Prettier check
+      - name: Format (Prettier)
         run: |
           pnpm --filter @signalops/friction-api format:check
           pnpm --filter @signalops/friction-web format:check
 
-      - name: ESLint
+      - name: Lint (ESLint)
         run: |
           pnpm --filter @signalops/friction-api lint
           pnpm --filter @signalops/friction-web lint

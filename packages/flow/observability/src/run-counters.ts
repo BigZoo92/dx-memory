@@ -4,10 +4,7 @@ import type { FlowLogEvent, RunCounters } from './types'
  * Derive the operational Run counters from a window of events. Pure and cheap so the /dx-metrics Run
  * section and the Ops summary can recompute it on every render from the in-memory store.
  */
-export function computeRunCounters(
-  events: readonly FlowLogEvent[],
-  alertCount = 0
-): RunCounters {
+export function computeRunCounters(events: readonly FlowLogEvent[], alertCount = 0): RunCounters {
   const total = events.length
   let handledErrors = 0
   let unhandledErrors = 0

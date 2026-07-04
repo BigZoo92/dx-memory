@@ -46,7 +46,12 @@ export function ComparePage() {
           <p className="pageSubtitle">Before / after on a signal, and the user impact.</p>
         </div>
         <div className="row">
-          <select className="select" aria-label="Select signal" value={selected} onChange={(e) => setSelected(e.target.value)}>
+          <select
+            className="select"
+            aria-label="Select signal"
+            value={selected}
+            onChange={(e) => setSelected(e.target.value)}
+          >
             {options.map((s) => (
               <option key={s.id} value={s.id}>
                 {s.id} · {s.title}
@@ -72,7 +77,9 @@ export function ComparePage() {
                   <tr>
                     <th>Attribute</th>
                     <th>Before</th>
-                    <th></th>
+                    <th>
+                      <span className="visually-hidden">Change direction</span>
+                    </th>
                     <th>After</th>
                     <th>Change</th>
                   </tr>
@@ -84,7 +91,9 @@ export function ComparePage() {
                       <td>{a.before}</td>
                       <td aria-hidden>{a.changed ? '→' : ''}</td>
                       <td>{a.after}</td>
-                      <td className={`delta-${a.delta}`}>{a.delta === 'no-change' ? '—' : a.delta}</td>
+                      <td className={`delta-${a.delta}`}>
+                        {a.delta === 'no-change' ? '—' : a.delta}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -104,7 +113,8 @@ export function ComparePage() {
                       <div>
                         <div className="timelineLabel">{e.label}</div>
                         <div className="timelineMeta">
-                          {e.actor} · {new Date(e.createdAt).toISOString().slice(0, 16).replace('T', ' ')}
+                          {e.actor} ·{' '}
+                          {new Date(e.createdAt).toISOString().slice(0, 16).replace('T', ' ')}
                         </div>
                       </div>
                     </div>
