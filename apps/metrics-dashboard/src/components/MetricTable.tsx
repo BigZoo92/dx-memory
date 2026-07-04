@@ -19,7 +19,13 @@ export function MetricTable() {
   // Repo-level metrics (shared GitHub pipeline) tie across variants — they belong in the
   // GitHub / History / PR sections, not this per-variant comparison table.
   const perVariantKeys = useMemo(
-    () => Object.keys(summary.catalog).filter((k) => summary.catalog[k].scope !== 'repo'),
+    () =>
+      Object.keys(summary.catalog).filter((k) => {
+        // A well-formed catalog entry is an object with a string label/category; anything else
+        // (e.g. a stray `$comment_*` doc string) is not a metric and must not reach the sort.
+        const c = summary.catalog[k] as { label?: unknown; category?: unknown; scope?: string } | undefined
+        return typeof c?.label === 'string' && typeof c?.category === 'string' && c.scope !== 'repo'
+      }),
     []
   )
 

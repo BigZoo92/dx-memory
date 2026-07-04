@@ -43,7 +43,12 @@ const noHistory = argv.has('--no-history')
 
 const variantsCfg = JSON.parse(readFileSync(join(here, 'config', 'variants.config.json'), 'utf8'))
 const scoringCfg = JSON.parse(readFileSync(join(here, 'config', 'scoring.config.json'), 'utf8'))
-const catalog = scoringCfg.metrics
+// `metrics` in the scoring config carries `$comment_*` documentation strings alongside the
+// real metric entries. They are config-file annotations, never metrics — strip them so the
+// emitted catalog is a clean metric-key → CatalogEntry map (the dashboard sorts over its keys).
+const catalog = Object.fromEntries(
+  Object.entries(scoringCfg.metrics).filter(([key]) => !key.startsWith('$'))
+)
 
 function nowIso() {
   return new Date().toISOString()
