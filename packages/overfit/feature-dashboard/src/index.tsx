@@ -11,7 +11,8 @@ import {
   SeverityBadge,
   SkeletonRows,
   StatusDot,
-  formatSeverity
+  formatSeverity,
+  overfitHref
 } from '@signalops/overfit-ui'
 
 function sevColor(s: Severity): string {
@@ -131,7 +132,7 @@ export function DashboardPage() {
                 <div className="row" style={{ gap: 10 }}>
                   <span style={{ width: 9, height: 9, borderRadius: '50%', background: sevColor(s.severity) }} />
                   <div>
-                    <a href={`/signals/${s.id}`} className="cellTitle">
+                    <a href={overfitHref(`/signals/${s.id}`)} className="cellTitle">
                       {s.title}
                     </a>
                     <div className="cellSub">

@@ -1,0 +1,24 @@
+{
+  "name": "lab-web",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "sourceRoot": "apps/lab-web/src",
+  "tags": ["scope:lab", "type:app"],
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "outputs": ["{projectRoot}/dist"],
+      "cache": true,
+      "options": { "command": "pnpm --filter @signalops/lab-web build" }
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "cache": true,
+      "options": { "command": "pnpm --filter @signalops/lab-web typecheck" }
+    },
+    "dev": {
+      "executor": "nx:run-commands",
+      "options": { "command": "pnpm --filter @signalops/lab-web dev" }
+    }
+  }
+}

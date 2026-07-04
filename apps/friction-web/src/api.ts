@@ -3,7 +3,7 @@
 
 import type { ApiError } from './types'
 
-const BASE = (import.meta.env.VITE_API_BASE as string) || '/api'
+const BASE = ((import.meta.env.VITE_API_BASE as string) || '/api').replace(/\/+$/, '')
 
 // A demo flag toggled from Settings. When on, every read fails with a simulated error
 // (except health). Kept in a module-level variable-good enough for a demo.

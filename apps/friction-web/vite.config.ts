@@ -2,8 +2,12 @@
 import { defineConfig } from 'vitest/config'
 import react from '@vitejs/plugin-react'
 
+const configuredBasePath = process.env.VITE_BASE_PATH ?? '/'
+const basePath = configuredBasePath.endsWith('/') ? configuredBasePath : `${configuredBasePath}/`
+
 // Nothing fancy here. Dev server proxies /api to the NestJS backend.
 export default defineConfig({
+  base: basePath,
   plugins: [react()],
   server: {
     port: 3100,

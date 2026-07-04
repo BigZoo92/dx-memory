@@ -5,11 +5,14 @@ import react from '@vitejs/plugin-react'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const repoRoot = resolve(here, '..', '..')
+const configuredBasePath = process.env.VITE_BASE_PATH ?? '/metrics/'
+const basePath = configuredBasePath.endsWith('/') ? configuredBasePath : `${configuredBasePath}/`
 
 // The dashboard consumes the collector's output directly (no copy step) via the `@metrics`
 // alias. server.fs.allow is widened to the repo root so Vite can serve that JSON in dev.
 export default defineConfig({
   root: here,
+  base: basePath,
   plugins: [react()],
   resolve: {
     alias: {

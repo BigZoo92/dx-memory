@@ -1,0 +1,9 @@
+services:
+  dx-lab-gateway:
+    ports:
+      - "127.0.0.1:18080:8080"
+
+networks:
+  dokploy-network:
+    external: false
+    name: dx-memory-local-public

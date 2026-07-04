@@ -9,7 +9,7 @@ import {
   Toggle,
   type BannerTone
 } from '@signalops/flow-ui'
-import { useDemoControls, useHealth } from '@signalops/flow-api-client'
+import { appHref, useDemoControls, useHealth } from '@signalops/flow-api-client'
 import styles from './SettingsScreen.module.css'
 
 export type SettingsVariant = {
@@ -172,7 +172,7 @@ export function SettingsScreen({ variant }: { variant: SettingsVariant }) {
           redacted diagnostic pack.
         </p>
         <a
-          href="/ops"
+          href={appHref('/ops')}
           style={{ color: 'var(--so-accent-hover, #9a5100)', fontWeight: 600, textDecoration: 'none' }}
         >
           Open operational health

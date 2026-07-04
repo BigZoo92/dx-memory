@@ -39,11 +39,44 @@ export type RequestOptions = {
 
 const DEFAULT_TIMEOUT_MS = 10_000
 const DEFAULT_RETRIES = 2
+const DEFAULT_API_BASE = '/api'
+const DEFAULT_APP_BASE = '/'
 
 // Client-side observability: structured events + breadcrumbs into the in-memory store the Ops surface
 // reads. Framework-free core only (never the `/effect` adapter) so the client bundle stays tiny.
 const clientLogger = createLogger({ store: getDefaultStore(), runtime: 'api-client' })
 const breadcrumbs = getDefaultTrail()
+
+function trimTrailingSlash(value: string): string {
+  return value.length > 1 ? value.replace(/\/+$/, '') : value
+}
+
+function apiBaseUrl(): string {
+  return trimTrailingSlash(
+    import.meta.env.VITE_API_BASE_URL ?? import.meta.env.VITE_API_BASE ?? DEFAULT_API_BASE
+  )
+}
+
+function appBasePath(): string {
+  const base = import.meta.env.VITE_BASE_PATH ?? import.meta.env.VITE_APP_BASE_PATH ?? DEFAULT_APP_BASE
+  return base === '/' ? '/' : trimTrailingSlash(base)
+}
+
+function publicApiUrl(path: string): string {
+  const base = apiBaseUrl()
+  if (base === DEFAULT_API_BASE) return path
+  const pathWithoutApi = path.startsWith(`${DEFAULT_API_BASE}/`)
+    ? path.slice(DEFAULT_API_BASE.length)
+    : path
+  return `${base}${pathWithoutApi.startsWith('/') ? pathWithoutApi : `/${pathWithoutApi}`}`
+}
+
+export function appHref(path: string): string {
+  const base = appBasePath()
+  if (base === DEFAULT_APP_BASE) return path
+  const normalizedPath = path.startsWith('/') ? path : `/${path}`
+  return `${base}${normalizedPath}`
+}
 
 /** Build a query string from a partial record, dropping empty values. */
 export function toQueryString(params: Record<string, string | number | undefined>): string {
@@ -85,7 +118,7 @@ function fetchEffect(
 ): Effect.Effect<Response, FlowNetworkError> {
   return Effect.tryPromise({
     try: () =>
-      fetch(path, {
+      fetch(publicApiUrl(path), {
         method: options.method ?? 'GET',
         headers: { accept: 'application/json', 'x-request-id': requestId },
         signal: options.signal

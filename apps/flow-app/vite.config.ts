@@ -5,11 +5,14 @@ import { visualizer } from 'rollup-plugin-visualizer'
 import type { PluginOption } from 'vite'
 
 const shouldAnalyze = process.env.ANALYZE === 'true'
+const configuredBasePath = process.env.VITE_BASE_PATH ?? process.env.APP_BASE_PATH ?? '/'
+const basePath = configuredBasePath.endsWith('/') ? configuredBasePath : `${configuredBasePath}/`
 
 // TanStack Start app. `tanstackStart()` wires the file-based router plugin + SSR/Nitro build;
 // it must come before `@vitejs/plugin-react`. Scaffolded following the official
 // "Build from scratch" guide (https://tanstack.com/start/latest/docs/framework/react/build-from-scratch).
 export default defineConfig({
+  base: basePath,
   server: { port: 3000 },
   plugins: [
     tanstackStart(),

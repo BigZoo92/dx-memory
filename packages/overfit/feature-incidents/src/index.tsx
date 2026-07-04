@@ -13,7 +13,8 @@ import {
   SeverityBadge,
   SkeletonRows,
   ageSince,
-  formatDuration
+  formatDuration,
+  overfitHref
 } from '@signalops/overfit-ui'
 
 const REFERENCE_NOW = Date.parse('2026-06-29T12:00:00.000Z')
@@ -188,7 +189,7 @@ export function IncidentsPage() {
                         <td>{inc.status === 'resolved' ? 'Closed' : ageSince(inc.createdAt, REFERENCE_NOW)}</td>
                         <td>
                           {inc.linkedSignalIds[0] ? (
-                            <a className="btn btn-secondary btn-sm" href={`/signals/${inc.linkedSignalIds[0]}`}>
+                            <a className="btn btn-secondary btn-sm" href={overfitHref(`/signals/${inc.linkedSignalIds[0]}`)}>
                               View
                             </a>
                           ) : null}

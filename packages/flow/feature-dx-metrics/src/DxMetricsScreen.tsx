@@ -32,7 +32,7 @@ import {
   type IconName,
   type MetricsTableRow
 } from '@signalops/flow-ui'
-import { useDxMetrics } from '@signalops/flow-api-client'
+import { appHref, useDxMetrics } from '@signalops/flow-api-client'
 import { computeRunCounters, evaluateAlerts, getDefaultStore } from '@signalops/flow-observability'
 import { dxMetricsToCsv, dxMetricsToJson } from './export'
 import styles from './DxMetrics.module.css'
@@ -116,7 +116,7 @@ function RunReadinessCard() {
       </div>
       <p className={styles.outcome}>
         Diagnostic pack available —{' '}
-        <a href="/ops" style={{ color: 'var(--so-accent-hover, #9a5100)', fontWeight: 600 }}>
+        <a href={appHref('/ops')} style={{ color: 'var(--so-accent-hover, #9a5100)', fontWeight: 600 }}>
           open Operational health
         </a>
         .

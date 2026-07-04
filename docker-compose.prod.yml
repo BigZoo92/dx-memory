@@ -1,0 +1,79 @@
+name: dx-memory
+
+services:
+  dx-lab-gateway:
+    image: ${GHCR_IMAGE_NAME}-gateway:${APP_IMAGE_TAG}
+    restart: unless-stopped
+    environment:
+      APP_VERSION: ${APP_VERSION}
+      APP_COMMIT_SHA: ${APP_COMMIT_SHA}
+      APP_BUILD_TIME: ${APP_BUILD_TIME}
+    expose:
+      - "8080"
+    networks:
+      - dokploy-network
+      - dx-lab-internal
+
+  flow-app:
+    image: ${GHCR_IMAGE_NAME}-flow:${APP_IMAGE_TAG}
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: "3000"
+    expose:
+      - "3000"
+    networks:
+      - dx-lab-internal
+
+  friction-web:
+    image: ${GHCR_IMAGE_NAME}-friction-web:${APP_IMAGE_TAG}
+    restart: unless-stopped
+    expose:
+      - "8080"
+    networks:
+      - dx-lab-internal
+    depends_on:
+      - friction-api
+
+  friction-api:
+    image: ${GHCR_IMAGE_NAME}-friction-api:${APP_IMAGE_TAG}
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: "3101"
+    expose:
+      - "3101"
+    networks:
+      - dx-lab-internal
+
+  overfit-web:
+    image: ${GHCR_IMAGE_NAME}-overfit-web:${APP_IMAGE_TAG}
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: "3300"
+      OVERFIT_API_URL: http://overfit-api:3200
+      NEXT_PUBLIC_OVERFIT_BASE_PATH: /overfit
+    expose:
+      - "3300"
+    networks:
+      - dx-lab-internal
+    depends_on:
+      - overfit-api
+
+  overfit-api:
+    image: ${GHCR_IMAGE_NAME}-overfit-api:${APP_IMAGE_TAG}
+    restart: unless-stopped
+    environment:
+      OVERFIT_API_PORT: "3200"
+      RUST_LOG: info
+    expose:
+      - "3200"
+    networks:
+      - dx-lab-internal
+
+networks:
+  dokploy-network:
+    external: true
+  dx-lab-internal:
+    internal: true

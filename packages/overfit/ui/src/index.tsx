@@ -27,6 +27,17 @@ export * from './format'
 export { Icon } from './icons'
 export type { IconName } from './icons'
 
+function publicBasePath(): string {
+  const base = process.env.NEXT_PUBLIC_OVERFIT_BASE_PATH ?? ''
+  return base === '/' ? '' : base.replace(/\/+$/, '')
+}
+
+export function overfitHref(path: string): string {
+  const base = publicBasePath()
+  const normalizedPath = path.startsWith('/') ? path : `/${path}`
+  return `${base}${normalizedPath}`
+}
+
 export function Card(props: {
   title?: string
   right?: ReactNode

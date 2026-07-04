@@ -18,6 +18,7 @@ import {
   confidenceLabel,
   confidencePercent,
   formatSource,
+  overfitHref,
   riskColor,
   riskTrendLabel
 } from '@signalops/overfit-ui'
@@ -53,7 +54,7 @@ export function SignalDetailPage({ id }: { id: string }) {
   if (error)
     return (
       <div className="page">
-        <a href="/signals" className="linkAccent">
+        <a href={overfitHref('/signals')} className="linkAccent">
           ← Back to signals
         </a>
         <div className="errorState">
@@ -69,7 +70,7 @@ export function SignalDetailPage({ id }: { id: string }) {
 
   return (
     <div className="page">
-      <a href="/signals" className="linkAccent">
+      <a href={overfitHref('/signals')} className="linkAccent">
         ← Back to signals
       </a>
 
@@ -191,7 +192,7 @@ export function SignalDetailPage({ id }: { id: string }) {
 
           <Card title="Linked incident">
             {detail.linkedIncident ? (
-              <a href="/incidents" className="listRow" style={{ textDecoration: 'none' }}>
+              <a href={overfitHref('/incidents')} className="listRow" style={{ textDecoration: 'none' }}>
                 <div>
                   <div className="cellTitle">{detail.linkedIncident.title}</div>
                   <div className="cellSub mono">{detail.linkedIncident.id}</div>

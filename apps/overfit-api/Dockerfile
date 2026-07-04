@@ -29,9 +29,15 @@ RUN cargo test --workspace --release
 
 # ---- runtime: slim, non-root, healthchecked --------------------------------
 FROM debian:bookworm-slim AS runtime
+ARG APP_VERSION=0.0.0
+ARG APP_COMMIT_SHA=unknown
+ARG APP_BUILD_TIME=unknown
 LABEL org.opencontainers.image.title="signalops-overfit-api" \
       org.opencontainers.image.description="SignalOps Variant C (Overfit) Rust/Axum API" \
       org.opencontainers.image.source="https://example.invalid/signalops-dx-lab" \
+      org.opencontainers.image.version=$APP_VERSION \
+      org.opencontainers.image.revision=$APP_COMMIT_SHA \
+      org.opencontainers.image.created=$APP_BUILD_TIME \
       signalops.variant="overfit"
 RUN apt-get update \
   && apt-get install -y --no-install-recommends ca-certificates curl \

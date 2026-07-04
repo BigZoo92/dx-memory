@@ -1,0 +1,190 @@
+name: release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: 'Existing release tag to redeploy, for example v1.0.0'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  packages: write
+
+env:
+  NODE_VERSION: '22'
+  SMOKE_BASE_URL: https://dx-memory.enzogivernaud.fr
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Resolve release metadata
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --tags --force
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            release_tag="${{ inputs.release_tag }}"
+            is_redeploy="true"
+          else
+            release_tag="${GITHUB_REF_NAME}"
+            is_redeploy="false"
+          fi
+          if [[ ! "$release_tag" =~ ^v[0-9]+(\.[0-9]+){0,2}([.-][A-Za-z0-9]+)?$ ]]; then
+            echo "Release tag must start with v and contain a version-like value." >&2
+            exit 1
+          fi
+          source_sha="$(git rev-list -n 1 "$release_tag")"
+          build_time="$(date -u +"%Y-%m-%dT%H:%M:%S.000Z")"
+          {
+            echo "RELEASE_TAG=$release_tag"
+            echo "SOURCE_SHA=$source_sha"
+            echo "BUILD_TIME=$build_time"
+            echo "IS_REDEPLOY=$is_redeploy"
+            echo "GHCR_IMAGE_NAME=${{ vars.GHCR_IMAGE_NAME }}"
+          } >> "$GITHUB_ENV"
+          if [[ -z "${{ vars.GHCR_IMAGE_NAME }}" ]]; then
+            echo "Repository variable GHCR_IMAGE_NAME is required." >&2
+            exit 1
+          fi
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Validate code and production builds
+        if: env.IS_REDEPLOY == 'false'
+        shell: bash
+        run: |
+          set -euo pipefail
+          pnpm fixtures:generate
+          pnpm --filter @signalops/lab-web build
+          VITE_BASE_PATH=/metrics/ pnpm --filter @signalops/metrics-dashboard build
+          VITE_BASE_PATH=/flow/ VITE_API_BASE_URL=/api/flow pnpm --filter @signalops/flow-app build
+          VITE_BASE_PATH=/friction/ VITE_API_BASE=/api/friction pnpm --filter @signalops/friction-web build
+          pnpm --filter @signalops/friction-api build
+          OVERFIT_BASE_PATH=/overfit NEXT_PUBLIC_OVERFIT_BASE_PATH=/overfit NEXT_PUBLIC_OVERFIT_API_BASE=/api/overfit pnpm --filter @signalops/overfit-web build
+          cargo test --workspace
+          cargo build -p overfit-api --release
+          docker compose --env-file .env.production.example -f docker-compose.prod.yml config
+          pnpm compose:prod:validate
+
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to GHCR
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+
+      - name: Build and push release images
+        if: env.IS_REDEPLOY == 'false'
+        shell: bash
+        run: |
+          set -euo pipefail
+          common_args=(
+            --push
+            --build-arg "APP_VERSION=$RELEASE_TAG"
+            --build-arg "APP_COMMIT_SHA=$SOURCE_SHA"
+            --build-arg "APP_BUILD_TIME=$BUILD_TIME"
+            --label "org.opencontainers.image.version=$RELEASE_TAG"
+            --label "org.opencontainers.image.revision=$SOURCE_SHA"
+            --label "org.opencontainers.image.created=$BUILD_TIME"
+            --annotation "org.opencontainers.image.version=$RELEASE_TAG"
+            --annotation "org.opencontainers.image.revision=$SOURCE_SHA"
+            --annotation "org.opencontainers.image.created=$BUILD_TIME"
+          )
+
+          docker buildx build "${common_args[@]}" \
+            -f infra/gateway/Dockerfile \
+            -t "$GHCR_IMAGE_NAME-gateway:$RELEASE_TAG" \
+            -t "$GHCR_IMAGE_NAME-gateway:sha-$SOURCE_SHA" .
+
+          docker buildx build "${common_args[@]}" \
+            --build-arg VITE_BASE_PATH=/flow/ \
+            --build-arg VITE_API_BASE_URL=/api/flow \
+            -f apps/flow-app/Dockerfile \
+            -t "$GHCR_IMAGE_NAME-flow:$RELEASE_TAG" \
+            -t "$GHCR_IMAGE_NAME-flow:sha-$SOURCE_SHA" .
+
+          docker buildx build "${common_args[@]}" \
+            --build-arg VITE_BASE_PATH=/friction/ \
+            --build-arg VITE_API_BASE=/api/friction \
+            -f infra/docker/friction-web.Dockerfile \
+            -t "$GHCR_IMAGE_NAME-friction-web:$RELEASE_TAG" \
+            -t "$GHCR_IMAGE_NAME-friction-web:sha-$SOURCE_SHA" .
+
+          docker buildx build "${common_args[@]}" \
+            -f infra/docker/friction-api.Dockerfile \
+            -t "$GHCR_IMAGE_NAME-friction-api:$RELEASE_TAG" \
+            -t "$GHCR_IMAGE_NAME-friction-api:sha-$SOURCE_SHA" .
+
+          docker buildx build "${common_args[@]}" \
+            --build-arg OVERFIT_BASE_PATH=/overfit \
+            --build-arg NEXT_PUBLIC_OVERFIT_BASE_PATH=/overfit \
+            --build-arg NEXT_PUBLIC_OVERFIT_API_BASE=/api/overfit \
+            -f apps/overfit-web/Dockerfile \
+            -t "$GHCR_IMAGE_NAME-overfit-web:$RELEASE_TAG" \
+            -t "$GHCR_IMAGE_NAME-overfit-web:sha-$SOURCE_SHA" .
+
+          docker buildx build "${common_args[@]}" \
+            -f apps/overfit-api/Dockerfile \
+            -t "$GHCR_IMAGE_NAME-overfit-api:$RELEASE_TAG" \
+            -t "$GHCR_IMAGE_NAME-overfit-api:sha-$SOURCE_SHA" .
+
+          {
+            echo "APP_IMAGE_TAG=$RELEASE_TAG"
+            echo "APP_VERSION=$RELEASE_TAG"
+            echo "APP_COMMIT_SHA=$SOURCE_SHA"
+            echo "APP_BUILD_TIME=$BUILD_TIME"
+          } >> "$GITHUB_ENV"
+
+      - name: Validate existing images for manual redeploy
+        if: env.IS_REDEPLOY == 'true'
+        run: node scripts/release/validate-images.mjs
+
+      - name: Validate production compose
+        run: |
+          docker compose --env-file .env.production.example -f docker-compose.prod.yml config
+          pnpm compose:prod:validate
+
+      - name: Sync Dokploy compose
+        env:
+          DOKPLOY_URL: ${{ secrets.DOKPLOY_URL }}
+          DOKPLOY_API_KEY: ${{ secrets.DOKPLOY_API_KEY }}
+          DOKPLOY_COMPOSE_ID: ${{ secrets.DOKPLOY_COMPOSE_ID }}
+        run: node scripts/release/dokploy.mjs sync
+
+      - name: Trigger Dokploy deploy
+        env:
+          DOKPLOY_URL: ${{ secrets.DOKPLOY_URL }}
+          DOKPLOY_API_KEY: ${{ secrets.DOKPLOY_API_KEY }}
+          DOKPLOY_COMPOSE_ID: ${{ secrets.DOKPLOY_COMPOSE_ID }}
+        run: node scripts/release/dokploy.mjs deploy
+
+      - name: Wait for public deployment
+        run: node scripts/release/dokploy.mjs wait-public
+
+      - name: Production smoke
+        env:
+          SMOKE_BASE_URL: ${{ env.SMOKE_BASE_URL }}
+          SMOKE_EXPECTED_RELEASE_TAG: ${{ env.RELEASE_TAG }}
+        run: pnpm smoke:prod

@@ -40,6 +40,10 @@ export interface ClientOptions {
   fetchImpl?: typeof fetch
 }
 
+function defaultBaseUrl(): string {
+  return (process.env.NEXT_PUBLIC_OVERFIT_API_BASE ?? '/api').replace(/\/+$/, '')
+}
+
 let clientRequestCounter = 0
 function nextClientRequestId(): string {
   clientRequestCounter += 1
@@ -55,7 +59,7 @@ export class OverfitApiClient {
   private readonly fetchImpl: typeof fetch
 
   constructor(opts: ClientOptions = {}) {
-    this.baseUrl = opts.baseUrl ?? '/api'
+    this.baseUrl = opts.baseUrl ?? defaultBaseUrl()
     // Never store a bare reference to `globalThis.fetch`: called as `this.fetchImpl(...)` it would
     // lose its binding to `window` and throw "Illegal invocation". Wrap it so the browser always
     // receives `fetch` invoked with the correct receiver.
@@ -71,7 +75,7 @@ export class OverfitApiClient {
         headers: {
           'content-type': 'application/json',
           'x-overfit-client-request-id': clientRequestId,
-          ...(init?.headers ?? {})
+          ...init?.headers
         }
       })
     } catch (cause) {

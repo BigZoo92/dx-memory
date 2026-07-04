@@ -15,7 +15,8 @@ import {
   RiskTrendBadge,
   SeverityBadge,
   SkeletonRows,
-  StatusBadge
+  StatusBadge,
+  overfitHref
 } from '@signalops/overfit-ui'
 import {
   RISK_TRENDS,
@@ -271,7 +272,7 @@ export function SignalsPage({ initialSearch = '' }: { initialSearch?: string }) 
                       />
                     </td>
                     <td>
-                      <a href={`/signals/${s.id}`} className="cellTitle">
+                      <a href={overfitHref(`/signals/${s.id}`)} className="cellTitle">
                         {s.title}
                       </a>
                       <div className="cellSub mono">{s.id}</div>
@@ -306,7 +307,7 @@ export function SignalsPage({ initialSearch = '' }: { initialSearch?: string }) 
                       )}
                     </td>
                     <td>
-                      <a href={`/signals/${s.id}`} className="btn btn-secondary btn-sm">
+                      <a href={overfitHref(`/signals/${s.id}`)} className="btn btn-secondary btn-sm">
                         View
                       </a>
                     </td>

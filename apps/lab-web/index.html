@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="dx-memory-app" content="control-center" />
+    <title>DX MEMORY - Delivery Lab</title>
+  </head>
+  <body>
+    <div id="app" data-app="dx-memory-lab">
+      <header class="topbar" aria-label="Navigation principale">
+        <a class="brand" href="/" aria-label="DX Memory">
+          <span class="brand-mark" aria-hidden="true"></span>
+          <span>DX MEMORY</span>
+        </a>
+        <nav aria-label="Acces rapides">
+          <a href="/flow/">Flow</a>
+          <a href="/friction/">Friction</a>
+          <a href="/overfit/">Overfit</a>
+          <a href="/metrics/">Metrics</a>
+        </nav>
+      </header>
+
+      <main>
+        <section class="hero" aria-labelledby="hero-title">
+          <div class="hero-copy">
+            <p class="kicker">DX DELIVERY LAB</p>
+            <h1 id="hero-title">DX MEMORY</h1>
+            <p class="headline">Un même produit.<br />Trois systèmes de livraison.</p>
+            <p class="lede">
+              Le laboratoire compare l'effet de trois architectures sur le coût réel du
+              changement logiciel.
+            </p>
+            <div class="hero-actions" aria-label="Actions principales">
+              <a class="primary-link" href="/metrics/">Ouvrir les métriques</a>
+              <a class="secondary-link" href="/flow/">Explorer Flow</a>
+            </div>
+          </div>
+
+          <div class="lab-visual" aria-label="Carte du laboratoire DX">
+            <div class="visual-line"></div>
+            <div class="visual-node visual-node-main">
+              <span>DX</span>
+              <small>Gateway</small>
+            </div>
+            <div class="visual-track">
+              <span>FLOW</span>
+              <span>FRICTION</span>
+              <span>OVERFIT</span>
+            </div>
+            <div class="visual-caption">Build / Ship / Run / Change</div>
+          </div>
+        </section>
+
+        <section class="thesis" aria-labelledby="thesis-title">
+          <p class="quote">« Optimiser la DX pour une UX qui rapporte »</p>
+          <h2 id="thesis-title">Même surface utilisateur, coûts de livraison différents.</h2>
+        </section>
+
+        <section class="variants" aria-labelledby="variants-title">
+          <div class="section-head">
+            <p class="kicker">Comparer</p>
+            <h2 id="variants-title">Trois variantes, un produit visible.</h2>
+          </div>
+
+          <div class="variant-list">
+            <article class="variant-row">
+              <div>
+                <p class="variant-name">FLOW</p>
+                <h3>Optimisation équilibrée</h3>
+              </div>
+              <p>L'optimisation reste un levier.</p>
+              <div class="row-end">
+                <span class="status" data-health-id="flow">
+                  <span class="status-dot" aria-hidden="true"></span>
+                  <span>Vérification...</span>
+                </span>
+                <a href="/flow/">Explorer Flow</a>
+              </div>
+            </article>
+
+            <article class="variant-row">
+              <div>
+                <p class="variant-name">FRICTION</p>
+                <h3>Coût de livraison élevé</h3>
+              </div>
+              <p>Chaque changement coûte davantage.</p>
+              <div class="row-end">
+                <span class="status" data-health-id="friction">
+                  <span class="status-dot" aria-hidden="true"></span>
+                  <span>Vérification...</span>
+                </span>
+                <a href="/friction/">Explorer Friction</a>
+              </div>
+            </article>
+
+            <article class="variant-row">
+              <div>
+                <p class="variant-name">OVERFIT</p>
+                <h3>Optimisation contre-productive</h3>
+              </div>
+              <p>L'optimisation devient elle-même le coût.</p>
+              <div class="row-end">
+                <span class="status" data-health-id="overfit">
+                  <span class="status-dot" aria-hidden="true"></span>
+                  <span>Vérification...</span>
+                </span>
+                <a href="/overfit/">Explorer Overfit</a>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section class="metrics-band" aria-labelledby="metrics-title">
+          <div>
+            <p class="kicker">BUILD / SHIP / RUN / CHANGE</p>
+            <h2 id="metrics-title">Comparer les signaux mesurés.</h2>
+            <p>
+              Les métriques distinguent ce qui relève des variantes de ce qui relève de la
+              chaîne commune du repository.
+            </p>
+          </div>
+          <div class="metrics-actions">
+            <span class="status" data-health-id="metrics">
+              <span class="status-dot" aria-hidden="true"></span>
+              <span>Vérification...</span>
+            </span>
+            <a class="primary-link" href="/metrics/">Ouvrir les métriques</a>
+            <button type="button" id="refresh-health">Rafraîchir les statuts</button>
+          </div>
+        </section>
+      </main>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
