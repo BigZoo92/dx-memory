@@ -8,9 +8,10 @@ import {
   SIGNAL_STATUSES,
   INCIDENT_IMPACTS,
   INCIDENT_STATUSES,
-  type IncidentsQuery,
-  type SignalsQuery
+  RISK_TRENDS,
+  type IncidentsQuery
 } from '@signalops/contracts'
+import type { FlowSignalsQuery } from '@signalops/flow-domain'
 import { FlowValidationError } from '@signalops/flow-effect'
 import { RequestContext } from '../effect/request-context'
 
@@ -38,6 +39,7 @@ const SignalsQuerySchema = Schema.Struct({
   severity: Schema.optional(Schema.Literal(...SIGNAL_SEVERITIES)),
   status: Schema.optional(Schema.Literal(...SIGNAL_STATUSES)),
   source: Schema.optional(Schema.Literal(...SIGNAL_SOURCES)),
+  riskTrend: Schema.optional(Schema.Literal(...RISK_TRENDS)),
   assignedTo: Schema.optional(Schema.String),
   dateFrom: Schema.optional(Schema.String),
   dateTo: Schema.optional(Schema.String),
@@ -80,7 +82,7 @@ function decodeQuery<A, I>(
 /** Parse + validate `/api/signals` query params. Invalid values fail with `FlowValidationError`. */
 export function parseSignalsQuery(
   input: RawQuery
-): Effect.Effect<SignalsQuery, FlowValidationError, RequestContext> {
+): Effect.Effect<FlowSignalsQuery, FlowValidationError, RequestContext> {
   return decodeQuery(SignalsQuerySchema, input, 'Invalid signals query parameters')
 }
 

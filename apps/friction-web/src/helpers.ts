@@ -37,6 +37,21 @@ export function statusHue(s: SignalStatus): string {
   return 'blue'
 }
 
+// Risk trend labels/hues. The trend itself is derived server-side from the risk score
+// (>= 80 up, <= 35 down) - the frontend just formats whatever the API sends.
+export function formatRiskTrend(t: 'up' | 'stable' | 'down'): string {
+  return t === 'up' ? 'Rising' : t === 'down' ? 'Falling' : 'Stable'
+}
+
+export function riskTrendHue(t: 'up' | 'stable' | 'down'): string {
+  // Rising risk is bad (red), falling is good (green), stable is neutral (grey).
+  return t === 'up' ? 'red' : t === 'down' ? 'green' : 'grey'
+}
+
+export function riskTrendArrow(t: 'up' | 'stable' | 'down'): string {
+  return t === 'up' ? '▲' : t === 'down' ? '▼' : '▬'
+}
+
 export function impactHue(i: IncidentImpact): string {
   if (i === 'security') return 'red'
   if (i === 'business') return 'green'

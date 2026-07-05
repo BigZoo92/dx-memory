@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import type { OnChangeFn, RowSelectionState, SortingState } from '@tanstack/react-table'
 import {
+  RISK_TRENDS,
   SIGNAL_SEVERITIES,
   SIGNAL_SOURCES,
   SIGNAL_STATUSES,
@@ -45,6 +46,8 @@ const cap = (v: string) => v.charAt(0).toUpperCase() + v.slice(1)
 const SEVERITY_OPTIONS = opt(SIGNAL_SEVERITIES, cap)
 const STATUS_OPTIONS = opt(SIGNAL_STATUSES, cap)
 const SOURCE_OPTIONS = opt(SIGNAL_SOURCES, (v) => (v === 'api' ? 'API' : cap(v)))
+const RISK_TREND_LABELS: Record<string, string> = { up: 'Rising', stable: 'Stable', down: 'Falling' }
+const RISK_TREND_OPTIONS = opt(RISK_TRENDS, (v) => RISK_TREND_LABELS[v] ?? cap(v))
 const ASSIGNED_OPTIONS: SelectOption[] = [
   { value: '', label: 'All' },
   { value: UNASSIGNED, label: 'Unassigned' }
@@ -155,6 +158,12 @@ export function SignalsScreen({ search, onSearchChange }: SignalsScreenProps) {
             value={search.source ?? ''}
             options={SOURCE_OPTIONS}
             onChange={(v) => setFilter('source', v)}
+          />
+          <FilterSelect
+            label="Risk trend"
+            value={search.riskTrend ?? ''}
+            options={RISK_TREND_OPTIONS}
+            onChange={(v) => setFilter('riskTrend', v)}
           />
           <FilterSelect
             label="Assigned to"

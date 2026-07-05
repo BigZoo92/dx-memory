@@ -6,10 +6,10 @@
     "thesis": "The balanced choice — modular, readable, and the cheapest to change.",
     "stack": "TanStack Start · React 19 · Vite · TypeScript",
     "accent": "#38e8c6",
-    "commit": "7a604df18d3e28c0ba510cda9a681252ce3f1534",
-    "commitShort": "7a604df",
+    "commit": "271240f99e5cae54d0cb71b22264ae0fb0ebd9bc",
+    "commitShort": "271240f",
     "branch": "main",
-    "timestamp": "2026-07-04T16:51:36.369Z",
+    "timestamp": "2026-07-04T19:31:39.691Z",
     "ciPipelineId": null,
     "ciRunNumber": null,
     "environment": "local",
@@ -18,7 +18,7 @@
   },
   "metrics": {
     "sourceFiles": {
-      "value": 180,
+      "value": 182,
       "status": "ok",
       "label": "Source files",
       "unit": "count",
@@ -40,7 +40,7 @@
       "description": "Number of configuration files (json/yaml/toml/rc/*.config.*)."
     },
     "locTotal": {
-      "value": 7472,
+      "value": 7554,
       "status": "ok",
       "label": "Total LOC",
       "unit": "loc",
@@ -51,7 +51,7 @@
       "description": "Non-empty lines of source code. Scored on balance — too little means missing structure, too much means bloat."
     },
     "locFrontend": {
-      "value": 4993,
+      "value": 5042,
       "status": "ok",
       "label": "Frontend LOC",
       "unit": "loc",
@@ -62,7 +62,7 @@
       "description": "Lines of front-end code (heuristic classification)."
     },
     "locBackend": {
-      "value": 2479,
+      "value": 2512,
       "status": "ok",
       "label": "Backend LOC",
       "unit": "loc",
@@ -73,7 +73,7 @@
       "description": "Lines of back-end / server code (heuristic classification, includes Rust)."
     },
     "locTests": {
-      "value": 1819,
+      "value": 1880,
       "status": "ok",
       "label": "Test LOC",
       "unit": "loc",
@@ -139,7 +139,7 @@
       "description": "eslint-disable / oxlint-disable / @ts-ignore / @ts-expect-error directives."
     },
     "avgComplexity": {
-      "value": 1.86,
+      "value": 1.87,
       "status": "ok",
       "label": "Avg cyclomatic complexity",
       "unit": "index",
@@ -150,7 +150,7 @@
       "description": "Mean per-function cyclomatic complexity (decision-point heuristic)."
     },
     "maxComplexity": {
-      "value": 19,
+      "value": 21,
       "status": "ok",
       "label": "Max cyclomatic complexity",
       "unit": "index",
@@ -183,7 +183,7 @@
       "description": "Source files longer than 300 lines."
     },
     "businessRatio": {
-      "value": 0.762,
+      "value": 0.764,
       "status": "ok",
       "label": "Business/boilerplate ratio",
       "unit": "ratio",
@@ -203,18 +203,6 @@
       "axis": "Change",
       "scope": "variant",
       "description": "Distinct third-party runtime + dev dependencies declared across the variant's manifests."
-    },
-    "transitiveDeps": {
-      "value": null,
-      "status": "unavailable",
-      "reason": "Per-variant transitive resolution not computed offline; wire `pnpm list --json` / `cargo tree` in a later pass.",
-      "label": "transitiveDeps",
-      "unit": null,
-      "direction": "neutral",
-      "category": "Other",
-      "axis": null,
-      "scope": "variant",
-      "description": null
     },
     "nxProjects": {
       "value": 15,
@@ -316,7 +304,7 @@
       "description": "Import cycles between the variant's own projects (detected from workspace manifests)."
     },
     "bundleJsKb": {
-      "value": 698.9,
+      "value": 699.7,
       "status": "ok",
       "label": "JS bundle (raw)",
       "unit": "kb",
@@ -327,7 +315,7 @@
       "description": "Total uncompressed JavaScript shipped to the browser."
     },
     "bundleJsGzipKb": {
-      "value": 216.2,
+      "value": 216.4,
       "status": "ok",
       "label": "JS bundle (gzip)",
       "unit": "kb",
@@ -338,7 +326,7 @@
       "description": "Gzip-compressed JavaScript — the closest proxy to what users download."
     },
     "bundleJsBrotliKb": {
-      "value": 186.8,
+      "value": 187.1,
       "status": "ok",
       "label": "JS bundle (brotli)",
       "unit": "kb",
@@ -393,7 +381,7 @@
       "description": "Number of emitted CSS chunks."
     },
     "largestChunkKb": {
-      "value": 588.1,
+      "value": 588.5,
       "status": "ok",
       "label": "Largest chunk",
       "unit": "kb",
@@ -426,7 +414,7 @@
       "description": "Total font weight in the build output."
     },
     "distTotalKb": {
-      "value": 739.8,
+      "value": 740.5,
       "status": "ok",
       "label": "Build artifact",
       "unit": "kb",
@@ -436,58 +424,11 @@
       "scope": "variant",
       "description": "Total size of the deployable build output."
     },
-    "buildTimeMs": {
-      "value": null,
-      "status": "unavailable",
-      "reason": "Opt-in — re-run with --timings to measure `nx run flow-app:build --skip-nx-cache`.",
-      "label": "Build time (cold)",
-      "unit": "ms",
-      "direction": "lower",
-      "category": "Build",
-      "axis": "Build",
-      "scope": "variant",
-      "description": "Wall-clock cold build time (opt-in: run with --timings)."
-    },
-    "typecheckTimeMs": {
-      "value": null,
-      "status": "unavailable",
-      "reason": "Opt-in — re-run with --timings to measure `nx run flow-app:typecheck --skip-nx-cache`.",
-      "label": "Typecheck time",
-      "unit": "ms",
-      "direction": "lower",
-      "category": "Build",
-      "axis": "Build",
-      "scope": "variant",
-      "description": "Time to run the type checker (opt-in)."
-    },
-    "testTimeMs": {
-      "value": null,
-      "status": "unavailable",
-      "reason": "Opt-in — re-run with --timings to measure `nx run flow-app:test --skip-nx-cache`.",
-      "label": "Test time",
-      "unit": "ms",
-      "direction": "lower",
-      "category": "Build",
-      "axis": "Build",
-      "scope": "variant",
-      "description": "Time to run the unit test suite (opt-in)."
-    },
-    "lintTimeMs": {
-      "value": null,
-      "status": "unavailable",
-      "reason": "Opt-in — re-run with --timings to measure `nx run flow-app:lint --skip-nx-cache`.",
-      "label": "Lint time",
-      "unit": "ms",
-      "direction": "lower",
-      "category": "Build",
-      "axis": "Build",
-      "scope": "variant",
-      "description": "Time to run the linter / boundary check (opt-in)."
-    },
     "variant.ci.build.duration": {
-      "value": null,
-      "status": "unavailable",
-      "reason": "No CI artifact — run `pnpm metrics:variant --variant flow` (or the CI matrix job) to produce tools/metrics/results/ci/flow.json.",
+      "value": 6997,
+      "status": "ok",
+      "command": "nx run-many -t build --projects=tag:scope:flow --skip-nx-cache",
+      "at": "2026-07-04T19:29:44.830Z",
       "label": "Variant build time (cold)",
       "unit": "ms",
       "direction": "lower",
@@ -497,9 +438,10 @@
       "description": "Cache-DISABLED cold build of this variant's app(s) (Flow: nx --skip-nx-cache; Friction/Overfit: pnpm/cargo/next). Intrinsic build cost, independent of CI cache strategy. NOT the real cached CI feedback time."
     },
     "variant.ci.typecheck.duration": {
-      "value": null,
-      "status": "unavailable",
-      "reason": "No CI artifact — run `pnpm metrics:variant --variant flow` (or the CI matrix job) to produce tools/metrics/results/ci/flow.json.",
+      "value": 6682,
+      "status": "ok",
+      "command": "nx run-many -t typecheck --projects=tag:scope:flow --skip-nx-cache",
+      "at": "2026-07-04T19:29:44.830Z",
       "label": "Variant typecheck time (cold)",
       "unit": "ms",
       "direction": "lower",
@@ -509,9 +451,10 @@
       "description": "Cache-disabled cold typecheck of this variant. Intrinsic cost, cache-immune."
     },
     "variant.ci.lint.duration": {
-      "value": null,
-      "status": "unavailable",
-      "reason": "No CI artifact — run `pnpm metrics:variant --variant flow` (or the CI matrix job) to produce tools/metrics/results/ci/flow.json.",
+      "value": 3545,
+      "status": "ok",
+      "command": "nx run-many -t lint --projects=tag:scope:flow --skip-nx-cache",
+      "at": "2026-07-04T19:29:44.830Z",
       "label": "Variant lint time (cold)",
       "unit": "ms",
       "direction": "lower",
@@ -521,9 +464,10 @@
       "description": "Cache-disabled cold lint / boundary check of this variant. Intrinsic cost, cache-immune."
     },
     "variant.ci.test.duration": {
-      "value": null,
-      "status": "unavailable",
-      "reason": "No CI artifact — run `pnpm metrics:variant --variant flow` (or the CI matrix job) to produce tools/metrics/results/ci/flow.json.",
+      "value": 10191,
+      "status": "ok",
+      "command": "nx run-many -t test --projects=tag:scope:flow --skip-nx-cache",
+      "at": "2026-07-04T19:29:44.830Z",
       "label": "Variant test time (cold)",
       "unit": "ms",
       "direction": "lower",
@@ -532,10 +476,46 @@
       "scope": "variant",
       "description": "Cache-disabled cold unit-test run of this variant (vitest). Intrinsic cost, cache-immune."
     },
+    "variant.ci.validation.cold": {
+      "value": 27415,
+      "status": "ok",
+      "at": "2026-07-04T19:29:44.830Z",
+      "steps": {
+        "build": 6997,
+        "typecheck": 6682,
+        "lint": 3545,
+        "test": 10191
+      },
+      "label": "Full validation (cold)",
+      "unit": "ms",
+      "direction": "lower",
+      "category": "Cold validation",
+      "axis": "Build",
+      "scope": "variant",
+      "description": "Total cache-disabled cost of the variant's whole validation protocol: build + typecheck + lint + test, summed. The intrinsic worst-case price of one trustworthy signal."
+    },
+    "variant.ci.validation.warm": {
+      "value": 5658,
+      "status": "ok",
+      "at": "2026-07-04T19:29:44.830Z",
+      "steps": {
+        "build": 1475,
+        "typecheck": 1438,
+        "lint": 1348,
+        "test": 1397
+      },
+      "label": "Full re-validation (warm)",
+      "unit": "ms",
+      "direction": "lower",
+      "category": "Cold validation",
+      "axis": "Build",
+      "scope": "variant",
+      "description": "The SAME four gates re-run immediately after the cold pass, with the variant's real cache strategy in play (Flow: Nx computation cache; Friction/Overfit: whatever their toolchains cache). The everyday 'is my change still green?' cost — paid dozens of times a day."
+    },
     "variant.ci.tests.executed": {
-      "value": null,
-      "status": "unavailable",
-      "reason": "No CI artifact — run `pnpm metrics:variant --variant flow` (or the CI matrix job) to produce tools/metrics/results/ci/flow.json.",
+      "value": 169,
+      "status": "ok",
+      "at": "2026-07-04T19:29:44.830Z",
       "label": "Tests executed",
       "unit": "count",
       "direction": "neutral",
@@ -545,9 +525,9 @@
       "description": "Number of unit tests executed by this variant's suite. Informational (not scored)."
     },
     "variant.ci.tests.passed": {
-      "value": null,
-      "status": "unavailable",
-      "reason": "No CI artifact — run `pnpm metrics:variant --variant flow` (or the CI matrix job) to produce tools/metrics/results/ci/flow.json.",
+      "value": 169,
+      "status": "ok",
+      "at": "2026-07-04T19:29:44.830Z",
       "label": "Tests passed",
       "unit": "count",
       "direction": "neutral",
@@ -557,9 +537,9 @@
       "description": "Number of passing unit tests. Informational."
     },
     "variant.ci.tests.failed": {
-      "value": null,
-      "status": "unavailable",
-      "reason": "No CI artifact — run `pnpm metrics:variant --variant flow` (or the CI matrix job) to produce tools/metrics/results/ci/flow.json.",
+      "value": 0,
+      "status": "ok",
+      "at": "2026-07-04T19:29:44.830Z",
       "label": "Tests failed",
       "unit": "count",
       "direction": "lower",
@@ -569,9 +549,9 @@
       "description": "Number of failing unit tests."
     },
     "variant.ci.tests.skipped": {
-      "value": null,
-      "status": "unavailable",
-      "reason": "No CI artifact — run `pnpm metrics:variant --variant flow` (or the CI matrix job) to produce tools/metrics/results/ci/flow.json.",
+      "value": 0,
+      "status": "ok",
+      "at": "2026-07-04T19:29:44.830Z",
       "label": "Tests skipped",
       "unit": "count",
       "direction": "lower",
@@ -581,9 +561,10 @@
       "description": "Number of skipped unit tests."
     },
     "variant.ci.warnings.count": {
-      "value": null,
-      "status": "unavailable",
-      "reason": "No CI artifact — run `pnpm metrics:variant --variant flow` (or the CI matrix job) to produce tools/metrics/results/ci/flow.json.",
+      "value": 0,
+      "status": "ok",
+      "at": "2026-07-04T19:29:44.830Z",
+      "method": "heuristic parse of tool output",
       "label": "CI warnings",
       "unit": "count",
       "direction": "lower",
@@ -593,9 +574,10 @@
       "description": "Warnings parsed from this variant's build/lint/typecheck output (heuristic across tsc/eslint/oxlint/cargo)."
     },
     "variant.ci.errors.count": {
-      "value": null,
-      "status": "unavailable",
-      "reason": "No CI artifact — run `pnpm metrics:variant --variant flow` (or the CI matrix job) to produce tools/metrics/results/ci/flow.json.",
+      "value": 0,
+      "status": "ok",
+      "at": "2026-07-04T19:29:44.830Z",
+      "method": "heuristic parse of tool output",
       "label": "CI errors",
       "unit": "count",
       "direction": "lower",
@@ -605,9 +587,9 @@
       "description": "Errors parsed from this variant's build/lint/typecheck output (heuristic)."
     },
     "variant.ci.ramPeak.build": {
-      "value": null,
-      "status": "unavailable",
-      "reason": "No CI artifact — run `pnpm metrics:variant --variant flow` (or the CI matrix job) to produce tools/metrics/results/ci/flow.json.",
+      "value": 551008,
+      "status": "ok",
+      "at": "2026-07-04T19:29:44.830Z",
       "label": "Build peak RAM",
       "unit": "kb",
       "direction": "lower",
@@ -617,9 +599,9 @@
       "description": "Peak resident memory of the build step (from /usr/bin/time on the CI runner). Unavailable where the runner lacks GNU/BSD time."
     },
     "variant.ci.ramPeak.tests": {
-      "value": null,
-      "status": "unavailable",
-      "reason": "No CI artifact — run `pnpm metrics:variant --variant flow` (or the CI matrix job) to produce tools/metrics/results/ci/flow.json.",
+      "value": 169424,
+      "status": "ok",
+      "at": "2026-07-04T19:29:44.830Z",
       "label": "Test peak RAM",
       "unit": "kb",
       "direction": "lower",
@@ -629,9 +611,9 @@
       "description": "Peak resident memory of the test step (from /usr/bin/time)."
     },
     "variant.ci.artifact.distSize": {
-      "value": null,
-      "status": "unavailable",
-      "reason": "No CI artifact — run `pnpm metrics:variant --variant flow` (or the CI matrix job) to produce tools/metrics/results/ci/flow.json.",
+      "value": 740.5,
+      "status": "ok",
+      "at": "2026-07-04T19:29:44.830Z",
       "label": "Variant dist size (CI)",
       "unit": "kb",
       "direction": "lower",
@@ -643,7 +625,7 @@
     "variant.docker.build.duration": {
       "value": null,
       "status": "unavailable",
-      "reason": "No CI artifact — run `pnpm metrics:variant --variant flow` (or the CI matrix job) to produce tools/metrics/results/ci/flow.json.",
+      "reason": "Docker disabled via --no-docker.",
       "label": "Docker build time",
       "unit": "ms",
       "direction": "lower",
@@ -655,7 +637,7 @@
     "variant.docker.image.size": {
       "value": null,
       "status": "unavailable",
-      "reason": "No CI artifact — run `pnpm metrics:variant --variant flow` (or the CI matrix job) to produce tools/metrics/results/ci/flow.json.",
+      "reason": "Docker disabled via --no-docker.",
       "label": "Docker image size",
       "unit": "kb",
       "direction": "lower",
@@ -667,7 +649,7 @@
     "variant.docker.layers.count": {
       "value": null,
       "status": "unavailable",
-      "reason": "No CI artifact — run `pnpm metrics:variant --variant flow` (or the CI matrix job) to produce tools/metrics/results/ci/flow.json.",
+      "reason": "Docker disabled via --no-docker.",
       "label": "Docker layers",
       "unit": "count",
       "direction": "lower",
@@ -679,7 +661,7 @@
     "variant.docker.layer.maxSize": {
       "value": null,
       "status": "unavailable",
-      "reason": "No CI artifact — run `pnpm metrics:variant --variant flow` (or the CI matrix job) to produce tools/metrics/results/ci/flow.json.",
+      "reason": "Docker disabled via --no-docker.",
       "label": "Largest Docker layer",
       "unit": "kb",
       "direction": "lower",
@@ -691,7 +673,7 @@
     "variant.docker.startup.duration": {
       "value": null,
       "status": "unavailable",
-      "reason": "No CI artifact — run `pnpm metrics:variant --variant flow` (or the CI matrix job) to produce tools/metrics/results/ci/flow.json.",
+      "reason": "Docker disabled via --no-docker.",
       "label": "Container startup",
       "unit": "ms",
       "direction": "lower",
@@ -703,7 +685,7 @@
     "variant.docker.healthcheck.status": {
       "value": null,
       "status": "unavailable",
-      "reason": "No CI artifact — run `pnpm metrics:variant --variant flow` (or the CI matrix job) to produce tools/metrics/results/ci/flow.json.",
+      "reason": "Docker disabled via --no-docker.",
       "label": "Container healthcheck",
       "unit": "status",
       "direction": "neutral",
@@ -715,7 +697,7 @@
     "variant.docker.healthcheck.duration": {
       "value": null,
       "status": "unavailable",
-      "reason": "No CI artifact — run `pnpm metrics:variant --variant flow` (or the CI matrix job) to produce tools/metrics/results/ci/flow.json.",
+      "reason": "Docker disabled via --no-docker.",
       "label": "Healthcheck latency",
       "unit": "ms",
       "direction": "lower",
@@ -747,6 +729,202 @@
       "axis": null,
       "scope": "variant",
       "description": "Number of push-to-main runs the feedback duration was averaged over. Informational."
+    },
+    "ship.services.count": {
+      "value": 1,
+      "status": "ok",
+      "services": [
+        {
+          "dockerfile": "apps/flow-app/Dockerfile",
+          "healthcheck": true,
+          "healthEndpoint": true
+        }
+      ],
+      "label": "Services to ship",
+      "unit": "count",
+      "direction": "lower",
+      "category": "Delivery surface",
+      "axis": "Ship",
+      "scope": "variant",
+      "description": "Images the variant must build, push and deploy for one release (its Dockerfiles). Every extra service is an extra build, push, deploy and coordination step."
+    },
+    "ship.healthcheck.coverage": {
+      "value": 100,
+      "status": "ok",
+      "services": [
+        {
+          "dockerfile": "apps/flow-app/Dockerfile",
+          "healthcheck": true,
+          "healthEndpoint": true
+        }
+      ],
+      "label": "Guarded deploys",
+      "unit": "%",
+      "direction": "higher",
+      "category": "Delivery surface",
+      "axis": "Ship",
+      "scope": "variant",
+      "description": "Share of the variant's images that declare a Docker HEALTHCHECK — deploys the platform can verify (and roll back) instead of hoping."
+    },
+    "run.inspection.surfaces": {
+      "value": 1,
+      "status": "ok",
+      "services": [
+        {
+          "dockerfile": "apps/flow-app/Dockerfile",
+          "healthcheck": true,
+          "healthEndpoint": true
+        }
+      ],
+      "label": "Runtimes to inspect",
+      "unit": "count",
+      "direction": "lower",
+      "category": "Diagnosis surface",
+      "axis": "Run",
+      "scope": "variant",
+      "description": "When production misbehaves, how many separate runtimes must be inspected before the fault can even be localized."
+    },
+    "run.health.coverage": {
+      "value": 100,
+      "status": "ok",
+      "services": [
+        {
+          "dockerfile": "apps/flow-app/Dockerfile",
+          "healthcheck": true,
+          "healthEndpoint": true
+        }
+      ],
+      "label": "Health endpoint coverage",
+      "unit": "%",
+      "direction": "higher",
+      "category": "Diagnosis surface",
+      "axis": "Run",
+      "scope": "variant",
+      "description": "Share of the variant's services that expose a dedicated health endpoint (a health route in their source, or a HEALTHCHECK that targets a health path — not just the home page)."
+    },
+    "change.contract.restatements": {
+      "value": 1,
+      "status": "ok",
+      "field": "riskScore",
+      "files": [
+        "packages/flow/domain/src/signals/risk-trend.ts"
+      ],
+      "method": "files under the variant roots that DECLARE the field (TS `riskScore: number` / Rust `pub risk_score:`), hand-written code only",
+      "label": "Contract restatements",
+      "unit": "count",
+      "direction": "lower",
+      "category": "Change surface",
+      "axis": "Change",
+      "scope": "variant",
+      "description": "Hand-written files that re-declare the shared Signal contract (measured on the riskScore field). 0 = the variant imports the single source of truth; each extra copy is one more place a schema change must propagate to — and one more place it can silently diverge."
+    },
+    "change.experiment.sourceFilesTouched": {
+      "value": 13,
+      "status": "ok",
+      "experiment": "risk-trend",
+      "files": [
+        "apps/flow-app/src/routes/signals/index.tsx",
+        "packages/flow/domain/src/signals/filter.ts",
+        "packages/flow/domain/src/signals/index.ts",
+        "packages/flow/domain/src/signals/risk-trend.ts",
+        "packages/flow/feature-dx-metrics/src/DxMetricsScreen.tsx",
+        "packages/flow/feature-signal-detail/src/SignalDetailScreen.tsx",
+        "packages/flow/feature-signals/src/SignalsScreen.tsx",
+        "packages/flow/feature-signals/src/SignalsTable.tsx",
+        "packages/flow/feature-signals/src/query.ts",
+        "packages/flow/server-data-access/src/fixtures/dataset.ts",
+        "packages/flow/server-data-access/src/query/parse.ts",
+        "packages/flow/ui/src/badges/RiskTrendBadge.tsx",
+        "packages/flow/ui/src/badges/index.ts"
+      ],
+      "label": "Same change — source files",
+      "unit": "count",
+      "direction": "lower",
+      "category": "Change experiment",
+      "axis": "Change",
+      "scope": "variant",
+      "description": "Hand-written production source files that carry the Risk trend capability — how far one identical product intent propagated into this codebase."
+    },
+    "change.experiment.testsTouched": {
+      "value": 5,
+      "status": "ok",
+      "experiment": "risk-trend",
+      "files": [
+        "packages/flow/domain/src/signals/signals.test.ts",
+        "packages/flow/feature-signals/src/SignalsTable.test.tsx",
+        "packages/flow/server-data-access/src/query/parse.test.ts",
+        "packages/flow/server-data-access/src/repositories/signals-repository.test.ts",
+        "packages/flow/ui/src/badges/badges.test.tsx"
+      ],
+      "label": "Same change — test files",
+      "unit": "count",
+      "direction": "lower",
+      "category": "Change experiment",
+      "axis": "Change",
+      "scope": "variant",
+      "description": "Test files the same capability reaches. A propagation COST, not a confidence bonus: needing 3× the tests for the same intent means 3× the files to keep coherent."
+    },
+    "change.experiment.docsTouched": {
+      "value": 1,
+      "status": "ok",
+      "experiment": "risk-trend",
+      "files": [
+        "apps/flow-app/README.md"
+      ],
+      "label": "Same change — docs",
+      "unit": "count",
+      "direction": "lower",
+      "category": "Change experiment",
+      "axis": "Change",
+      "scope": "variant",
+      "description": "Documentation files the same capability reaches — the writing needed to keep the system coherent after one product intent."
+    },
+    "change.experiment.projectsTouched": {
+      "value": 7,
+      "status": "ok",
+      "experiment": "risk-trend",
+      "projects": [
+        "apps/flow-app",
+        "packages/flow/domain",
+        "packages/flow/feature-dx-metrics",
+        "packages/flow/feature-signal-detail",
+        "packages/flow/feature-signals",
+        "packages/flow/server-data-access",
+        "packages/flow/ui"
+      ],
+      "label": "Same change — projects",
+      "unit": "count",
+      "direction": "lower",
+      "category": "Change experiment",
+      "axis": "Change",
+      "scope": "variant",
+      "description": "Distinct workspace projects (packages/crates/apps) the capability's footprint spans — the coordination surface of one change."
+    },
+    "change.experiment.filesTouched": {
+      "value": 19,
+      "status": "ok",
+      "experiment": "risk-trend",
+      "note": "hand-written files (source + tests + docs + config); generated mirrors counted separately",
+      "label": "Same change — total files",
+      "unit": "count",
+      "direction": "neutral",
+      "category": "Change experiment",
+      "axis": "Change",
+      "scope": "variant",
+      "description": "Total hand-written files carrying the capability (source + tests + docs + config). Context — the scored members are the classified counts."
+    },
+    "change.experiment.generatedTouched": {
+      "value": 0,
+      "status": "ok",
+      "experiment": "risk-trend",
+      "files": [],
+      "label": "Same change — generated files",
+      "unit": "count",
+      "direction": "neutral",
+      "category": "Change experiment",
+      "axis": "Change",
+      "scope": "variant",
+      "description": "Generated mirrors (OpenAPI spec, generated clients) that carry the capability. Context — regenerating is cheap; the hand-written counts are what score."
     },
     "lighthousePerformance": {
       "value": 100,
@@ -1177,44 +1355,44 @@
   },
   "topChunks": [
     {
-      "name": "index-fXA66x6l.js",
-      "kb": 588.1,
-      "gzipKb": 181.4
+      "name": "index-BY4g1Ho3.js",
+      "kb": 588.5,
+      "gzipKb": 181.5
     },
     {
-      "name": "signals-DGoEYYHx.js",
-      "kb": 76,
-      "gzipKb": 20.8
+      "name": "signals-DqS6agE1.js",
+      "kb": 76.3,
+      "gzipKb": 20.9
     },
     {
-      "name": "dx-metrics-YBGfPMAi.js",
+      "name": "dx-metrics-BX8d9Bjf.js",
       "kb": 8.7,
       "gzipKb": 3.2
     },
     {
-      "name": "_id-CwR3xFr8.js",
-      "kb": 5.7,
-      "gzipKb": 2.1
+      "name": "_id-CeWUkkCi.js",
+      "kb": 5.8,
+      "gzipKb": 2.2
     },
     {
-      "name": "routes-Co2K7Lox.js",
+      "name": "routes-BlBk9TY4.js",
       "kb": 4.2,
       "gzipKb": 1.6
     },
     {
-      "name": "settings-1u_pvvHA.js",
+      "name": "settings-B6LrgcfQ.js",
       "kb": 4,
       "gzipKb": 1.5
     },
     {
-      "name": "incidents-Cq0lBltf.js",
+      "name": "incidents-DmT1z05X.js",
       "kb": 3.7,
       "gzipKb": 1.4
     },
     {
-      "name": "ops-BzTX12Z7.js",
+      "name": "ops-DIrKSgtT.js",
       "kb": 3.4,
-      "gzipKb": 1.6
+      "gzipKb": 1.5
     },
     {
       "name": "run-counters-CGSBTjaV.js",
@@ -1222,7 +1400,7 @@
       "gzipKb": 0.9
     },
     {
-      "name": "compare-C4NhV8LZ.js",
+      "name": "compare-Djdw8uX0.js",
       "kb": 1.6,
       "gzipKb": 0.8
     },
@@ -1241,35 +1419,37 @@
     "build": {
       "label": "Build",
       "kind": "axis",
-      "value": null,
-      "coverage": "0/4",
-      "coverageFrac": 0,
-      "complete": false,
-      "gated": true
+      "value": 77.9,
+      "coverage": "2/2",
+      "coverageFrac": 1,
+      "complete": true,
+      "gated": false
     },
     "ship": {
+      "label": "Ship",
       "kind": "axis",
-      "value": 0,
-      "coverage": "2/10",
-      "coverageFrac": 0.44,
+      "value": 100,
+      "coverage": "2/4",
+      "coverageFrac": 0.5,
       "complete": false,
       "gated": false
     },
     "run": {
       "label": "Run",
       "kind": "axis",
-      "value": 75,
-      "coverage": "5/5",
-      "coverageFrac": 1,
-      "complete": true,
+      "value": 100,
+      "coverage": "2/3",
+      "coverageFrac": 0.7,
+      "complete": false,
       "gated": false
     },
     "change": {
+      "label": "Change",
       "kind": "axis",
-      "value": 70.7,
-      "coverage": "9/11",
-      "coverageFrac": 0.93,
-      "complete": false,
+      "value": 77.7,
+      "coverage": "11/11",
+      "coverageFrac": 1,
+      "complete": true,
       "gated": false
     },
     "uxQuality": {
@@ -1293,7 +1473,7 @@
     "sustainability": {
       "label": "Sustainability",
       "kind": "derived",
-      "value": 80,
+      "value": 87.4,
       "coverage": "4/4",
       "coverageFrac": 1,
       "complete": true,
@@ -1302,7 +1482,7 @@
     "architectureComplexity": {
       "label": "Architecture Health",
       "kind": "derived",
-      "value": 67.5,
+      "value": 78.4,
       "coverage": "11/11",
       "coverageFrac": 1,
       "complete": true,
@@ -1311,9 +1491,10 @@
     "totalDeliveryScore": {
       "label": "Total Delivery Score",
       "kind": "headline",
-      "value": 59.2,
+      "value": 84.4,
       "method": "weighted-mean-over-measured-axes",
       "axesUsed": [
+        "Build",
         "Ship",
         "Run",
         "Change"
@@ -1321,8 +1502,8 @@
     }
   },
   "statuses": {
-    "ok": 48,
-    "unavailable": 27,
+    "ok": 74,
+    "unavailable": 9,
     "error": 0
   },
   "collectorErrors": [],

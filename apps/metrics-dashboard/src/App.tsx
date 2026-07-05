@@ -2,32 +2,30 @@ import { useEffect, useState } from 'react'
 import { summary, variants, VARIANT_ORDER } from './data'
 import type { VariantId } from './types'
 import { VARIANT_COLOR, VARIANT_LABEL } from './lib/theme'
-import { TooltipHost, Reveal, SectionHead, Legend, ScopeBadge } from './components/ui'
+import { TooltipHost, Reveal, SectionHead, Legend } from './components/ui'
 import { Hero } from './components/Hero'
+import { ContrastBoard } from './components/ContrastBoard'
+import { ChangeCost } from './components/ChangeCost'
 import { AxisTracks } from './components/charts/AxisTracks'
-import { PositioningPlot } from './components/charts/PositioningPlot'
 import { ForceGraph } from './components/charts/ForceGraph'
-import { BundleTreemap } from './components/charts/Treemap'
 import { MetricBarGroup } from './components/charts/MetricBars'
 import { MetricTable } from './components/MetricTable'
-import { GitHubActions } from './components/GitHubActions'
-import { PullRequests } from './components/PullRequests'
-import { HistoryLines } from './components/charts/HistoryLines'
+
+/**
+ * /metrics is a demonstration, not a monitoring dashboard. Five moments:
+ *   1. Verdict   — who delivers cheapest (Hero podium).
+ *   2. Why       — local trophies vs delivery cost (the thesis).
+ *   3. Change    — how far one schema change travels.
+ *   4. Shape     — why that distance is architectural, not accidental.
+ *   5. Evidence  — the full per-axis measurements and the complete table.
+ */
 
 const NAV = [
-  { id: 'overview', label: 'Overview' },
-  { id: 'why', label: 'Why Flow wins' },
-  { id: 'axes', label: 'Build·Ship·Run·Change' },
-  { id: 'architecture', label: 'Architecture' },
-  { id: 'build', label: 'Build & CI' },
-  { id: 'docker', label: 'Docker' },
-  { id: 'ship', label: 'GitHub Actions' },
-  { id: 'bundle', label: 'Bundle' },
-  { id: 'runtime', label: 'Runtime & UX' },
-  { id: 'sustainability', label: 'Sustainability' },
-  { id: 'pull-requests', label: 'Pull requests' },
-  { id: 'history', label: 'History' },
-  { id: 'table', label: 'All metrics' }
+  { id: 'verdict', label: 'Verdict' },
+  { id: 'why', label: 'Why' },
+  { id: 'change', label: 'The next change' },
+  { id: 'shape', label: 'Shape' },
+  { id: 'evidence', label: 'Evidence' }
 ]
 
 const LEGEND = VARIANT_ORDER.map((id) => ({ label: VARIANT_LABEL[id], color: VARIANT_COLOR[id].mark }))
@@ -52,22 +50,14 @@ function useScrollSpy(ids: string[]) {
   return active
 }
 
-function VariantPicker({ value, onChange }: { value: VariantId; onChange: (v: VariantId) => void }) {
-  return (
-    <div className="seg">
-      {VARIANT_ORDER.map((id) => (
-        <button key={id} className={value === id ? 'on' : ''} onClick={() => onChange(id)} style={value === id ? { color: VARIANT_COLOR[id].glow } : undefined}>
-          {VARIANT_LABEL[id]}
-        </button>
-      ))}
-    </div>
-  )
+const SHAPE_TAKEAWAY: Record<VariantId, string> = {
+  flow: 'Layered features — a change stays in its lane.',
+  friction: 'Two boxes, no seams — everything can touch everything.',
+  overfit: 'A change must cross many borders before it ships.'
 }
 
 export default function App() {
   const active = useScrollSpy(NAV_IDS)
-  const [archId, setArchId] = useState<VariantId>('flow')
-  const flow = variants.find((v) => v.meta.variant === 'flow')!
 
   return (
     <TooltipHost>
@@ -86,309 +76,201 @@ export default function App() {
         </div>
       </nav>
 
+      {/* ------------------------------------------------- MOMENT 1 · VERDICT ---- */}
       <Hero />
 
       <main className="shell">
-        {/* ---------------------------------------------------------- WHY FLOW ---- */}
+        {/* ---------------------------------------------------- MOMENT 2 · WHY ---- */}
         <section id="why">
           <SectionHead
-            kicker="The thesis"
+            kicker="Why"
             title="Small looks cheap. Safe-to-change is cheap."
             lede={
               <>
-                Every raw size metric rewards <b>Friction</b> for being tiny — that’s exactly its trap. Plot apparent leanness
-                against how safe the code is to change, and the picture inverts: Friction is lean but the riskiest to touch,
-                while <b>Flow</b> trades a little size for the safest, cleanest system. Bubble size = total delivery score.
+                Read one metric at a time and <b>Friction</b> (tiny) or <b>Overfit</b> (immaculate) wins almost every trophy.
+                Price a real change — validate it, ship it, keep every copy in sync — and the board flips.
               </>
             }
           />
-          <Reveal className="card">
-            <PositioningPlot />
-            <Legend items={LEGEND} />
-          </Reveal>
+          <ContrastBoard />
         </section>
 
-        {/* -------------------------------------------------------------- AXES ---- */}
-        <section id="axes">
+        {/* ------------------------------------------------- MOMENT 3 · CHANGE ---- */}
+        <section id="change">
           <SectionHead
-            kicker="Four axes of delivery cost"
-            title="Build · Ship · Run · Change"
+            kicker="The next change"
+            title="The same change was asked of all three. Here is what happened."
             lede={
               <>
-                The headline <b>Total Delivery Score</b> is a weighted mean over the axes actually measured for each variant
-                (weights: Change {pct('Change')}, Run {pct('Run')}, Ship {pct('Ship')}, Build {pct('Build')}). Change dominates
-                because change is where lifetime cost concentrates — and it’s the only axis fully measured for all three today.
+                One product intent — the <b>Risk trend</b> capability — one spec, implemented in each variant the way its
+                own maintainer would. First the <b>observation</b> (the measured footprint), then the <b>explanation</b>{' '}
+                (the structure that made it spread).
+              </>
+            }
+          />
+          <ChangeCost />
+        </section>
+
+        {/* -------------------------------------------------- MOMENT 4 · SHAPE ---- */}
+        <section id="shape">
+          <SectionHead
+            kicker="Shape"
+            title="That distance is the architecture"
+            lede={
+              <>
+                Each node is a project; its size is how many others depend on it (the blast radius of touching it). The
+                propagation cost above isn&rsquo;t an accident — it&rsquo;s the shape of the codebase.
+              </>
+            }
+          />
+          <div className="grid cols-3 shape-grid">
+            {VARIANT_ORDER.map((id) => {
+              const v = variants.find((x) => x.meta.variant === id)!
+              const c = VARIANT_COLOR[id]
+              return (
+                <Reveal className="card shape-card" key={id}>
+                  <div className="between" style={{ marginBottom: 4 }}>
+                    <span className="card-title" style={{ color: c.glow }}>
+                      {VARIANT_LABEL[id]}
+                    </span>
+                    <span className="tiny muted mono">
+                      {v.metrics.nxProjects?.value ?? '—'} projects · {v.graph.edges.length} edges
+                    </span>
+                  </div>
+                  <ForceGraph id={id} height={300} />
+                  <p className="shape-takeaway">{SHAPE_TAKEAWAY[id]}</p>
+                </Reveal>
+              )
+            })}
+          </div>
+          <p className="chart-note" style={{ marginTop: 14 }}>
+            ◯ npm package · ◇ Rust crate · hover a node to trace its dependents. A healthy shape has seams (you can change one
+            lane safely) without sprawl (you don&rsquo;t cross five borders to ship a column).
+          </p>
+        </section>
+
+        {/* ----------------------------------------------- MOMENT 5 · EVIDENCE ---- */}
+        <section id="evidence">
+          <SectionHead
+            kicker="Evidence"
+            title="Every score, decomposed"
+            lede={
+              <>
+                The verdict is a weighted mean over four measured axes — Change {pct('Change')}, Build {pct('Build')}, Ship{' '}
+                {pct('Ship')}, Run {pct('Run')}. Each metric below shows its real value; bar length is the ratio-to-best
+                score. Unmeasured data reads <i>pending</i>, never zero.
               </>
             }
           />
           <Reveal className="card">
             <AxisTracks />
             <Legend items={LEGEND} />
-            <p className="chart-note">
-              Dashed rings = pending: an axis with too little measured signal (build/CI timings and full runtime land in pass 2)
-              is never scored as a fake zero. Flow reaches into <b>Run</b> because it’s the only variant with a proven Lighthouse
-              run.
-            </p>
           </Reveal>
-        </section>
 
-        {/* ----------------------------------------------------- ARCHITECTURE ---- */}
-        <section id="architecture">
-          <SectionHead
-            kicker="Structural health"
-            title="The shape of each codebase"
-            lede={
-              <>
-                Every node is a project (npm package ◯ or Rust crate ◇); size = how many projects depend on it (change blast
-                radius). Friction is a 2-project monolith with no seams; Overfit fragments the same product into 31 projects;
-                Flow sits in the healthy middle.
-              </>
-            }
-          />
-          <div className="controls">
-            <VariantPicker value={archId} onChange={setArchId} />
-            <span className="tiny muted" style={{ marginLeft: 'auto' }}>
-              {archMeta(archId)}
-            </span>
-          </div>
-          <div className="grid cols-2">
-            <Reveal className="card">
-              <ForceGraph id={archId} />
-              <p className="chart-note">◯ npm package · ◇ Rust crate · hover a node to trace its dependents.</p>
-            </Reveal>
+          <div className="grid cols-2" style={{ marginTop: 18 }}>
             <Reveal className="card">
               <div className="card-title" style={{ marginBottom: 16 }}>
-                Architecture signals (all three)
+                Build — the feedback loop
               </div>
-              <MetricBarGroup
-                metricKeys={['nxProjects', 'circularDeps', 'fanInMax', 'avgComplexity', 'businessRatio', 'anyCount']}
-              />
+              <MetricBarGroup metricKeys={['variant.ci.validation.cold', 'variant.ci.validation.warm']} />
+              <p className="chart-note">
+                Real runs of each variant&rsquo;s own gates (build + typecheck + lint + test) over its entire own code. Cold =
+                caches disabled. Warm = the same gates re-run with each variant&rsquo;s real cache strategy — the price paid
+                dozens of times a day.
+              </p>
             </Reveal>
-          </div>
-        </section>
-
-        {/* -------------------------------------------------------- BUILD & CI ---- */}
-        <section id="build">
-          <SectionHead
-            kicker="Build & CI"
-            badge={<ScopeBadge scope="variant" />}
-            title="What it costs to compile, check and test — per variant"
-            lede={
-              <>
-                Real per-variant wall-clock from the <b>CI matrix</b> (one job per variant): build, typecheck, lint and unit
-                tests, each measured on the same runner so the three are directly comparable. These are the numbers that
-                differentiate Flow / Friction / Overfit on delivery cost — not the shared repo pipeline below. Bars fill in once
-                the matrix has run; until then they read “pending”, never a guessed value.
-              </>
-            }
-          />
-          <div className="grid cols-2">
             <Reveal className="card">
               <div className="card-title" style={{ marginBottom: 16 }}>
-                CI step durations
+                Ship — from validated to running
               </div>
               <MetricBarGroup
                 metricKeys={[
-                  'variant.ci.build.duration',
-                  'variant.ci.typecheck.duration',
-                  'variant.ci.lint.duration',
-                  'variant.ci.test.duration'
+                  'ship.services.count',
+                  'ship.healthcheck.coverage',
+                  'variant.docker.image.size',
+                  'variant.docker.build.duration'
                 ]}
               />
+              <p className="chart-note">
+                Surface counted from the variant&rsquo;s real Dockerfiles (the ones release.yml ships); image metrics come from
+                the CI matrix&rsquo;s <code className="mono">docker build --no-cache</code>.
+              </p>
             </Reveal>
             <Reveal className="card">
               <div className="card-title" style={{ marginBottom: 16 }}>
-                Test suite &amp; footprint
+                Run — when production misbehaves
               </div>
               <MetricBarGroup
-                metricKeys={['variant.ci.tests.executed', 'variant.ci.warnings.count', 'variant.ci.ramPeak.build', 'variant.ci.artifact.distSize']}
+                metricKeys={['run.inspection.surfaces', 'run.health.coverage', 'variant.docker.startup.duration']}
               />
+              <p className="chart-note">
+                How many runtimes to inspect, whether each exposes a dedicated health endpoint, and how fast a container
+                returns to healthy (restore speed, probed in CI).
+              </p>
+            </Reveal>
+            <Reveal className="card">
+              <div className="card-title" style={{ marginBottom: 16 }}>
+                Change — the dominant axis
+              </div>
+              <MetricBarGroup
+                metricKeys={[
+                  'change.experiment.sourceFilesTouched',
+                  'change.experiment.projectsTouched',
+                  'change.experiment.testsTouched',
+                  'change.experiment.docsTouched',
+                  'change.contract.restatements',
+                  'nxProjects',
+                  'avgComplexity',
+                  'businessRatio'
+                ]}
+              />
+              <p className="chart-note">
+                Two families: the <b>observed</b> cost of the same product change (60% of the axis) and the{' '}
+                <b>structural</b> signals that explain it (40%). Project count is scored on <i>balance</i>: a 2-project
+                tangle and a 31-project sprawl are both expensive to change.
+              </p>
             </Reveal>
           </div>
-          <p className="chart-note">
-            Produced by <code className="mono">pnpm metrics:variant --variant &lt;flow|friction|overfit&gt;</code> (each writes{' '}
-            <code className="mono">tools/metrics/results/ci/&lt;variant&gt;.json</code>), then folded in by{' '}
-            <code className="mono">pnpm metrics:dynamic</code>. A failed step degrades to “pending” — its duration is never
-            counted as a good number.
-          </p>
-        </section>
 
-        {/* ------------------------------------------------------------ DOCKER ---- */}
-        <section id="docker">
-          <SectionHead
-            kicker="Containerisation"
-            badge={<ScopeBadge scope="variant" />}
-            title="What each variant costs to ship as an image"
-            lede={
-              <>
-                Real Docker numbers from the CI matrix: image size, cold <code className="mono">docker build</code> time, RootFS
-                layer count and time-to-healthy for each variant’s user-facing image. Best-effort — where Docker isn’t available
-                or a Dockerfile is missing, the metric reads “pending” rather than a faked size.
-              </>
-            }
-          />
-          <Reveal className="card">
-            <MetricBarGroup
-              metricKeys={[
-                'variant.docker.image.size',
-                'variant.docker.build.duration',
-                'variant.docker.layers.count',
-                'variant.docker.startup.duration'
-              ]}
-            />
-            <p className="chart-note">
-              Variants that ship several images (Friction, Overfit) are measured on their user-facing web image for a comparable
-              single-image signal. Startup = time from <code className="mono">docker run</code> to the container answering its
-              health endpoint.
-            </p>
-          </Reveal>
-        </section>
-
-        {/* -------------------------------------------------- GITHUB ACTIONS ---- */}
-        <section id="ship">
-          <SectionHead
-            kicker="Ship · delivery pipeline"
-            badge={<ScopeBadge scope="repo" />}
-            title="What it really costs to ship, read from GitHub Actions"
-            lede={
-              <>
-                Straight from the GitHub API — CI wall time, success rate, an honest job-level instability proxy, artifacts and
-                deployments. This turns the dashboard from a static photo of the repo into a read of the live delivery chain.
-                It’s <b>repo-level</b>: the three variants share one monorepo pipeline, so it enriches Ship without faking
-                per-variant differences. Tokens live only in the collector, never in this static site.
-              </>
-            }
-          />
-          <GitHubActions />
-        </section>
-
-        {/* ------------------------------------------------------------ BUNDLE ---- */}
-        <section id="bundle">
-          <SectionHead
-            kicker="Frontend delivery"
-            badge={<ScopeBadge scope="variant" />}
-            title="Every kilobyte the browser downloads"
-            lede="Real gzip and brotli sizes, computed from each variant’s actual build output. The treemaps show chunk composition — one giant chunk means poor code-splitting; a spread means the router lazy-loads."
-          />
-          <div className="grid cols-3" style={{ marginBottom: 18 }}>
-            {VARIANT_ORDER.map((id) => (
-              <Reveal className="card" key={id} delay={0}>
-                <div className="between" style={{ marginBottom: 12 }}>
-                  <span className="card-title" style={{ color: VARIANT_COLOR[id].glow }}>
-                    {VARIANT_LABEL[id]}
-                  </span>
-                  <span className="tiny muted">{bundleMeta(id)}</span>
-                </div>
-                <BundleTreemap id={id} />
-              </Reveal>
-            ))}
+          <div style={{ marginTop: 18 }}>
+            <Reveal className="card">
+              <div className="card-title" style={{ marginBottom: 16 }}>
+                Local quality — real, and deliberately not the verdict
+              </div>
+              <MetricBarGroup metricKeys={['bundleJsGzipKb', 'largestChunkKb', 'avgComplexity', 'maxComplexity']} />
+              <p className="chart-note">
+                The product itself is good in all three variants — that&rsquo;s the point. Friction and Overfit genuinely win
+                several of these; none of them measures what the next change costs, so they inform the lab without deciding the
+                verdict.
+              </p>
+            </Reveal>
           </div>
-          <Reveal className="card">
-            <MetricBarGroup metricKeys={['bundleJsGzipKb', 'bundleJsBrotliKb', 'largestChunkKb', 'jsChunks', 'distTotalKb']} />
-          </Reveal>
-        </section>
 
-        {/* --------------------------------------------------------- RUNTIME ---- */}
-        <section id="runtime">
-          <SectionHead
-            kicker="Runtime & visible UX"
-            title="From technical choices to what users feel"
-            lede={
-              <>
-                Lighthouse ties the architecture back to experience. Flow’s reports are collected; Friction and Overfit haven’t
-                been audited yet (no served URL in this pass), shown as pending. This is the seam where post-deploy audits plug in.
-              </>
-            }
-          />
-          <Reveal className="card">
-            <MetricBarGroup
-              metricKeys={['lighthousePerformance', 'lcpMs', 'tbtMs', 'cls', 'speedIndexMs', 'fcpMs']}
-            />
-            <p className="chart-note">
-              Flow scores {lh('lighthousePerformance')} Lighthouse Performance with LCP {lh('lcpMs')} and CLS {lh('cls')} —
-              measured, not asserted.
-            </p>
-          </Reveal>
-        </section>
-
-        {/* --------------------------------------------------- SUSTAINABILITY ---- */}
-        <section id="sustainability">
-          <SectionHead
-            kicker="Sustainability & accessibility"
-            title="Weight on the wire, and who can use it"
-            lede="Transferred bytes, request count and an order-of-magnitude CO₂ estimate per view, plus the automated accessibility score. Lighter pages cost less to run and emit less."
-          />
-          <Reveal className="card">
-            <MetricBarGroup metricKeys={['transferredKb', 'requests', 'co2PerViewMg', 'lighthouseAccessibility']} />
-            <p className="chart-note">
-              CO₂ is a Sustainable-Web-Design order-of-magnitude estimate from transferred bytes (≈0.5 g/MB) — directional, not
-              a certified figure.
-            </p>
-          </Reveal>
-        </section>
-
-        {/* ----------------------------------------------------- PULL REQUESTS ---- */}
-        <section id="pull-requests">
-          <SectionHead
-            kicker="Change · pull requests"
-            badge={<ScopeBadge scope="repo" />}
-            title="The shape of merged changes"
-            lede={
-              <>
-                Change surface, additions/deletions, time-to-merge and review count from recent merged PRs — a proxy for the
-                cost of review. These are <b>repo-level</b> and mix every chantier; they’re deliberately kept separate from the
-                future human/AI change-cost scenarios, not blended into them.
-              </>
-            }
-          />
-          <PullRequests />
-        </section>
-
-        {/* ----------------------------------------------------------- HISTORY ---- */}
-        <section id="history">
-          <SectionHead
-            kicker="Trends over time"
-            title="How the numbers move between runs"
-            lede={
-              <>
-                Each collector run writes an immutable snapshot; these charts replay them — the Total Delivery Score and Ship
-                score per variant, CI wall time and Flow’s gzip bundle. The series fill in as the metrics workflow runs more
-                often.
-              </>
-            }
-          />
-          <Reveal>
-            <HistoryLines />
-          </Reveal>
-        </section>
-
-        {/* ------------------------------------------------------------ TABLE ---- */}
-        <section id="table">
-          <SectionHead
-            kicker="The whole picture"
-            title="Every metric, side by side"
-            lede="All collected metrics with unit, direction and winner. Filter by axis, search, sort by any column, and toggle variants to compare two head-to-head with deltas."
-          />
-          <Reveal>
-            <MetricTable />
-          </Reveal>
+          <div style={{ marginTop: 18 }}>
+            <Reveal>
+              <MetricTable />
+            </Reveal>
+          </div>
         </section>
       </main>
 
       <footer className="shell">
         <div className="between wrap" style={{ alignItems: 'flex-start', gap: 30 }}>
           <div style={{ maxWidth: 520 }}>
-            <b style={{ color: 'var(--ink)' }}>How this is scored.</b> Every raw value is collected automatically from the
-            repository (static analysis, real gzip/brotli, manifest graph, Lighthouse reports) — nothing is hand-entered.
-            Values are min-max normalised across variants (direction-aware; structural metrics use a healthy-band “balance”
-            score). Scores are fully configurable in <code className="mono">tools/metrics/config/scoring.config.json</code>.
+            <b style={{ color: 'var(--ink)' }}>How this is scored.</b> Every value is collected automatically from the
+            repository — static analysis, real command runs, real gzip, real Dockerfiles. Per metric, the best variant scores
+            100 and the others score proportionally (ratio-to-best, direction-aware; structural counts use a healthy-band
+            balance). Axes are weighted means; the headline weighs Change {pct('Change')}, Build {pct('Build')}, Ship{' '}
+            {pct('Ship')}, Run {pct('Run')}. Everything is configured in{' '}
+            <code className="mono">tools/metrics/config/scoring.config.json</code> — no score references a variant by name.
           </div>
           <div style={{ maxWidth: 420 }}>
-            <b style={{ color: 'var(--ink)' }}>Pending (pass 2):</b>{' '}
-            {Object.keys(summary.notMeasured).join(', ')} — plus build/CI timings and full runtime audits for all variants, and
-            the human/AI change-cost scenarios. Each is surfaced as “pending”, never faked.
+            <b style={{ color: 'var(--ink)' }}>Still pending.</b> Docker image metrics and container startup are measured by
+            the CI matrix (they need a Docker daemon); GitHub-based CI feedback needs completed runs. Anything unmeasured is
+            shown as <i>pending</i> — never converted into a score.
             <div style={{ marginTop: 14 }} className="tiny muted">
-              collector v{summary.collectorVersion} · {summary.commitShort} · generated {new Date(summary.generatedAt).toISOString().slice(0, 16).replace('T', ' ')} · flow ok metrics: {flow.statuses.ok}
+              collector v{summary.collectorVersion} · {summary.commitShort} · generated{' '}
+              {new Date(summary.generatedAt).toISOString().slice(0, 16).replace('T', ' ')}
             </div>
           </div>
         </div>
@@ -401,21 +283,4 @@ export default function App() {
 function pct(axis: string): string {
   const w = summary.axisWeights[axis]
   return typeof w === 'number' ? `${Math.round(w * 100)}%` : '—'
-}
-function archMeta(id: VariantId): string {
-  const v = variants.find((x) => x.meta.variant === id)!
-  const n = v.metrics.nxProjects
-  const e = v.graph.edges.length
-  return `${n?.value ?? '—'} projects · ${e} internal edges · central: ${v.graph.central[0]?.name?.replace('@signalops/', '') ?? '—'}`
-}
-function bundleMeta(id: VariantId): string {
-  const v = variants.find((x) => x.meta.variant === id)!
-  const g = v.metrics.bundleJsGzipKb
-  return g?.status === 'ok' ? `${g.value} KB gzip` : 'pending'
-}
-function lh(key: string): string {
-  const m = variants.find((v) => v.meta.variant === 'flow')!.metrics[key]
-  if (!m || m.status !== 'ok') return '—'
-  if (key === 'lcpMs') return `${Math.round(m.value as number)}ms`
-  return String(m.value)
 }

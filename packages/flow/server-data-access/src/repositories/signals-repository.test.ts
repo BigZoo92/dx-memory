@@ -64,6 +64,19 @@ describe('querySignals (pure) — filtering', () => {
     expect(result.total).toBe(0)
     expect(result.items).toEqual([])
   })
+
+  it('serves a riskTrend derived from riskScore on every signal, and filters by it', () => {
+    const signals = getSignals()
+    expect(
+      signals.every(
+        (s) =>
+          s.riskTrend === (s.riskScore >= 80 ? 'up' : s.riskScore <= 35 ? 'down' : 'stable')
+      )
+    ).toBe(true)
+    const result = querySignals({ riskTrend: 'up', pageSize: 200 }, signals)
+    expect(result.total).toBeGreaterThan(0)
+    expect(result.items.every((s) => s.riskTrend === 'up')).toBe(true)
+  })
 })
 
 describe('querySignals (pure) — stable pagination & sort', () => {

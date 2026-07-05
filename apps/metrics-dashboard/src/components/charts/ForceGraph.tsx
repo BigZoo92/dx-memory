@@ -22,13 +22,13 @@ type SimLink = { source: SimNode; target: SimNode }
  * projects depend on it = change blast radius); Rust crates and npm packages are shape-coded.
  * The simulation is run to rest once (deterministic, no animation loop) for performance.
  */
-export function ForceGraph({ id }: { id: VariantId }) {
+export function ForceGraph({ id, height = 440 }: { id: VariantId; height?: number }) {
   const [ref, width] = useWidth<HTMLDivElement>()
   const { show, hide } = useTip()
   const [hover, setHover] = useState<string | null>(null)
   const v = variant(id)
   const c = VARIANT_COLOR[id]
-  const h = 440
+  const h = height
   const w = Math.max(300, width)
 
   const { nodes, links } = useMemo(() => {

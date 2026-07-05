@@ -19,6 +19,7 @@ import type {
   TimelineEvent,
   TimelineEventType
 } from './types'
+import { deriveRiskTrend } from './helpers'
 
 /** mulberry32 PRNG. Same seed -> same sequence, on every machine. */
 export class Rng {
@@ -280,7 +281,7 @@ function buildSignals(rng: Rng, analysts: Analyst[], sources: Source[]): Signal[
     const updatedAt = isoBetween(rng, createdMs, REFERENCE_NOW)
     const assignProbability = status === 'new' ? 0.3 : 0.8
     const assignedTo = rng.bool(assignProbability) ? rng.pick(analysts).id : null
-    signals.push({
+    const signal: Signal = {
       id: Rng.id('sig', i + 1, 5),
       title: rng.pick(SIGNAL_TITLES),
       description: `${rng.pick(SIGNAL_TITLES)} observed on "${source.name}" (${region}). Automated qualification pending analyst review.`,
@@ -295,7 +296,11 @@ function buildSignals(rng: Rng, analysts: Analyst[], sources: Source[]): Signal[
       updatedAt,
       tags: rng.sampleUnique(TAGS, rng.int(1, 4)),
       hasLinkedIncident: false
-    })
+    }
+    // Derived once at build time so the table never recomputes it per row. Keep this AFTER the
+    // rng draws above so the generated numbers keep lining up with the other variants.
+    signal.riskTrend = deriveRiskTrend(signal.riskScore)
+    signals.push(signal)
   }
   return signals
 }

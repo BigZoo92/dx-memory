@@ -22,6 +22,11 @@ on:
       - 'packages/**'
       - 'docker/friction/**'
       - '.github/workflows/friction-ci.yml'
+      # Kept in parity with flow-ci/overfit-ci: a lockfile/workspace change re-validates every
+      # variant, and the metrics feedback sampler (push-to-main runs) needs comparable
+      # populations across the three *-ci workflows.
+      - 'pnpm-lock.yaml'
+      - 'pnpm-workspace.yaml'
   pull_request:
     branches: [main]
   workflow_dispatch:

@@ -40,6 +40,14 @@ describe('dataset', () => {
   it('some signals are flagged with a linked incident', () => {
     expect(d.signals.some((s) => s.hasLinkedIncident)).toBe(true)
   })
+  it('every signal has a risk trend derived from its risk score', () => {
+    expect(
+      d.signals.every(
+        (s) =>
+          s.riskTrend === (s.riskScore >= 80 ? 'up' : s.riskScore <= 35 ? 'down' : 'stable')
+      )
+    ).toBe(true)
+  })
 })
 
 describe('Rng', () => {

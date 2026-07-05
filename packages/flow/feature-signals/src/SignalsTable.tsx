@@ -17,6 +17,7 @@ import {
   Checkbox,
   ConfidenceDisplay,
   RiskScoreCell,
+  RiskTrendBadge,
   SeverityBadge,
   StatusBadge
 } from '@signalops/flow-ui'
@@ -104,6 +105,13 @@ function buildColumns(
       header: 'Risk score',
       accessorKey: 'riskScore',
       cell: ({ row }) => <RiskScoreCell score={row.original.riskScore} />
+    },
+    {
+      id: 'riskTrend',
+      header: 'Risk trend',
+      enableSorting: false,
+      cell: ({ row }) =>
+        row.original.riskTrend ? <RiskTrendBadge trend={row.original.riskTrend} /> : <span>—</span>
     },
     {
       id: 'confidence',

@@ -93,6 +93,7 @@ export type SignalsQuery = {
   severity?: Severity
   status?: SignalStatus
   source?: SignalSource
+  riskTrend?: 'up' | 'stable' | 'down'
   assignedTo?: string
   dateFrom?: string
   dateTo?: string

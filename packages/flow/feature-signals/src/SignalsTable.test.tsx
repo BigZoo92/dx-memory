@@ -59,4 +59,19 @@ describe('SignalsTable accessibility', () => {
     expect(sorted).toHaveLength(1)
     expect(sorted[0]).toHaveAttribute('aria-sort', 'ascending')
   })
+
+  it('declares the Risk trend column', () => {
+    // Row cells are virtualized away in jsdom (zero-height viewport); the badge itself is
+    // covered in flow-ui's badges.test.tsx.
+    render(
+      <SignalsTable
+        signals={[signal('sig_up', { riskTrend: 'up' })]}
+        rowSelection={{}}
+        onRowSelectionChange={noop}
+        sorting={[]}
+        onSortingChange={noop}
+      />
+    )
+    expect(screen.getByRole('columnheader', { name: 'Risk trend' })).toBeInTheDocument()
+  })
 })

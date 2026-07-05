@@ -3,7 +3,15 @@ import { Link, useParams } from 'react-router-dom'
 import { apiGet } from '../api'
 import type { ApiError, SignalDetail as SignalDetailType, TimelineEvent } from '../types'
 import { confidenceLabel, confidencePercent, formatSource, riskColor } from '../helpers'
-import { Card, SeverityBadge, StatusBadge, StatTile, ErrorState, SkeletonRows } from '../components'
+import {
+  Card,
+  SeverityBadge,
+  StatusBadge,
+  RiskTrendBadge,
+  StatTile,
+  ErrorState,
+  SkeletonRows
+} from '../components'
 
 export function SignalDetail() {
   const { id } = useParams()
@@ -93,6 +101,10 @@ export function SignalDetail() {
             value={s.riskScore}
             barPercent={s.riskScore}
             barColor={riskColor(s.riskScore)}
+          />
+          <StatTile
+            label="Risk trend"
+            value={s.riskTrend ? <RiskTrendBadge trend={s.riskTrend} /> : 'Unavailable'}
           />
           <StatTile
             label="Confidence"

@@ -8,6 +8,7 @@ import {
   Card,
   SeverityBadge,
   StatusBadge,
+  RiskTrendBadge,
   RiskCell,
   ErrorState,
   SkeletonRows,
@@ -32,6 +33,7 @@ export function Signals() {
   const [severity, setSeverity] = useState('')
   const [status, setStatus] = useState('')
   const [source, setSource] = useState('')
+  const [riskTrend, setRiskTrend] = useState('')
   const [assignedTo, setAssignedTo] = useState('')
   const [dateFrom, setDateFrom] = useState('')
   const [dateTo, setDateTo] = useState('')
@@ -52,6 +54,7 @@ export function Signals() {
     if (severity) qs.set('severity', severity)
     if (status) qs.set('status', status)
     if (source) qs.set('source', source)
+    if (riskTrend) qs.set('riskTrend', riskTrend)
     if (assignedTo) qs.set('assignedTo', assignedTo)
     if (dateFrom) qs.set('dateFrom', new Date(dateFrom).toISOString())
     if (dateTo) qs.set('dateTo', new Date(dateTo).toISOString())
@@ -68,7 +71,19 @@ export function Signals() {
   // Refetch whenever anything changes. No debounce - every keystroke hits the API.
   useEffect(() => {
     load()
-  }, [search, severity, status, source, assignedTo, dateFrom, dateTo, sortBy, sortDirection, page])
+  }, [
+    search,
+    severity,
+    status,
+    source,
+    riskTrend,
+    assignedTo,
+    dateFrom,
+    dateTo,
+    sortBy,
+    sortDirection,
+    page
+  ])
 
   // Redundant client-side filter over the current page (the server already filtered). Recomputed
   // on every render - no useMemo. Fine at this page size, wasteful at scale.
@@ -108,6 +123,7 @@ export function Signals() {
     setSeverity('')
     setStatus('')
     setSource('')
+    setRiskTrend('')
     setAssignedTo('')
     setDateFrom('')
     setDateTo('')
@@ -144,6 +160,7 @@ export function Signals() {
                 'status',
                 'source',
                 'riskScore',
+                'riskTrend',
                 'confidence',
                 'assignedTo',
                 'createdAt',
@@ -159,6 +176,7 @@ export function Signals() {
                     s.status,
                     s.source,
                     s.riskScore,
+                    s.riskTrend ?? '',
                     s.confidence ?? '',
                     s.assignedTo ?? '',
                     s.createdAt,
@@ -261,6 +279,25 @@ export function Signals() {
             </select>
           </div>
           <div className="field">
+            <label className="fieldLabel" htmlFor="f-trend">
+              Risk trend
+            </label>
+            <select
+              id="f-trend"
+              className="select"
+              value={riskTrend}
+              onChange={(e) => {
+                setRiskTrend(e.target.value)
+                setPage(1)
+              }}
+            >
+              <option value="">All</option>
+              <option value="up">Rising</option>
+              <option value="stable">Stable</option>
+              <option value="down">Falling</option>
+            </select>
+          </div>
+          <div className="field">
             <label className="fieldLabel" htmlFor="f-assigned">
               Assigned to
             </label>
@@ -336,6 +373,7 @@ export function Signals() {
                   <th className="sortable" onClick={() => toggleSort('riskScore')}>
                     Risk score
                   </th>
+                  <th>Risk trend</th>
                   <th>Confidence</th>
                   <th>Assigned to</th>
                   <th className="sortable" onClick={() => toggleSort('createdAt')}>
@@ -371,6 +409,13 @@ export function Signals() {
                     <td>{SOURCE_LABEL[s.source]}</td>
                     <td>
                       <RiskCell score={s.riskScore} />
+                    </td>
+                    <td>
+                      {s.riskTrend ? (
+                        <RiskTrendBadge trend={s.riskTrend} />
+                      ) : (
+                        <span className="muted">—</span>
+                      )}
                     </td>
                     <td>
                       {s.confidence === null ? (

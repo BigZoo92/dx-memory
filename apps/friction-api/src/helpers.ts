@@ -52,6 +52,14 @@ export function formatSource(source: SignalSource): string {
   return SOURCE_LABELS[source]
 }
 
+// Risk trend is derived from the risk score. NOTE: the frontend renders its own labels/hues for
+// this - keep the thresholds in sync if they ever change.
+export function deriveRiskTrend(riskScore: number): 'up' | 'stable' | 'down' {
+  if (riskScore >= 80) return 'up'
+  if (riskScore <= 35) return 'down'
+  return 'stable'
+}
+
 export function isOpenStatus(status: SignalStatus): boolean {
   return status !== 'resolved' && status !== 'dismissed'
 }
@@ -99,6 +107,7 @@ export function matchesSignal(signal: Signal, query: SignalsQuery): boolean {
   if (query.severity && signal.severity !== query.severity) return false
   if (query.status && signal.status !== query.status) return false
   if (query.source && signal.source !== query.source) return false
+  if (query.riskTrend && signal.riskTrend !== query.riskTrend) return false
   if (query.assignedTo) {
     if (query.assignedTo === UNASSIGNED) {
       if (signal.assignedTo !== null) return false

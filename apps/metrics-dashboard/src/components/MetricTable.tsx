@@ -15,6 +15,10 @@ export function MetricTable() {
   const [cat, setCat] = useState<string>('all')
   const [sort, setSort] = useState<{ key: SortKey; dir: 1 | -1 }>({ key: 'category', dir: 1 })
   const [selected, setSelected] = useState<VariantId[]>([...VARIANT_ORDER])
+  // Evidence answers "what supports the verdict?" — by default only metrics measured for
+  // ALL three variants are listed (a 3-way comparison with 2 holes is not evidence).
+  // The toggle reveals the not-yet-comparable rows for debugging/inspection.
+  const [comparableOnly, setComparableOnly] = useState(true)
 
   // Repo-level metrics (shared GitHub pipeline) tie across variants — they belong in the
   // GitHub / History / PR sections, not this per-variant comparison table.
@@ -37,6 +41,9 @@ export function MetricTable() {
 
   const rows = useMemo(() => {
     let keys = perVariantKeys.slice()
+    if (comparableOnly) {
+      keys = keys.filter((k) => variants.every((v) => v.metrics[k]?.status === 'ok'))
+    }
     if (cat !== 'all') keys = keys.filter((k) => summary.catalog[k].category === cat)
     if (query.trim()) {
       const q = query.toLowerCase()
@@ -59,7 +66,7 @@ export function MetricTable() {
       return d * sort.dir
     })
     return keys
-  }, [query, cat, sort, perVariantKeys])
+  }, [query, cat, sort, perVariantKeys, comparableOnly])
 
   const toggle = (id: VariantId) =>
     setSelected((s) => (s.includes(id) ? s.filter((x) => x !== id) : [...VARIANT_ORDER].filter((v) => s.includes(v) || v === id)))
@@ -87,6 +94,14 @@ export function MetricTable() {
           ))}
         </div>
         <div className="row" style={{ marginLeft: 'auto', gap: 8 }}>
+          <label className="tiny muted" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, cursor: 'pointer' }}>
+            <input
+              type="checkbox"
+              checked={comparableOnly}
+              onChange={(e) => setComparableOnly(e.target.checked)}
+            />
+            measured for all three only
+          </label>
           <span className="tiny muted">compare:</span>
           {variants.map((v) => {
             const id = v.meta.variant as VariantId
@@ -186,8 +201,11 @@ export function MetricTable() {
         </table>
       </div>
       <p className="chart-note">
-        {rows.length} metrics shown · green = best of the compared variants · “pending” = not measured in this pass (never a
-        faked value). Click a column header to sort.
+        {rows.length} metrics shown · green = best of the compared variants
+        {comparableOnly
+          ? ' · only metrics measured for all three variants are listed (untick to inspect the rest)'
+          : ' · “pending” = not measured in this pass (never a faked value)'}
+        . Click a column header to sort.
       </p>
     </div>
   )

@@ -18,6 +18,8 @@ export type Metric = {
   scope?: MetricScope
   description: string | null
   command?: string
+  /** change-surface collector: the real file paths behind the count. */
+  files?: string[]
 }
 
 export type ScoreEntry = {
@@ -65,6 +67,13 @@ export type Meta = {
 }
 
 export type Chunk = { name: string; kb: number; gzipKb: number }
+
+export type Provenance = {
+  commitSha: string | null
+  generatedAt: string
+  workflowRunId: string | null
+  source: 'ci' | 'local'
+}
 
 export type VariantSummary = {
   meta: Meta
@@ -236,6 +245,7 @@ export type Summary = {
   generatedAt: string
   collectorVersion: string
   source: string
+  provenance?: Provenance
   withTimings: boolean
   commit: string | null
   commitShort: string | null

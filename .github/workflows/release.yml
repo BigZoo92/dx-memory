@@ -14,6 +14,8 @@ on:
 permissions:
   contents: read
   packages: write
+  # Read-only Actions access for the metrics collector (CI feedback metrics, best-effort).
+  actions: read
 
 env:
   NODE_VERSION: '22'
@@ -94,6 +96,23 @@ jobs:
           cargo build -p overfit-api --release
           docker compose --env-file .env.production.example -f docker-compose.prod.yml config
           pnpm compose:prod:validate
+
+      # ---- Metrics provenance: measure at the RELEASE SHA, verify, then bake ---------
+      # The deployed dashboard must show numbers measured at the same commit as the
+      # deployed applications. The full matrix (cold+warm gates + Docker probe per
+      # variant) runs here, the summary is verified for provenance + completeness, and
+      # the gateway image build below picks the fresh summary up from the build context.
+      # A SHA mismatch or a missing scored member FAILS the release — no silent fallback.
+      - name: Measure delivery metrics at the release SHA
+        if: env.IS_REDEPLOY == 'false'
+        env:
+          METRICS_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          METRICS_GITHUB_REPOSITORY: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          node tools/metrics/collect-variant.mjs --all
+          node tools/metrics/collect.mjs --no-history
+          node tools/metrics/verify-summary.mjs --sha "$SOURCE_SHA" --require-complete
 
       - name: Setup Docker Buildx
         uses: docker/setup-buildx-action@v3

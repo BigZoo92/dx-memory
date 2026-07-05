@@ -8,7 +8,7 @@ import { spawnSync } from 'node:child_process'
  * Run a shell command, returning { ok, ms, code, stdout, stderr }.
  * `ms` is wall-clock from before spawn to after exit.
  */
-export function timeCommand(command, { cwd, timeoutMs = 15 * 60 * 1000, env } = {}) {
+export function timeCommand(command, { cwd, timeoutMs = 30 * 60 * 1000, env } = {}) {
   const start = process.hrtime.bigint()
   const res = spawnSync(command, {
     cwd,

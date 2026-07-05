@@ -1,6 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { z } from 'zod'
 import {
+  RISK_TRENDS,
   SIGNAL_SEVERITIES,
   SIGNAL_SORT_FIELDS,
   SIGNAL_SOURCES,
@@ -14,6 +15,7 @@ const searchSchema = z.object({
   severity: z.enum(SIGNAL_SEVERITIES).optional(),
   status: z.enum(SIGNAL_STATUSES).optional(),
   source: z.enum(SIGNAL_SOURCES).optional(),
+  riskTrend: z.enum(RISK_TRENDS).optional(),
   assignedTo: z.string().optional(),
   dateFrom: z.string().optional(),
   dateTo: z.string().optional(),

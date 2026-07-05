@@ -3,6 +3,7 @@ import {
   Badge,
   SeverityBadge,
   StatusBadge,
+  RiskTrendBadge,
   ImpactBadge,
   KpiCard,
   Toggle,
@@ -31,6 +32,17 @@ describe('StatusBadge', () => {
   it('shows the text label', () => {
     render(<StatusBadge status="investigating" />)
     expect(screen.getByText('Investigating')).toBeTruthy()
+  })
+})
+
+describe('RiskTrendBadge', () => {
+  it('shows the text label', () => {
+    render(<RiskTrendBadge trend="up" />)
+    expect(screen.getByText('Rising')).toBeTruthy()
+  })
+  it('applies the hue class', () => {
+    const { container } = render(<RiskTrendBadge trend="down" />)
+    expect(container.querySelector('.badge-green')).toBeTruthy()
   })
 })
 

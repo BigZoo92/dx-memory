@@ -59,10 +59,19 @@ function resolveRamWrapper(repoRoot) {
 }
 
 /* -------------------------------------------------------------- step runner */
+// Commands are the exact strings from variants.config.json (e.g. `nx run …`). When the runner
+// is invoked directly with `node` (outside a pnpm script) the workspace binaries are not on
+// PATH, so `nx` resolves nowhere and every step dies with exit 127. Prepending the workspace
+// .bin keeps behaviour identical in CI (where pnpm already provides it) and fixes local runs.
+function workspaceEnv(repoRoot) {
+  return { PATH: `${join(repoRoot, 'node_modules', '.bin')}:${process.env.PATH ?? ''}` }
+}
+
 function runStep(cmd, repoRoot, wrapper) {
+  const env = workspaceEnv(repoRoot)
   const res = wrapper
-    ? timeCommand(wrapper.command, { cwd: repoRoot, env: { __METRICS_CMD: cmd } })
-    : timeCommand(cmd, { cwd: repoRoot })
+    ? timeCommand(wrapper.command, { cwd: repoRoot, env: { ...env, __METRICS_CMD: cmd } })
+    : timeCommand(cmd, { cwd: repoRoot, env })
   const ramPeakKb = wrapper ? wrapper.parse(res.stderr) : null
   return {
     command: cmd,
@@ -76,28 +85,44 @@ function runStep(cmd, repoRoot, wrapper) {
 }
 
 /* ------------------------------------------------------------- output parsers */
-/** Parse vitest / cargo test summaries into { executed, passed, failed, skipped }. Null if unrecognised. */
+/**
+ * Parse test summaries into { executed, passed, failed, skipped }. Null if unrecognised.
+ * A variant's test command can span SEVERAL projects (nx run-many / pnpm --filter prints one
+ * vitest summary per project) and even several toolchains (Overfit chains vitest + cargo),
+ * so both parsers SUM every summary line they recognise, and their results are combined.
+ */
 export function parseTestCounts(output, runner = 'vitest') {
   const text = String(output)
-  if (runner === 'cargo') return parseCargo(text)
-  return parseVitest(text) ?? parseCargo(text)
+  const vitest = runner === 'cargo' ? null : parseVitest(text)
+  const cargo = parseCargo(text)
+  if (vitest && cargo) {
+    return {
+      executed: vitest.executed + cargo.executed,
+      passed: vitest.passed + cargo.passed,
+      failed: vitest.failed + cargo.failed,
+      skipped: vitest.skipped + cargo.skipped
+    }
+  }
+  return vitest ?? cargo
 }
 
 function parseVitest(text) {
-  // Last "Tests   1 failed | 25 passed | 1 skipped (27)" line wins (final summary).
+  // Sum every "Tests   1 failed | 25 passed | 1 skipped (27)" summary line — one per project.
   const lines = text.split(/\r?\n/).filter((l) => /\bTests\b/.test(l) && /\(\d+\)/.test(l))
-  const line = lines[lines.length - 1]
-  if (!line) return null
-  const num = (re) => {
-    const m = line.match(re)
-    return m ? Number(m[1]) : 0
+  if (lines.length === 0) return null
+  const acc = { executed: 0, passed: 0, failed: 0, skipped: 0 }
+  for (const line of lines) {
+    const num = (re) => {
+      const m = line.match(re)
+      return m ? Number(m[1]) : 0
+    }
+    const totalM = line.match(/\((\d+)\)/)
+    acc.passed += num(/(\d+)\s+passed/)
+    acc.failed += num(/(\d+)\s+failed/)
+    acc.skipped += num(/(\d+)\s+skipped/)
+    acc.executed += totalM ? Number(totalM[1]) : num(/(\d+)\s+passed/) + num(/(\d+)\s+failed/) + num(/(\d+)\s+skipped/)
   }
-  const passed = num(/(\d+)\s+passed/)
-  const failed = num(/(\d+)\s+failed/)
-  const skipped = num(/(\d+)\s+skipped/)
-  const totalM = line.match(/\((\d+)\)/)
-  const executed = totalM ? Number(totalM[1]) : passed + failed + skipped
-  return { executed, passed, failed, skipped }
+  return acc
 }
 
 function parseCargo(text) {
@@ -180,7 +205,7 @@ function dirSizeBytes(dir) {
  * @param {string} repoRoot
  * @param {object} opts       { steps?: string[], docker?: boolean, hostPort?: number, now: isoString }
  */
-export async function runVariant(variant, repoRoot, { steps, docker = true, hostPort, now } = {}) {
+export async function runVariant(variant, repoRoot, { steps, docker = true, warm = true, hostPort, now } = {}) {
   const ci = variant.ci ?? {}
   const commands = ci.commands ?? {}
   const wanted = (steps && steps.length ? steps : STEP_ORDER).filter((s) => STEP_ORDER.includes(s))
@@ -208,6 +233,35 @@ export async function runVariant(variant, repoRoot, { steps, docker = true, host
     stepResults[step] = entry
   }
 
+  // ---- Warm re-validation pass ------------------------------------------------
+  // Same steps re-run immediately after the cold pass, with each variant's REAL cache
+  // behaviour in play (`ci.warmCommands` overrides where the cold command explicitly
+  // disabled a cache, e.g. Flow's `--skip-nx-cache`; otherwise the same command re-runs).
+  // This measures the everyday feedback loop — "re-validate after a change" — as opposed
+  // to the cold pass's intrinsic worst-case cost. Skipped for failed cold steps (a warm
+  // number after a failed cold run would be meaningless).
+  const warmSteps = {}
+  if (warm) {
+    const warmCommands = ci.warmCommands ?? {}
+    for (const step of STEP_ORDER) {
+      if (!wanted.includes(step)) continue
+      const cold = stepResults[step]
+      if (!cold || cold.status !== 'ok') {
+        warmSteps[step] = { status: 'unavailable', reason: `Cold ${step} did not succeed — warm re-run skipped.` }
+        continue
+      }
+      const cmd = warmCommands[step] ?? commands[step]
+      const r = runStep(cmd, repoRoot, wrapper)
+      warmSteps[step] = {
+        command: cmd,
+        status: r.status,
+        exitCode: r.exitCode,
+        durationMs: r.durationMs,
+        ...(r.status !== 'ok' ? { reason: `\`${cmd}\` exited ${r.exitCode}.` } : {})
+      }
+    }
+  }
+
   const diagnostics = parseDiagnostics(allOut)
 
   // Build artifact size (only meaningful if a build ran or dist already exists).
@@ -229,6 +283,7 @@ export async function runVariant(variant, repoRoot, { steps, docker = true, host
       steps: wanted
     },
     steps: stepResults,
+    warmSteps: warm ? warmSteps : undefined,
     diagnostics,
     artifact,
     docker: dockerResult

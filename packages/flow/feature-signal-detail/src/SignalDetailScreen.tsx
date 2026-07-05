@@ -12,6 +12,7 @@ import {
   EmptyState,
   QueryState,
   RecommendedAction,
+  RiskTrendBadge,
   SeverityBadge,
   StatTile,
   StatusBadge,
@@ -113,6 +114,10 @@ function DetailBody({ signal }: { signal: Signal }) {
             label="Confidence"
             value={conf.available ? conf.label : 'Unavailable'}
             bar={conf.available ? { percent: conf.percent, color: '#2563eb' } : undefined}
+          />
+          <StatTile
+            label="Risk trend"
+            value={signal.riskTrend ? <RiskTrendBadge trend={signal.riskTrend} /> : 'Unavailable'}
           />
           <StatTile label="Source" value={formatSource(signal.source)} />
           <StatTile label="Assigned to" value={assignedTo ?? 'Unassigned'} />

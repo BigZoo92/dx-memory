@@ -1,0 +1,91 @@
+{
+  "variant": "flow",
+  "label": "Flow",
+  "generatedAt": "2026-07-04T19:29:44.830Z",
+  "runner": {
+    "node": "v22.17.0",
+    "os": "darwin",
+    "ramWrapper": "/usr/bin/time",
+    "steps": [
+      "build",
+      "typecheck",
+      "lint",
+      "test"
+    ]
+  },
+  "steps": {
+    "build": {
+      "command": "nx run-many -t build --projects=tag:scope:flow --skip-nx-cache",
+      "status": "ok",
+      "exitCode": 0,
+      "durationMs": 6997,
+      "ramPeakKb": 551008
+    },
+    "typecheck": {
+      "command": "nx run-many -t typecheck --projects=tag:scope:flow --skip-nx-cache",
+      "status": "ok",
+      "exitCode": 0,
+      "durationMs": 6682,
+      "ramPeakKb": 443728
+    },
+    "lint": {
+      "command": "nx run-many -t lint --projects=tag:scope:flow --skip-nx-cache",
+      "status": "ok",
+      "exitCode": 0,
+      "durationMs": 3545,
+      "ramPeakKb": 135728
+    },
+    "test": {
+      "command": "nx run-many -t test --projects=tag:scope:flow --skip-nx-cache",
+      "status": "ok",
+      "exitCode": 0,
+      "durationMs": 10191,
+      "ramPeakKb": 169424,
+      "tests": {
+        "executed": 169,
+        "passed": 169,
+        "failed": 0,
+        "skipped": 0
+      }
+    }
+  },
+  "warmSteps": {
+    "build": {
+      "command": "nx run-many -t build --projects=tag:scope:flow",
+      "status": "ok",
+      "exitCode": 0,
+      "durationMs": 1475
+    },
+    "typecheck": {
+      "command": "nx run-many -t typecheck --projects=tag:scope:flow",
+      "status": "ok",
+      "exitCode": 0,
+      "durationMs": 1438
+    },
+    "lint": {
+      "command": "nx run-many -t lint --projects=tag:scope:flow",
+      "status": "ok",
+      "exitCode": 0,
+      "durationMs": 1348
+    },
+    "test": {
+      "command": "nx run-many -t test --projects=tag:scope:flow",
+      "status": "ok",
+      "exitCode": 0,
+      "durationMs": 1397
+    }
+  },
+  "diagnostics": {
+    "warnings": 0,
+    "errors": 0
+  },
+  "artifact": {
+    "status": "ok",
+    "distSizeKb": 740.5,
+    "dist": "apps/flow-app/dist/client"
+  },
+  "docker": {
+    "status": "skipped",
+    "reason": "Docker disabled via --no-docker."
+  }
+}

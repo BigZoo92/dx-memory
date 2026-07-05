@@ -60,6 +60,13 @@ describe('parseSignalsQuery (Effect Schema)', () => {
     expect(query.page).toBe(3)
   })
 
+  it('parses the riskTrend filter and rejects unknown trends', async () => {
+    const query = await valueOf(parseSignalsQuery({ riskTrend: 'up' }))
+    expect(query.riskTrend).toBe('up')
+    const error = await errorOf(parseSignalsQuery({ riskTrend: 'sideways' }))
+    expect(error).toBeInstanceOf(FlowValidationError)
+  })
+
   it('fails with a typed FlowValidationError for an invalid enum value', async () => {
     const error = await errorOf(parseSignalsQuery({ severity: 'nuclear' }))
     expect(error).toBeInstanceOf(FlowValidationError)

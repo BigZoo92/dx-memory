@@ -1,10 +1,8 @@
-import { variants } from '../data'
+import { variants, summary } from '../data'
 import type { VariantId } from '../types'
-import { VARIANT_COLOR } from '../lib/theme'
+import { VARIANT_COLOR, STATUS, scoreColor } from '../lib/theme'
 import { relativeTime } from '../lib/format'
-import { summary } from '../data'
 import { Reveal, ScoreMeter, Chip } from './ui'
-import { scoreColor } from '../lib/theme'
 
 const AX = ['Build', 'Ship', 'Run', 'Change'] as const
 
@@ -12,27 +10,29 @@ export function Hero() {
   const ranked = [...variants].sort(
     (a, b) => (b.scores.totalDeliveryScore.value ?? 0) - (a.scores.totalDeliveryScore.value ?? 0)
   )
+  const live = variants.reduce((s, v) => s + v.statuses.ok, 0)
+  const pending = variants.reduce((s, v) => s + v.statuses.unavailable, 0)
 
   return (
-    <header className="shell hero" id="overview">
+    <header className="shell hero" id="verdict">
       <Reveal>
-        <div className="sec-kicker">SignalOps · Delivery-cost lab</div>
+        <div className="sec-kicker">SignalOps · DX Lab</div>
         <h1 className="hero-title">
-          The best build isn’t the one that wins every metric. It’s the one that’s <span className="em">cheapest to keep delivering.</span>
+          One product. Three architectures. <span className="em">One is cheapest to keep delivering.</span>
         </h1>
         <p className="hero-lede">
-          One product, three architectures. This dashboard scores <b>Flow</b>, <b>Friction</b> and <b>Overfit</b> on the four
-          axes of delivery cost — Build, Ship, Run and Change — from metrics collected automatically off the real repository.
-          No hand-typed numbers.
+          Same features, same dataset, same routes — only the engineering differs. Every number below is measured from the
+          real repository and scored <b>ratio-to-best</b>: the cheapest variant sets the bar at 100.
         </p>
         <div className="hero-meta">
-          <Chip color={scoreColor(100)}>source: {summary.source}</Chip>
-          <Chip>commit {summary.commitShort ?? '—'}</Chip>
-          <Chip>branch {summary.branch ?? '—'}</Chip>
+          {summary.provenance?.source === 'ci' ? (
+            <Chip color={STATUS.good}>CI-measured · commit {summary.commitShort ?? '—'}</Chip>
+          ) : (
+            <Chip color={STATUS.warning}>provisional · local collection · {summary.commitShort ?? '—'}</Chip>
+          )}
           <Chip>generated {relativeTime(summary.generatedAt)}</Chip>
           <Chip>
-            {variants.reduce((s, v) => s + v.statuses.ok, 0)} live metrics ·{' '}
-            {variants.reduce((s, v) => s + v.statuses.unavailable, 0)} pending
+            {live} measured · {pending} pending
           </Chip>
         </div>
       </Reveal>
@@ -51,7 +51,7 @@ export function Hero() {
                 <div className="vcard-glow" />
                 <div className="vcard-rank">
                   <span>#{i + 1} of 3</span>
-                  <span>{i === 0 ? 'best total delivery' : i === 2 ? 'highest total cost' : 'middle'}</span>
+                  <span>{i === 0 ? 'lowest delivery cost' : i === 2 ? 'highest delivery cost' : ''}</span>
                 </div>
                 <div className="vcard-name">{v.meta.label}</div>
                 <div className="vcard-stack">{v.meta.stack}</div>

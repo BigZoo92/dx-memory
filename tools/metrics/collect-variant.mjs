@@ -11,7 +11,7 @@
  *   node tools/metrics/collect-variant.mjs --variant flow
  *   node tools/metrics/collect-variant.mjs --variant friction --no-docker
  *   node tools/metrics/collect-variant.mjs --variant overfit --steps typecheck,lint
- *   node tools/metrics/collect-variant.mjs --all
+ *   node tools/metrics/collect-variant.mjs --all --no-warm   # skip the warm re-validation pass
  *
  * (or via package.json: `pnpm metrics:variant --variant flow`)
  *
@@ -28,13 +28,14 @@ const repoRoot = join(here, '..', '..')
 const ciDir = join(here, 'results', 'ci')
 
 function parseArgs(argv) {
-  const out = { variant: null, all: false, steps: null, docker: true, hostPort: undefined }
+  const out = { variant: null, all: false, steps: null, docker: true, warm: true, hostPort: undefined }
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i]
     if (a === '--variant' || a === '-v') out.variant = argv[++i]
     else if (a.startsWith('--variant=')) out.variant = a.slice('--variant='.length)
     else if (a === '--all') out.all = true
     else if (a === '--no-docker') out.docker = false
+    else if (a === '--no-warm') out.warm = false
     else if (a === '--steps') out.steps = argv[++i]?.split(',').map((s) => s.trim()).filter(Boolean)
     else if (a.startsWith('--steps=')) out.steps = a.slice('--steps='.length).split(',').map((s) => s.trim()).filter(Boolean)
     else if (a === '--host-port') out.hostPort = Number.parseInt(argv[++i], 10)
@@ -65,12 +66,14 @@ async function main() {
   for (const variant of targets) {
     log(`\n◆ Variant CI — ${variant.label} (${variant.id})`)
     log(`  steps: ${(args.steps ?? ['build', 'typecheck', 'lint', 'test']).join(', ')}${args.docker ? ' · docker' : ' · (docker skipped)'}`)
-    const result = await runVariant(variant, repoRoot, { steps: args.steps, docker: args.docker, hostPort: args.hostPort, now })
+    const result = await runVariant(variant, repoRoot, { steps: args.steps, docker: args.docker, warm: args.warm, hostPort: args.hostPort, now })
 
     for (const [step, r] of Object.entries(result.steps)) {
       const dur = typeof r.durationMs === 'number' ? `${(r.durationMs / 1000).toFixed(1)}s` : '—'
       const ram = typeof r.ramPeakKb === 'number' ? ` · ${(r.ramPeakKb / 1024).toFixed(0)}MB peak` : ''
-      log(`  ${step.padEnd(10)} ${String(r.status).padEnd(11)} ${dur}${ram}`)
+      const warmR = result.warmSteps?.[step]
+      const warmTxt = warmR && typeof warmR.durationMs === 'number' ? ` · warm ${(warmR.durationMs / 1000).toFixed(1)}s` : ''
+      log(`  ${step.padEnd(10)} ${String(r.status).padEnd(11)} ${dur}${ram}${warmTxt}`)
     }
     if (result.steps.test?.tests) {
       const t = result.steps.test.tests

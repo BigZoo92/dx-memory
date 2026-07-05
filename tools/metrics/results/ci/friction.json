@@ -1,0 +1,91 @@
+{
+  "variant": "friction",
+  "label": "Friction",
+  "generatedAt": "2026-07-04T19:29:44.830Z",
+  "runner": {
+    "node": "v22.17.0",
+    "os": "darwin",
+    "ramWrapper": "/usr/bin/time",
+    "steps": [
+      "build",
+      "typecheck",
+      "lint",
+      "test"
+    ]
+  },
+  "steps": {
+    "build": {
+      "command": "pnpm --filter @signalops/friction-web --filter @signalops/friction-api run build",
+      "status": "ok",
+      "exitCode": 0,
+      "durationMs": 2554,
+      "ramPeakKb": 243872
+    },
+    "typecheck": {
+      "command": "pnpm --filter @signalops/friction-web --filter @signalops/friction-api run typecheck",
+      "status": "ok",
+      "exitCode": 0,
+      "durationMs": 1584,
+      "ramPeakKb": 241856
+    },
+    "lint": {
+      "command": "pnpm --filter @signalops/friction-web --filter @signalops/friction-api run lint",
+      "status": "ok",
+      "exitCode": 0,
+      "durationMs": 1586,
+      "ramPeakKb": 276000
+    },
+    "test": {
+      "command": "pnpm --filter @signalops/friction-web --filter @signalops/friction-api run test",
+      "status": "ok",
+      "exitCode": 0,
+      "durationMs": 1527,
+      "ramPeakKb": 142496,
+      "tests": {
+        "executed": 134,
+        "passed": 134,
+        "failed": 0,
+        "skipped": 0
+      }
+    }
+  },
+  "warmSteps": {
+    "build": {
+      "command": "pnpm --filter @signalops/friction-web --filter @signalops/friction-api run build",
+      "status": "ok",
+      "exitCode": 0,
+      "durationMs": 2223
+    },
+    "typecheck": {
+      "command": "pnpm --filter @signalops/friction-web --filter @signalops/friction-api run typecheck",
+      "status": "ok",
+      "exitCode": 0,
+      "durationMs": 1532
+    },
+    "lint": {
+      "command": "pnpm --filter @signalops/friction-web --filter @signalops/friction-api run lint",
+      "status": "ok",
+      "exitCode": 0,
+      "durationMs": 1223
+    },
+    "test": {
+      "command": "pnpm --filter @signalops/friction-web --filter @signalops/friction-api run test",
+      "status": "ok",
+      "exitCode": 0,
+      "durationMs": 1670
+    }
+  },
+  "diagnostics": {
+    "warnings": 0,
+    "errors": 0
+  },
+  "artifact": {
+    "status": "ok",
+    "distSizeKb": 282.7,
+    "dist": "apps/friction-web/dist"
+  },
+  "docker": {
+    "status": "skipped",
+    "reason": "Docker disabled via --no-docker."
+  }
+}

@@ -3,6 +3,7 @@ import { makeSignal } from '../test-utils'
 import { compareSeverityDesc, severityRank } from './severity'
 import { normalizeConfidence, confidenceLabel } from './confidence'
 import { riskBand, averageRiskScore } from './risk'
+import { deriveRiskTrend } from './risk-trend'
 import { filterSignals, matchesSignalFilters, UNASSIGNED } from './filter'
 import { sortSignals } from './sort'
 
@@ -52,6 +53,29 @@ describe('risk', () => {
   it('averages risk scores and returns 0 for an empty set', () => {
     expect(averageRiskScore([10, 20, 30])).toBe(20)
     expect(averageRiskScore([])).toBe(0)
+  })
+})
+
+describe('risk trend', () => {
+  it('derives the trend from risk score at the spec boundaries', () => {
+    expect(deriveRiskTrend(100)).toBe('up')
+    expect(deriveRiskTrend(80)).toBe('up')
+    expect(deriveRiskTrend(79)).toBe('stable')
+    expect(deriveRiskTrend(36)).toBe('stable')
+    expect(deriveRiskTrend(35)).toBe('down')
+    expect(deriveRiskTrend(0)).toBe('down')
+  })
+
+  it('filters signals by risk trend, combinable with other filters', () => {
+    const signals = [
+      makeSignal({ id: 'r1', riskTrend: 'up', severity: 'critical' }),
+      makeSignal({ id: 'r2', riskTrend: 'stable' }),
+      makeSignal({ id: 'r3', riskTrend: 'up', severity: 'low' })
+    ]
+    expect(filterSignals(signals, { riskTrend: 'up' }).map((s) => s.id)).toEqual(['r1', 'r3'])
+    expect(
+      filterSignals(signals, { riskTrend: 'up', severity: 'critical' }).map((s) => s.id)
+    ).toEqual(['r1'])
   })
 })
 

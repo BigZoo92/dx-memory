@@ -725,3 +725,226 @@ footer {
   min-width: 2px;
   transition: width 0.8s cubic-bezier(0.2, 0.7, 0.2, 1);
 }
+
+/* ------------------------------------------------------------- contrast board */
+.contrast-grid {
+  align-items: stretch;
+}
+.contrast-board {
+  display: flex;
+  flex-direction: column;
+}
+.contrast-board.cost {
+  border-color: rgba(46, 230, 191, 0.22);
+  box-shadow: 0 0 44px rgba(46, 230, 191, 0.04) inset;
+}
+.contrast-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 18px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--hair);
+}
+.contrast-title {
+  font-size: 15px;
+  font-weight: 640;
+  letter-spacing: 0.01em;
+  color: var(--ink);
+}
+.contrast-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 10px 0;
+  border-bottom: 1px dashed var(--hair);
+}
+.contrast-row:last-child {
+  border-bottom: none;
+}
+.contrast-label {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 13px;
+  color: var(--ink-2);
+  min-width: 0;
+}
+.contrast-values {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.contrast-val {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12px;
+  color: var(--ink-3);
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--hair);
+  background: var(--surface-2);
+  white-space: nowrap;
+}
+.contrast-val i {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  display: inline-block;
+}
+.contrast-val.win {
+  font-weight: 640;
+  background: rgba(255, 255, 255, 0.03);
+}
+.contrast-conclusion {
+  margin: 26px auto 0;
+  max-width: 620px;
+  text-align: center;
+  font-size: 17px;
+  color: var(--ink-2);
+}
+.contrast-conclusion b {
+  color: var(--ink);
+}
+
+/* ---------------------------------------------------------------- change cost */
+.changecost-truth {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding-bottom: 16px;
+  margin-bottom: 6px;
+  border-bottom: 1px solid var(--hair);
+}
+.changecost-row {
+  display: grid;
+  grid-template-columns: 190px 1fr;
+  gap: 16px;
+  align-items: start;
+  padding: 16px 0;
+  border-bottom: 1px dashed var(--hair);
+}
+.changecost-row:last-of-type {
+  border-bottom: none;
+}
+.changecost-name {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 15px;
+  font-weight: 640;
+}
+.changecost-count {
+  font-size: 13px;
+  font-weight: 500;
+}
+.changecost-files {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  min-height: 28px;
+}
+.changecost-chip {
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--hair-strong);
+  background: var(--surface-2);
+  color: var(--ink-2);
+  white-space: nowrap;
+}
+.changecost-chip.truth {
+  border-color: rgba(255, 255, 255, 0.28);
+  color: var(--ink);
+  font-weight: 500;
+}
+@media (max-width: 720px) {
+  .changecost-row {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+}
+
+/* ---------------------------------------------------------------------- shape */
+.shape-grid {
+  align-items: stretch;
+}
+.shape-card {
+  display: flex;
+  flex-direction: column;
+}
+.shape-takeaway {
+  margin: 10px 0 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--ink-2);
+  border-top: 1px solid var(--hair);
+  padding-top: 12px;
+}
+
+/* ------------------------------------------------------- change experiment */
+.xp-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--hair);
+}
+.xp-row {
+  display: grid;
+  grid-template-columns: 80px 1fr 90px minmax(220px, auto);
+  align-items: center;
+  gap: 14px;
+  padding: 12px 0;
+  border-bottom: 1px dashed var(--hair);
+}
+.xp-row:last-of-type {
+  border-bottom: none;
+}
+.xp-name {
+  font-size: 15px;
+  font-weight: 640;
+}
+.xp-track {
+  height: 26px;
+  border-radius: 6px;
+  background: var(--surface-2);
+  border: 1px solid var(--hair);
+  position: relative;
+  overflow: hidden;
+}
+.xp-bar {
+  position: absolute;
+  top: 3px;
+  bottom: 3px;
+  left: 3px;
+  border-radius: 4px;
+  min-width: 6px;
+  transition: width 0.8s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.xp-count {
+  font-size: 14px;
+  color: var(--ink);
+  text-align: right;
+  white-space: nowrap;
+}
+.xp-breakdown {
+  white-space: nowrap;
+}
+@media (max-width: 860px) {
+  .xp-row {
+    grid-template-columns: 80px 1fr 90px;
+  }
+  .xp-breakdown {
+    grid-column: 2 / -1;
+    white-space: normal;
+  }
+}

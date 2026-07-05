@@ -122,9 +122,16 @@ jobs:
           merge-multiple: true
           path: tools/metrics/results/ci
 
-      # Best-effort: build Flow so the bundle collector has real dist output to size.
+      # Best-effort: build all three variants so the bundle collector has real dist output
+      # to size for each of them — otherwise the summary compares bundles for Flow only.
       - name: Build Flow for bundle metrics (best-effort)
         run: pnpm build:flow || true
+        continue-on-error: true
+      - name: Build Friction web for bundle metrics (best-effort)
+        run: pnpm --filter @signalops/friction-web run build || true
+        continue-on-error: true
+      - name: Build Overfit web for bundle metrics (best-effort)
+        run: pnpm overfit:build || true
         continue-on-error: true
 
       - name: Collect dynamic metrics (variant-level + repo-level GitHub)
@@ -136,6 +143,12 @@ jobs:
           METRICS_GITHUB_REPOSITORY: ${{ github.repository }}
           METRICS_GITHUB_RUN_LIMIT: '20'
           METRICS_GITHUB_PR_LIMIT: '20'
+
+      # Report-only here (the BLOCKING gate lives in release.yml + the gateway image build):
+      # surfaces any scored member that would be missing from a published verdict.
+      - name: Verify summary provenance and completeness (report)
+        run: node tools/metrics/verify-summary.mjs --sha "$GITHUB_SHA" --require-complete
+        continue-on-error: true
 
       - name: Build metrics dashboard
         run: pnpm --filter @signalops/metrics-dashboard build

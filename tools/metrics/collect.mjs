@@ -27,8 +27,10 @@ import { collectArchitecture } from './collectors/architecture.mjs'
 import { collectDependencies } from './collectors/dependencies.mjs'
 import { collectGraph } from './collectors/graph.mjs'
 import { collectBundle } from './collectors/bundle.mjs'
-import { collectBuild } from './collectors/build.mjs'
 import { collectVariantCi } from './collectors/variant-ci.mjs'
+import { collectDelivery } from './collectors/delivery.mjs'
+import { collectChangeSurface } from './collectors/change-surface.mjs'
+import { collectChangeExperiment } from './collectors/change-experiment.mjs'
 import { collectLighthouse } from './collectors/lighthouse.mjs'
 import { collectNotMeasured } from './collectors/placeholders.mjs'
 import { scoreAll } from './score.mjs'
@@ -143,12 +145,19 @@ async function main() {
     const graphMetrics = graphRes.__error ? graphRes : graphRes.metrics
     const bundleRes = guard('bundle', () => collectBundle(variant, repoRoot))
     const bundleMetrics = bundleRes.__error ? bundleRes : bundleRes.metrics
-    const build = guard('build', () => collectBuild(variant, repoRoot, { timings: withTimings }))
     // Variant-level CI/Docker metrics (scope:'variant') read from the CI matrix artifact, if present.
     const variantCi = guard('variant-ci', () => collectVariantCi(variant, repoRoot, github.raw))
+    // Deployment/diagnosis surface parsed from the variant's real Dockerfiles (static).
+    const delivery = guard('delivery', () => collectDelivery(variant, repoRoot))
+    // Contract-propagation cost measured on the shared Signal contract (static).
+    const changeSurface = guard('change-surface', () => collectChangeSurface(variant, repoRoot))
+    // Observed cost of the controlled change experiment (risk-trend footprint).
+    const changeExperiment = guard('change-experiment', () =>
+      collectChangeExperiment(variant, repoRoot, variantsCfg.changeExperiment, projects)
+    )
     const lh = guard('lighthouse', () => collectLighthouse(variant, repoRoot))
 
-    const { flat, errors } = assembleMetrics(arch, deps, graphMetrics, bundleMetrics, build, variantCi, lh)
+    const { flat, errors } = assembleMetrics(arch, deps, graphMetrics, bundleMetrics, variantCi, delivery, changeSurface, changeExperiment, lh)
     const statuses = countStatuses(flat)
     log(`  metrics: ${statuses.ok} ok · ${statuses.unavailable} unavailable · ${statuses.error} error`)
     if (errors.length) log(`  collector errors: ${errors.join('; ')}`)
@@ -190,6 +199,15 @@ async function main() {
     generatedAt: started,
     collectorVersion: variantsCfg.collectorVersion,
     source: 'collected',
+    // Provenance of the measurement: the dashboard must display numbers measured at the
+    // SAME commit as the deployed applications. verify-summary.mjs enforces this in the
+    // release pipeline (and inside the gateway image build).
+    provenance: {
+      commitSha: collected[0]?.meta.commit ?? process.env.GITHUB_SHA ?? null,
+      generatedAt: started,
+      workflowRunId: process.env.GITHUB_RUN_ID ?? null,
+      source: process.env.GITHUB_ACTIONS === 'true' ? 'ci' : 'local'
+    },
     withTimings,
     commit: collected[0]?.meta.commit ?? null,
     commitShort: collected[0]?.meta.commitShort ?? null,

@@ -18,6 +18,11 @@ describe('SignalsController', () => {
   it('lists with default page size', () => {
     expect(c.list({} as any).items.length).toBe(50)
   })
+  it('filters by risk trend', () => {
+    const r = c.list({ riskTrend: 'up', pageSize: '5' } as any)
+    expect(r.items.length).toBe(5)
+    expect(r.items.every((s) => s.riskTrend === 'up')).toBe(true)
+  })
   it('gets one signal', () => {
     expect(c.one('sig_00001').signal.id).toBe('sig_00001')
   })

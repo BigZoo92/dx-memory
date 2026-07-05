@@ -3,6 +3,7 @@ import { render, screen } from '@testing-library/react'
 import { SeverityBadge } from './SeverityBadge'
 import { StatusBadge } from './StatusBadge'
 import { ImpactBadge, IncidentStatusBadge } from './ImpactBadge'
+import { RiskTrendBadge } from './RiskTrendBadge'
 import { ConfidenceDisplay } from './ConfidenceDisplay'
 import { VariantBadge } from './VariantBadge'
 
@@ -27,6 +28,13 @@ describe('badges carry a text label (never color alone)', () => {
   it('VariantBadge shows the variant label', () => {
     render(<VariantBadge label="Variant B — Flow" />)
     expect(screen.getByText('Variant B — Flow')).toBeTruthy()
+  })
+
+  it('RiskTrendBadge renders the trend label with a decorative arrow', () => {
+    render(<RiskTrendBadge trend="up" />)
+    expect(screen.getByText(/Rising/)).toBeTruthy()
+    render(<RiskTrendBadge trend="down" />)
+    expect(screen.getByText(/Falling/)).toBeTruthy()
   })
 })
 

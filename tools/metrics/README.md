@@ -92,6 +92,8 @@ collect.mjs ── orchestrates everything, writes results, prints the ranking
 │   ├── bundle.mjs        JS/CSS/img/font sizes + REAL gzip & brotli, chunks
 │   ├── build.mjs         opt-in build/typecheck/test/lint timings
 │   ├── variant-ci.mjs    reads results/ci/<variant>.json → variant.* metrics (scope:'variant')
+│   ├── delivery.mjs      deployment/diagnosis surface parsed from the variant's real Dockerfiles
+│   ├── change-surface.mjs contract-propagation cost (hand-written restatements of the shared Signal shape)
 │   ├── github.mjs        GitHub Actions / PR / deploy pipeline (scope:'repo')
 │   ├── lighthouse.mjs    parses .lighthouseci reports (perf, a11y, LCP, CLS, TBT, CO₂…)
 │   └── placeholders.mjs  runtime/axe → declared pending with wiring seam
@@ -111,16 +113,47 @@ Robustness: every collector is wrapped so one failure can't take down the run; i
 All of this lives in [`config/scoring.config.json`](config/scoring.config.json) — edit it and
 the dashboard reflects the change on the next collect.
 
-1. **Normalize** each metric to 0–100 across the three variants (100 = best), oriented by
-   `direction`. Structural metrics (`nxProjects`, `locTotal`, …) use a **balance** score:
-   both a monolith and over-fragmentation are penalized; the healthy band is defined in
-   `balanceBands`.
-2. **Score groups** (the 4 axes + 5 derived scores) = weighted mean of their members;
+1. **Normalize** each metric to 0–100 across the three variants with a **ratio-to-best**
+   rule (100 = best), oriented by `direction`: for lower-is-better, `score = 100 × best ÷ value`
+   (higher-is-better inverts it); counts are +1-smoothed so a zero best never divides by zero.
+   Unlike min-max, this keeps scores *proportional* — a 5% gap and a 5× gap no longer look the
+   same, and the worst variant is never forced to 0. Structural metrics (`nxProjects`,
+   `locTotal`, …) use a **balance** score instead: both a monolith and over-fragmentation are
+   penalized; the healthy band is defined in `balanceBands`.
+2. **Score groups** (the 4 axes + derived scores) = weighted mean of their members;
    `unavailable` members are dropped and weights renormalized (`coverage` is reported).
-   Axes below `axisCoverageMin` become `pending` instead of a misleading 0.
+   Axes below `axisCoverageMin` become `pending` instead of a misleading 0. Every scored axis
+   member is **`scope:'variant'`** — repo-level metrics tie across variants by construction,
+   so they are displayed as context but never scored.
 3. **Total Delivery Score** = weighted mean over the axes actually measured, with **Change
-   weighted highest** (change/maintenance is the majority of lifetime cost, and the only axis
-   fully measured for all three variants today).
+   weighted highest (0.50)** — change/maintenance is the majority of lifetime cost — then
+   Build 0.20 (the feedback loop is paid dozens of times a day) and Ship/Run 0.15 each.
+
+The four axes, in one sentence each (members in `scoreGroups`):
+
+- **Build** — the price of one trustworthy signal: full cold validation (build+typecheck+
+  lint+test, caches off) and the same gates re-run **warm** with the variant's real caches.
+- **Ship** — the price of turning a validated change into running software: services to
+  build/push/deploy, deploy-guard (HEALTHCHECK) coverage, image size and no-cache image build.
+- **Run** — the price of understanding production: runtimes to inspect, dedicated health
+  endpoint coverage, container time-to-healthy. (Lighthouse is deliberately *not* here — it
+  measures product quality, not diagnosability.)
+- **Change** — the price of the next modification (dominant), in two families:
+  **observed (0.60)** — the measured footprint of the controlled change experiment (the
+  risk-trend capability, one spec implemented in all three variants; collector:
+  `change-experiment.mjs`, no expected number exists anywhere); and **structural (0.40)**
+  — contract restatements + hygiene signals that explain WHY it propagated that way.
+  `tools/metrics/sensitivity.mjs` proves the verdict does not hinge on the Change weight.
+
+### Provenance of the published verdict
+
+The deployed dashboard must show numbers measured at the SAME commit as the deployed
+applications. `release.yml` re-runs the full matrix + collection at the release SHA and
+`tools/metrics/verify-summary.mjs` gates both the release job and the gateway image build:
+a SHA mismatch or a missing scored axis member fails the publication (local/dev builds
+with `APP_COMMIT_SHA=unknown` skip the SHA check and only warn). The committed
+`results/summary/latest.json` is the local/dev snapshot — the published one is always a
+product of the pipeline.
 
 Derived scores: `build`, `ship`, `run`, `change` (axes) + `uxQuality`, `accessibility`,
 `sustainability`, `architectureComplexity`, and the headline `totalDeliveryScore`.
@@ -194,8 +227,18 @@ Build and Ship axes.
 
 | Group | Keys |
 |---|---|
-| Build / validation | `variant.ci.build.duration`, `variant.ci.typecheck.duration`, `variant.ci.lint.duration`, `variant.ci.test.duration`, `variant.ci.tests.{executed,passed,failed,skipped}`, `variant.ci.{warnings,errors}.count`, `variant.ci.ramPeak.{build,tests}`, `variant.ci.artifact.distSize` |
+| Build / validation | `variant.ci.validation.{cold,warm}` (scored), `variant.ci.build.duration`, `variant.ci.typecheck.duration`, `variant.ci.lint.duration`, `variant.ci.test.duration`, `variant.ci.tests.{executed,passed,failed,skipped}`, `variant.ci.{warnings,errors}.count`, `variant.ci.ramPeak.{build,tests}`, `variant.ci.artifact.distSize` |
 | Docker | `variant.docker.build.duration`, `variant.docker.image.size`, `variant.docker.layers.count`, `variant.docker.layer.maxSize`, `variant.docker.startup.duration`, `variant.docker.healthcheck.{status,duration}` |
+| Delivery surface (static, from Dockerfiles) | `ship.services.count`, `ship.healthcheck.coverage`, `run.inspection.surfaces`, `run.health.coverage` |
+| Change surface (static) | `change.contract.restatements` (with the real file list in `files`) |
+
+Cold vs warm: the runner executes each variant's four gates twice — first with caches
+disabled (`commands`, the intrinsic worst case), then immediately again with the variant's
+real cache strategy (`warmCommands`, or the same commands if the variant has no cache story).
+Warm is the everyday "is my change still green?" price and carries most of the Build weight.
+Each variant's commands cover its ENTIRE own code (Flow: every `scope:flow` project via
+`nx run-many`; Overfit: its TS gates chained with the Rust workspace's `cargo` gates —
+excluding cargo would hide its real polyglot burden).
 
 The per-variant commands + Docker descriptor live in
 [`config/variants.config.json → ci`](config/variants.config.json) — the abstraction layer that

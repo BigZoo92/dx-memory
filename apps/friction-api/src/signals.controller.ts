@@ -15,6 +15,7 @@ export class SignalsController {
       severity: (q.severity as any) || undefined,
       status: (q.status as any) || undefined,
       source: (q.source as any) || undefined,
+      riskTrend: (q.riskTrend as any) || undefined,
       assignedTo: q.assignedTo || undefined,
       dateFrom: q.dateFrom || undefined,
       dateTo: q.dateTo || undefined,

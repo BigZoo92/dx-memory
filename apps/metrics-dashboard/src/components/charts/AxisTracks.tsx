@@ -79,7 +79,7 @@ export function AxisTracks() {
                             </div>
                             <div className="muted tiny" style={{ marginTop: 4, maxWidth: 200 }}>
                               {sc?.gated
-                                ? 'not enough measured signal on this axis yet (timings / runtime pass 2)'
+                                ? 'not enough measured signal on this axis for this variant yet'
                                 : 'not measured'}
                             </div>
                           </div>,

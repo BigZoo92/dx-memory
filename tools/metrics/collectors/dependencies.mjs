@@ -1,12 +1,12 @@
 /**
  * Dependency-footprint metrics. Direct dependencies are counted precisely from the
- * variant's manifests (npm + Cargo). Transitive dependency count is intentionally reported
- * as `unavailable`: computing it per-variant offline would require resolving the full
- * lockfile graph per project, which is fragile — better to be honest than to guess.
- * Circular deps come from the graph collector (single source of truth).
+ * variant's manifests (npm + Cargo). Transitive dependency count is deliberately NOT
+ * emitted: computing it per-variant offline would require resolving the full lockfile
+ * graph per project, which is fragile — an honestly absent metric beats a permanent
+ * "pending". Circular deps come from the graph collector (single source of truth).
  */
 import { projectsForVariant } from '../lib/projectgraph.mjs'
-import { ok, unavailable } from '../lib/metric.mjs'
+import { ok } from '../lib/metric.mjs'
 
 export function collectDependencies(variant, projects) {
   const own = projectsForVariant(projects, variant)
@@ -21,9 +21,6 @@ export function collectDependencies(variant, projects) {
     }
   }
   return {
-    directDeps: ok(external.size),
-    transitiveDeps: unavailable(
-      'Per-variant transitive resolution not computed offline; wire `pnpm list --json` / `cargo tree` in a later pass.'
-    )
+    directDeps: ok(external.size)
   }
 }

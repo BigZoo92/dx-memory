@@ -1,6 +1,12 @@
 {
   "$comment": "Descriptor for each SignalOps variant: where its source lives, what to measure, and how to attribute files. Shared 'socle' packages (contracts, fixtures, metrics, ui-spec, test-scenarios) are intentionally NOT attributed to any single variant so the comparison reflects variant-specific engineering. The `ci` block is the abstraction layer for the variant-level CI matrix (pass 2.5): per-variant build/typecheck/lint/test commands + Docker descriptor, so the heterogeneous toolchains (nx, pnpm filters, cargo/next) collect into one comparable JSON shape.",
-  "collectorVersion": "1.1.0",
+  "collectorVersion": "1.3.0",
+  "changeExperiment": {
+    "$comment": "The controlled cost-of-change experiment (docs/product/03-ai-task-protocol.md): the SAME product intent — the Risk trend capability — implemented in all three variants against the same spec (derive from riskScore: >=80 up, <=35 down, else stable; /signals column with a text badge; filter; detail view; tests). The collector measures each variant's REAL feature footprint from these identifiers; no expected number exists anywhere.",
+    "id": "risk-trend",
+    "spec": "docs/product/03-ai-task-protocol.md",
+    "tokens": ["riskTrend", "risk_trend", "RiskTrend", "risk-trend", "Risk trend"]
+  },
   "variants": [
     {
       "id": "flow",
@@ -9,6 +15,7 @@
       "stack": "TanStack Start · React 19 · Vite · TypeScript",
       "accent": "#38e8c6",
       "roots": ["apps/flow-app", "packages/flow"],
+      "docsRoots": ["docs/flow"],
       "dist": "apps/flow-app/dist/client",
       "dockerfiles": ["apps/flow-app/Dockerfile"],
       "appUrl": "http://localhost:3000",
@@ -22,11 +29,19 @@
       },
       "ci": {
         "testRunner": "vitest",
+        "$comment_commands": "Each variant's commands are ITS OWN full validation protocol over ITS ENTIRE own code, mirroring its real CI gate. Flow = every scope:flow project (app + 15 packages), like flow-ci's run-many (scope:shared socle excluded for all variants).",
         "commands": {
-          "build": "nx run flow-app:build --skip-nx-cache",
-          "typecheck": "nx run flow-app:typecheck --skip-nx-cache",
-          "lint": "nx run flow-app:lint --skip-nx-cache",
-          "test": "nx run flow-app:test --skip-nx-cache"
+          "build": "nx run-many -t build --projects=tag:scope:flow --skip-nx-cache",
+          "typecheck": "nx run-many -t typecheck --projects=tag:scope:flow --skip-nx-cache",
+          "lint": "nx run-many -t lint --projects=tag:scope:flow --skip-nx-cache",
+          "test": "nx run-many -t test --projects=tag:scope:flow --skip-nx-cache"
+        },
+        "$comment_warm": "Warm re-validation = the SAME gates re-run right after the cold pass, with the variant's real cache strategy in play. For Flow that is Nx computation caching (the cold pass disables it with --skip-nx-cache, so warm must drop the flag). Friction/Overfit have no warmCommands override: their cold commands ARE their everyday commands, so the warm pass re-runs them as-is and measures whatever incremental behaviour their toolchains really have.",
+        "warmCommands": {
+          "build": "nx run-many -t build --projects=tag:scope:flow",
+          "typecheck": "nx run-many -t typecheck --projects=tag:scope:flow",
+          "lint": "nx run-many -t lint --projects=tag:scope:flow",
+          "test": "nx run-many -t test --projects=tag:scope:flow"
         },
         "docker": {
           "enabled": true,
@@ -50,11 +65,12 @@
       "stack": "Vite · React · Express-style API · TypeScript",
       "accent": "#ff7a5c",
       "roots": ["apps/friction-web", "apps/friction-api"],
+      "docsRoots": ["docs/friction"],
       "dist": "apps/friction-web/dist",
       "dockerfiles": ["apps/friction-web/Dockerfile", "apps/friction-api/Dockerfile"],
-      "appUrl": null,
-      "apiUrl": null,
-      "lighthouseUrlHint": null,
+      "appUrl": "http://localhost:3100",
+      "apiUrl": "http://localhost:3101",
+      "lighthouseUrlHint": "localhost:3100",
       "timings": {
         "build": "pnpm --filter @signalops/friction-web --filter @signalops/friction-api run build",
         "typecheck": "pnpm --filter @signalops/friction-web --filter @signalops/friction-api run typecheck",
@@ -92,11 +108,13 @@
       "stack": "Next.js · Rust/Axum · CQRS · 17 crates + 14 packages",
       "accent": "#a98bff",
       "roots": ["apps/overfit-web", "apps/overfit-api", "packages/overfit", "crates"],
+      "docsRoots": ["docs/overfit"],
+      "generatedRoots": ["generated/overfit"],
       "dist": "apps/overfit-web/.next/static",
       "dockerfiles": ["apps/overfit-web/Dockerfile", "apps/overfit-api/Dockerfile"],
-      "appUrl": null,
-      "apiUrl": null,
-      "lighthouseUrlHint": null,
+      "appUrl": "http://localhost:3300",
+      "apiUrl": "http://localhost:3200",
+      "lighthouseUrlHint": "localhost:3300",
       "timings": {
         "build": "pnpm overfit:build",
         "typecheck": "pnpm overfit:typecheck",
@@ -105,12 +123,12 @@
       },
       "ci": {
         "testRunner": "vitest",
-        "$comment": "test measures the TS/JS suite (`overfit:test`, vitest). The Rust `cargo test` suite is a separate gate (overfit:api:test) and is intentionally NOT folded into this duration so the number stays comparable to the other variants' vitest runs.",
+        "$comment": "Overfit is deliberately polyglot, and its own CI gate (ci:overfit) validates BOTH toolchains: TS/Next AND the Rust workspace (fmt/clippy/test/release build). Excluding cargo would hide the variant's real validation burden, so each step chains its TS gate with its Rust twin. Test counts are parsed from the combined vitest + cargo output.",
         "commands": {
-          "build": "pnpm overfit:build",
+          "build": "pnpm overfit:build && pnpm overfit:api:build",
           "typecheck": "pnpm overfit:typecheck",
-          "lint": "pnpm overfit:boundaries",
-          "test": "pnpm overfit:test"
+          "lint": "pnpm overfit:boundaries && pnpm overfit:api:clippy",
+          "test": "pnpm overfit:test && pnpm overfit:api:test"
         },
         "docker": {
           "enabled": true,

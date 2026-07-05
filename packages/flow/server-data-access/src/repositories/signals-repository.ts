@@ -4,10 +4,9 @@ import {
   type Paginated,
   type Signal,
   type SignalDetailResponse,
-  type SignalsQuery,
   type TimelineEvent
 } from '@signalops/contracts'
-import { filterSignals, sortSignals } from '@signalops/flow-domain'
+import { filterSignals, sortSignals, type FlowSignalsQuery } from '@signalops/flow-domain'
 import { Dataset } from '../effect/dataset'
 import { failNotFound } from '../effect/errors'
 import type { RequestContext } from '../effect/request-context'
@@ -19,7 +18,7 @@ import type { FlowNotFoundError } from '@signalops/flow-effect'
  * `@signalops/flow-domain` so the API and any client compute them identically. This stays a plain
  * function (no Effect): wrapping deterministic, infallible compute in `Effect` would only add noise.
  */
-export function querySignals(query: SignalsQuery, source: readonly Signal[]): Paginated<Signal> {
+export function querySignals(query: FlowSignalsQuery, source: readonly Signal[]): Paginated<Signal> {
   const filtered = filterSignals(source, query)
   const sorted = sortSignals(filtered, query.sortBy ?? 'riskScore', query.sortDirection ?? 'desc')
 
@@ -44,7 +43,7 @@ const byCreatedAtAsc = (a: TimelineEvent, b: TimelineEvent): number =>
  * production and a hand-built dataset in tests.
  */
 export interface SignalsRepositoryService {
-  readonly query: (query: SignalsQuery) => Effect.Effect<Paginated<Signal>>
+  readonly query: (query: FlowSignalsQuery) => Effect.Effect<Paginated<Signal>>
   readonly getById: (
     id: string
   ) => Effect.Effect<SignalDetailResponse, FlowNotFoundError, RequestContext>

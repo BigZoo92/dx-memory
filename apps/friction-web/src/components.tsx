@@ -4,11 +4,14 @@ import type { ApiError, Severity, SignalStatus, IncidentImpact, SummaryKpi } fro
 import {
   formatSeverity,
   formatStatus,
+  formatRiskTrend,
   severityHue,
   statusHue,
   impactHue,
   incidentStatusLabel,
-  riskColor
+  riskColor,
+  riskTrendArrow,
+  riskTrendHue
 } from './helpers'
 
 export function Card(props: {
@@ -45,6 +48,15 @@ export function StatusBadge({ status }: { status: SignalStatus }) {
 export function ImpactBadge({ impact }: { impact: IncidentImpact }) {
   const label = impact.charAt(0).toUpperCase() + impact.slice(1)
   return <Badge hue={impactHue(impact)}>{label}</Badge>
+}
+
+// Risk-trend badge. Always renders a text label, never color alone.
+export function RiskTrendBadge({ trend }: { trend: 'up' | 'stable' | 'down' }) {
+  return (
+    <Badge hue={riskTrendHue(trend)}>
+      <span aria-hidden>{riskTrendArrow(trend)}</span> {formatRiskTrend(trend)}
+    </Badge>
+  )
 }
 
 export function IncidentStatusBadge({ status }: { status: string }) {

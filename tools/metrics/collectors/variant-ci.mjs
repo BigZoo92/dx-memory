@@ -20,6 +20,8 @@ export const VARIANT_CI_KEYS = [
   'variant.ci.typecheck.duration',
   'variant.ci.lint.duration',
   'variant.ci.test.duration',
+  'variant.ci.validation.cold',
+  'variant.ci.validation.warm',
   'variant.ci.tests.executed',
   'variant.ci.tests.passed',
   'variant.ci.tests.failed',
@@ -182,11 +184,27 @@ function collectArtifactCi(variant, repoRoot) {
     return d && typeof d[field] === 'number' ? ok(d[field], { at, method: 'heuristic parse of tool output' }) : unavailable('No diagnostics parsed.')
   }
 
+  // Full-validation totals. Cold = the intrinsic, cache-disabled cost of the whole
+  // protocol (build+typecheck+lint+test). Warm = the SAME gates re-run immediately after,
+  // with the variant's real cache strategy — the everyday "re-validate my change" cost.
+  // Both require all four steps to have succeeded: a partial sum would silently favour
+  // the variant whose slowest step failed.
+  const STEPS = ['build', 'typecheck', 'lint', 'test']
+  const sumSteps = (steps, label) => {
+    if (!steps) return unavailable(`No ${label} pass recorded — re-run \`pnpm metrics:variant\` (collector ≥1.2).`)
+    const durations = STEPS.map((s) => steps[s])
+    const failed = STEPS.filter((s, i) => !durations[i] || durations[i].status !== 'ok' || typeof durations[i].durationMs !== 'number')
+    if (failed.length > 0) return unavailable(`Incomplete ${label} pass (missing/failed: ${failed.join(', ')}).`)
+    return ok(durations.reduce((acc, s) => acc + s.durationMs, 0), { at, steps: Object.fromEntries(STEPS.map((s, i) => [s, durations[i].durationMs])) })
+  }
+
   const out = {
     'variant.ci.build.duration': stepDuration('build'),
     'variant.ci.typecheck.duration': stepDuration('typecheck'),
     'variant.ci.lint.duration': stepDuration('lint'),
     'variant.ci.test.duration': stepDuration('test'),
+    'variant.ci.validation.cold': sumSteps(data.steps, 'cold validation'),
+    'variant.ci.validation.warm': sumSteps(data.warmSteps, 'warm re-validation'),
     'variant.ci.tests.executed': testCount('executed'),
     'variant.ci.tests.passed': testCount('passed'),
     'variant.ci.tests.failed': testCount('failed'),

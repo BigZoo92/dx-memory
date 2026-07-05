@@ -2,6 +2,7 @@ import {
   formatSeverity,
   formatStatus,
   formatSource,
+  formatRiskTrend,
   severityHue,
   statusHue,
   impactHue,
@@ -9,6 +10,8 @@ import {
   confidenceLabel,
   confidencePercent,
   riskColor,
+  riskTrendArrow,
+  riskTrendHue,
   formatDuration,
   ageSince
 } from './helpers'
@@ -45,6 +48,24 @@ describe('statusHue', () => {
   it('investigating is orange', () => expect(statusHue('investigating')).toBe('orange'))
   it('new is blue', () => expect(statusHue('new')).toBe('blue'))
   it('dismissed is grey', () => expect(statusHue('dismissed')).toBe('grey'))
+})
+
+describe('formatRiskTrend', () => {
+  it('up is Rising', () => expect(formatRiskTrend('up')).toBe('Rising'))
+  it('stable is Stable', () => expect(formatRiskTrend('stable')).toBe('Stable'))
+  it('down is Falling', () => expect(formatRiskTrend('down')).toBe('Falling'))
+})
+
+describe('riskTrendHue', () => {
+  it('up is red', () => expect(riskTrendHue('up')).toBe('red'))
+  it('stable is grey', () => expect(riskTrendHue('stable')).toBe('grey'))
+  it('down is green', () => expect(riskTrendHue('down')).toBe('green'))
+})
+
+describe('riskTrendArrow', () => {
+  it('up', () => expect(riskTrendArrow('up')).toBe('▲'))
+  it('stable', () => expect(riskTrendArrow('stable')).toBe('▬'))
+  it('down', () => expect(riskTrendArrow('down')).toBe('▼'))
 })
 
 describe('impactHue', () => {
