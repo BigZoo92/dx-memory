@@ -1,10 +1,11 @@
 /**
- * Change-experiment collector — the OBSERVED cost of the same product change.
+ * Change-experiment collector — the propagation FOOTPRINT of one shared capability.
  *
  * The lab's controlled experiment (docs/product/03-ai-task-protocol.md) asks every
  * variant to absorb the SAME product intent: the "Risk trend" capability (field derived
  * from the common dataset, /signals column + filter, detail view, tests). This collector
- * measures, per variant, how far that one intent PROPAGATED into its codebase:
+ * measures, per variant, WHERE that capability lives in the codebase today. It is a
+ * footprint, NOT a historical git diff — never present it as "files modified":
  *
  *   the feature footprint = every file under the variant's roots that carries the
  *   feature's identifiers (declared in variants.config.json `changeExperiment.tokens`),
@@ -73,12 +74,12 @@ function walkAll(root) {
 
 export function collectChangeExperiment(variant, repoRoot, experiment, projects) {
   const keys = [
-    'change.experiment.sourceFilesTouched',
-    'change.experiment.testsTouched',
-    'change.experiment.docsTouched',
-    'change.experiment.projectsTouched',
-    'change.experiment.filesTouched',
-    'change.experiment.generatedTouched'
+    'change.footprint.sourceFiles',
+    'change.footprint.testSupport',
+    'change.footprint.docs',
+    'change.footprint.projects',
+    'change.footprint.files',
+    'change.footprint.generated'
   ]
   if (!experiment?.tokens?.length) {
     const reason = 'No changeExperiment descriptor in variants.config.json.'
@@ -123,18 +124,36 @@ export function collectChangeExperiment(variant, repoRoot, experiment, projects)
     if (project) touched.add(project)
   }
 
+  // Test-support surface (CONTEXT, not scored, deliberately NON-exclusive): dedicated test
+  // files PLUS source files that embed inline Rust test modules (`#[cfg(test)]`). Rust
+  // idiomatically tests inside `lib.rs`, so an exclusive source-XOR-test classification
+  // would silently move Rust test cost into the source bucket while TS variants keep
+  // separate test files — a language-idiom bias, which is why this number is context only.
+  const inlineTestFiles = buckets.source.filter((rel) => {
+    if (!rel.endsWith('.rs')) return false
+    try {
+      return readFileSync(join(repoRoot, rel), 'utf8').includes('#[cfg(test)]')
+    } catch {
+      return false
+    }
+  })
+  const testSupport = [...buckets.tests, ...inlineTestFiles]
+
   const at = experiment.id
   const handWritten = buckets.source.length + buckets.tests.length + buckets.docs.length + buckets.config.length
   const detail = (files) => ({ experiment: at, files: files.slice().sort() })
   return {
-    'change.experiment.sourceFilesTouched': ok(buckets.source.length, detail(buckets.source)),
-    'change.experiment.testsTouched': ok(buckets.tests.length, detail(buckets.tests)),
-    'change.experiment.docsTouched': ok(buckets.docs.length, detail(buckets.docs)),
-    'change.experiment.projectsTouched': ok(touched.size, { experiment: at, projects: [...touched].sort() }),
-    'change.experiment.filesTouched': ok(handWritten, {
-      experiment: at,
-      note: 'hand-written files (source + tests + docs + config); generated mirrors counted separately'
+    'change.footprint.sourceFiles': ok(buckets.source.length, detail(buckets.source)),
+    'change.footprint.testSupport': ok(testSupport.length, {
+      ...detail(testSupport),
+      note: 'NON-exclusive: dedicated test files + source files with inline #[cfg(test)] modules. Context only — overlaps sourceFiles by design.'
     }),
-    'change.experiment.generatedTouched': ok(buckets.generated.length, detail(buckets.generated))
+    'change.footprint.docs': ok(buckets.docs.length, detail(buckets.docs)),
+    'change.footprint.projects': ok(touched.size, { experiment: at, projects: [...touched].sort() }),
+    'change.footprint.files': ok(handWritten, {
+      experiment: at,
+      note: 'hand-written files carrying the capability (source + dedicated tests + docs + config); generated mirrors counted separately'
+    }),
+    'change.footprint.generated': ok(buckets.generated.length, detail(buckets.generated))
   }
 }

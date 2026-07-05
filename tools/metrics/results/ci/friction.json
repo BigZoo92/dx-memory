@@ -1,7 +1,7 @@
 {
   "variant": "friction",
   "label": "Friction",
-  "generatedAt": "2026-07-04T19:29:44.830Z",
+  "generatedAt": "2026-07-05T17:59:37.814Z",
   "runner": {
     "node": "v22.17.0",
     "os": "darwin",
@@ -18,29 +18,29 @@
       "command": "pnpm --filter @signalops/friction-web --filter @signalops/friction-api run build",
       "status": "ok",
       "exitCode": 0,
-      "durationMs": 2554,
-      "ramPeakKb": 243872
+      "durationMs": 2578,
+      "ramPeakKb": 227504
     },
     "typecheck": {
       "command": "pnpm --filter @signalops/friction-web --filter @signalops/friction-api run typecheck",
       "status": "ok",
       "exitCode": 0,
-      "durationMs": 1584,
-      "ramPeakKb": 241856
+      "durationMs": 1682,
+      "ramPeakKb": 222160
     },
     "lint": {
       "command": "pnpm --filter @signalops/friction-web --filter @signalops/friction-api run lint",
       "status": "ok",
       "exitCode": 0,
-      "durationMs": 1586,
-      "ramPeakKb": 276000
+      "durationMs": 1702,
+      "ramPeakKb": 255632
     },
     "test": {
       "command": "pnpm --filter @signalops/friction-web --filter @signalops/friction-api run test",
       "status": "ok",
       "exitCode": 0,
-      "durationMs": 1527,
-      "ramPeakKb": 142496,
+      "durationMs": 1884,
+      "ramPeakKb": 134592,
       "tests": {
         "executed": 134,
         "passed": 134,
@@ -54,25 +54,29 @@
       "command": "pnpm --filter @signalops/friction-web --filter @signalops/friction-api run build",
       "status": "ok",
       "exitCode": 0,
-      "durationMs": 2223
+      "durationMs": 2587,
+      "primed": true
     },
     "typecheck": {
       "command": "pnpm --filter @signalops/friction-web --filter @signalops/friction-api run typecheck",
       "status": "ok",
       "exitCode": 0,
-      "durationMs": 1532
+      "durationMs": 1582,
+      "primed": true
     },
     "lint": {
       "command": "pnpm --filter @signalops/friction-web --filter @signalops/friction-api run lint",
       "status": "ok",
       "exitCode": 0,
-      "durationMs": 1223
+      "durationMs": 1431,
+      "primed": true
     },
     "test": {
       "command": "pnpm --filter @signalops/friction-web --filter @signalops/friction-api run test",
       "status": "ok",
       "exitCode": 0,
-      "durationMs": 1670
+      "durationMs": 1635,
+      "primed": true
     }
   },
   "diagnostics": {

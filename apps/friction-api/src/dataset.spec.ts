@@ -43,8 +43,7 @@ describe('dataset', () => {
   it('every signal has a risk trend derived from its risk score', () => {
     expect(
       d.signals.every(
-        (s) =>
-          s.riskTrend === (s.riskScore >= 80 ? 'up' : s.riskScore <= 35 ? 'down' : 'stable')
+        (s) => s.riskTrend === (s.riskScore >= 80 ? 'up' : s.riskScore <= 35 ? 'down' : 'stable')
       )
     ).toBe(true)
   })

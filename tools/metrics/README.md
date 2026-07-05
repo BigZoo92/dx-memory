@@ -145,6 +145,31 @@ The four axes, in one sentence each (members in `scoreGroups`):
   — contract restatements + hygiene signals that explain WHY it propagated that way.
   `tools/metrics/sensitivity.mjs` proves the verdict does not hinge on the Change weight.
 
+### Model freeze — `modelVersion: "1.0"`
+
+The scoring model is **frozen for the experiment** (final coherence audit, 2026-07-05).
+Definition lives in one file: [`config/scoring.config.json`](config/scoring.config.json).
+
+- **Why these axes**: Build/Ship/Run/Change are the four moments a change pays for —
+  signal, delivery, operation, next modification. Change dominates (0.50) because most of
+  a product's life is modification; Build 0.20 (paid tens of times a day), Ship/Run 0.15.
+- **What is scored**: only `scope:'variant'` metrics; 2–4 members per axis for Build/Ship/
+  Run, footprint+structure for Change. Every score is ratio-to-best, variant-agnostic.
+- **What is context only**: test-support surface (classification is language-idiom
+  sensitive), total/generated footprint, CI feedback (observational), RAM peaks,
+  bundle/Lighthouse/product-quality metrics (local excellence ≠ delivery cost).
+- **What is excluded and why**: linesChanged (no honest baseline for Overfit),
+  boundariesCrossed (no variant-agnostic taxonomy), repo-level GitHub metrics (tie by
+  construction), Lighthouse in the verdict (product quality).
+- **Known, documented dependencies** (leave-one-out): the verdict rests on
+  `variant.ci.validation.warm` — remove it and Friction wins, i.e. the ranking encodes the
+  lab's central claim that the DAILY feedback loop outweighs the cold one. `nxProjects`
+  (balance band) is worth ±0.5 pt on the Flow/Friction gap. Ranking is stable for Change
+  weights 35–60% and flips to Friction at ≈70%.
+- **Rules after freeze**: collection bug fixes allowed; any semantic change to what is
+  scored or how requires bumping `modelVersion`. The defense scores must be reproducible
+  by this exact model (`explain-score.mjs`, `sensitivity.mjs`, `leave-one-out.mjs`).
+
 ### Provenance of the published verdict
 
 The deployed dashboard must show numbers measured at the SAME commit as the deployed

@@ -18,6 +18,7 @@ const LOCAL: RowSpec[] = [
   { key: 'bundleJsGzipKb', label: 'JS shipped to the browser', note: 'gzip, real build output' },
   { key: 'businessRatio', label: 'Least boilerplate', dir: 'higher', note: 'share of code that is product logic' },
   { key: 'avgComplexity', label: 'Cleanest functions', note: 'avg cyclomatic complexity' },
+  { key: 'maxComplexity', label: 'Worst-function ceiling', note: 'highest cyclomatic complexity anywhere' },
   { key: 'anyCount', label: 'Strictest typing', note: '`any` escape hatches' }
 ]
 

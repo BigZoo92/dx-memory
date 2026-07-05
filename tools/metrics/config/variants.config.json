@@ -36,7 +36,7 @@
           "lint": "nx run-many -t lint --projects=tag:scope:flow --skip-nx-cache",
           "test": "nx run-many -t test --projects=tag:scope:flow --skip-nx-cache"
         },
-        "$comment_warm": "Warm re-validation = the SAME gates re-run right after the cold pass, with the variant's real cache strategy in play. For Flow that is Nx computation caching (the cold pass disables it with --skip-nx-cache, so warm must drop the flag). Friction/Overfit have no warmCommands override: their cold commands ARE their everyday commands, so the warm pass re-runs them as-is and measures whatever incremental behaviour their toolchains really have.",
+        "$comment_warm": "Warm re-validation = the SAME gates re-run after the cold pass, with the variant's real cache strategy in play. For Flow that is Nx computation caching (the cold pass disables it with --skip-nx-cache, so warm must drop the flag). Friction/Overfit have no warmCommands override: their cold commands ARE their everyday commands. The runner PRIMES the warm pass (one untimed cache-enabled run for every variant) before timing it, so the published number is the steady-state daily loop — on a fresh CI runner the first cache-enabled run is a cache miss and timing it would punish exactly the variants that have a cache strategy.",
         "warmCommands": {
           "build": "nx run-many -t build --projects=tag:scope:flow",
           "typecheck": "nx run-many -t typecheck --projects=tag:scope:flow",
@@ -67,7 +67,8 @@
       "roots": ["apps/friction-web", "apps/friction-api"],
       "docsRoots": ["docs/friction"],
       "dist": "apps/friction-web/dist",
-      "dockerfiles": ["apps/friction-web/Dockerfile", "apps/friction-api/Dockerfile"],
+      "$comment_dockerfiles": "The SHIPPED images (release.yml builds infra/docker/friction-*.Dockerfile, not the apps/ dev Dockerfiles). Ship/Run surface metrics must be measured on what production actually runs.",
+      "dockerfiles": ["infra/docker/friction-web.Dockerfile", "infra/docker/friction-api.Dockerfile"],
       "appUrl": "http://localhost:3100",
       "apiUrl": "http://localhost:3101",
       "lighthouseUrlHint": "localhost:3100",
@@ -87,12 +88,12 @@
         },
         "docker": {
           "enabled": true,
-          "$comment": "Friction ships two images (web + api); we build the user-facing web image for a comparable single-image size/startup signal. The api image is noted but not the scored artifact.",
-          "dockerfile": "apps/friction-web/Dockerfile",
+          "$comment": "Friction ships two images (web + api); we build the user-facing web image for a comparable single-image size/startup signal — the SHIPPED one (infra/docker), which is what release.yml pushes to GHCR. The api image is noted but not the scored artifact.",
+          "dockerfile": "infra/docker/friction-web.Dockerfile",
           "context": ".",
           "image": "signalops-metrics-friction-web:ci",
-          "port": 3100,
-          "healthPath": "/"
+          "port": 8080,
+          "healthPath": "/health"
         },
         "feedback": {
           "$comment": "Real cached CI feedback source: the single quality job of friction-ci.yml on GitHub Actions.",

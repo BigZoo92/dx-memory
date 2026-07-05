@@ -6,9 +6,11 @@ import { Reveal } from './ui'
 /**
  * Moment 3 — observation first, explanation second.
  *
- * THE SAME CHANGE: the measured footprint of one identical product intent (the
- * risk-trend capability, one spec for all three variants) — real file counts from
- * the change-experiment collector, never typed by hand.
+ * ONE CAPABILITY, THREE FOOTPRINTS: where the same product capability (risk trend,
+ * one spec for all three variants) lives in each codebase — real file counts from
+ * the change-experiment collector. A footprint, deliberately NOT presented as a
+ * git diff: Overfit's implementation has no isolable baseline commit, so the same
+ * deterministic footprint method is applied to all three instead of inventing one.
  *
  * WHY IT SPREADS: the structural explanation — how many hand-written copies of the
  * shared contract each variant maintains (real file paths from the collector).
@@ -25,37 +27,35 @@ function metricNumber(id: VariantId, key: string): number | null {
   return m?.status === 'ok' && typeof m.value === 'number' ? m.value : null
 }
 
-/** Proportional bar row for one variant of the experiment. */
-function ExperimentRow({ id, max }: { id: VariantId; max: number }) {
+/** Proportional bar row for one variant of the footprint. */
+function FootprintRow({ id, max }: { id: VariantId; max: number }) {
   const c = VARIANT_COLOR[id]
-  const source = metricNumber(id, 'change.experiment.sourceFilesTouched')
-  const tests = metricNumber(id, 'change.experiment.testsTouched')
-  const docs = metricNumber(id, 'change.experiment.docsTouched')
-  const projects = metricNumber(id, 'change.experiment.projectsTouched')
+  const source = metricNumber(id, 'change.footprint.sourceFiles')
+  const docs = metricNumber(id, 'change.footprint.docs')
+  const projects = metricNumber(id, 'change.footprint.projects')
   if (source == null) {
     return (
       <div className="xp-row">
         <span className="xp-name" style={{ color: c.glow }}>
           {VARIANT_LABEL[id]}
         </span>
-        <span className="tiny muted">experiment pending for this variant</span>
+        <span className="tiny muted">footprint pending for this variant</span>
       </div>
     )
   }
-  const total = source + (tests ?? 0) + (docs ?? 0)
   return (
     <div className="xp-row">
       <span className="xp-name" style={{ color: c.glow }}>
         {VARIANT_LABEL[id]}
       </span>
       <div className="xp-track">
-        <div className="xp-bar" style={{ width: `${(total / max) * 100}%`, background: c.mark }} />
+        <div className="xp-bar" style={{ width: `${(source / max) * 100}%`, background: c.mark }} />
       </div>
       <span className="xp-count mono">
-        <b>{total}</b> files
+        <b>{source}</b> source files
       </span>
       <span className="xp-breakdown tiny muted mono">
-        {source} source · {tests} tests · {docs} docs · <b>{projects} projects</b>
+        + {docs} docs · across <b>{projects} projects</b>
       </span>
     </div>
   )
@@ -63,31 +63,27 @@ function ExperimentRow({ id, max }: { id: VariantId; max: number }) {
 
 export function ChangeCost() {
   const ids = variants.map((v) => v.meta.variant as VariantId)
-  const totals = ids.map(
-    (id) =>
-      (metricNumber(id, 'change.experiment.sourceFilesTouched') ?? 0) +
-      (metricNumber(id, 'change.experiment.testsTouched') ?? 0) +
-      (metricNumber(id, 'change.experiment.docsTouched') ?? 0)
-  )
-  const max = Math.max(1, ...totals)
+  const max = Math.max(1, ...ids.map((id) => metricNumber(id, 'change.footprint.sourceFiles') ?? 0))
 
   return (
     <>
       <Reveal className="card changecost">
         <div className="xp-head">
-          <span className="contrast-title">The same change, measured</span>
+          <span className="contrast-title">One capability, three footprints</span>
           <span className="tiny muted">
-            hand-written files carrying the risk-trend capability — counted by the collector, one spec for all three
+            hand-written files where the risk-trend capability lives — counted by the collector, one spec for all three
           </span>
         </div>
         {ids.map((id) => (
-          <ExperimentRow key={id} id={id} max={max} />
+          <FootprintRow key={id} id={id} max={max} />
         ))}
         <p className="chart-note">
           Same product intent, same acceptance criteria (derive from risk score, table column with a text badge, filter,
-          detail view, tests — <code className="mono">docs/product/03-ai-task-protocol.md</code>). Overfit&rsquo;s generated
-          mirrors (OpenAPI, TS client) regenerate on top of its count. Tests and docs are counted as propagation cost, not
-          rewarded as volume.
+          detail view, tests — <code className="mono">docs/product/03-ai-task-protocol.md</code>). This is a{' '}
+          <b>footprint</b> — where the capability is present today — not a historical diff: Overfit&rsquo;s implementation
+          has no isolable baseline commit, so one deterministic method measures all three (cross-checked against the real
+          diffs where they exist: ±2 files). Overfit&rsquo;s generated mirrors (OpenAPI, TS client) regenerate on top of its
+          count; documentation is counted as a synchronization surface, not as a flaw.
         </p>
       </Reveal>
 

@@ -19,6 +19,12 @@
  *     the service's own HEALTHCHECK targets a health path, OR the service's
  *     source tree defines a health route (a non-test code file named after it,
  *     e.g. routes/api/health.ts / health.controller.ts).
+ *   • run.structuredLogs.present — does the variant's runtime emit structured,
+ *     leveled logs (a logger with levels and context — `tracing`/`tracing_subscriber`
+ *     in Rust, a `createLogger(...)`/leveled logger in TS), or only bare console
+ *     output? One unreadable log stream must not beat two well-instrumented
+ *     services just because it is a single place to look: inspection SURFACES
+ *     measure fragmentation, this measures the QUALITY of the signal found there.
  */
 import { existsSync, readFileSync, readdirSync } from 'node:fs'
 import { join, dirname, extname } from 'node:path'
@@ -47,6 +53,41 @@ function targetsHealthEndpoint(healthcheck) {
 
 const CODE_EXTS = new Set(['.ts', '.tsx', '.rs', '.js', '.mjs'])
 const SKIP_DIRS = new Set(['node_modules', 'dist', 'dist-types', '.next', 'target', 'tests', '__tests__', 'coverage'])
+
+/**
+ * Structured-logging usage: a leveled logger with context, actually invoked by runtime
+ * code (not merely available as a dependency). Same regex for every variant.
+ */
+const STRUCTURED_LOG_RE = /tracing_subscriber|tracing::(info|warn|error)!|createLogger\s*\(|logger\.(info|warn|error)\s*\(/
+
+/** Does any non-test code file under these roots emit structured logs? */
+function usesStructuredLogs(roots, repoRoot) {
+  const stack = roots.map((r) => join(repoRoot, r))
+  while (stack.length) {
+    const dir = stack.pop()
+    let entries
+    try {
+      entries = readdirSync(dir, { withFileTypes: true })
+    } catch {
+      continue
+    }
+    for (const e of entries) {
+      const full = join(dir, e.name)
+      if (e.isDirectory()) {
+        if (!SKIP_DIRS.has(e.name) && !e.name.startsWith('.')) stack.push(full)
+        continue
+      }
+      if (!CODE_EXTS.has(extname(e.name))) continue
+      if (/\.(test|spec)\./.test(e.name)) continue
+      try {
+        if (STRUCTURED_LOG_RE.test(readFileSync(full, 'utf8'))) return true
+      } catch {
+        /* unreadable file — skip */
+      }
+    }
+  }
+  return false
+}
 
 /** Does the service's source tree define a health route (health-named, non-test code file)? */
 function definesHealthRoute(serviceDir) {
@@ -80,7 +121,8 @@ export function collectDelivery(variant, repoRoot) {
       'ship.services.count': unavailable(reason),
       'ship.healthcheck.coverage': unavailable(reason),
       'run.inspection.surfaces': unavailable(reason),
-      'run.health.coverage': unavailable(reason)
+      'run.health.coverage': unavailable(reason),
+      'run.structuredLogs.present': unavailable(reason)
     }
   }
 
@@ -103,18 +145,23 @@ export function collectDelivery(variant, repoRoot) {
       'ship.services.count': unavailable(reason),
       'ship.healthcheck.coverage': unavailable(reason),
       'run.inspection.surfaces': unavailable(reason),
-      'run.health.coverage': unavailable(reason)
+      'run.health.coverage': unavailable(reason),
+      'run.structuredLogs.present': unavailable(reason)
     }
   }
 
   const guarded = present.filter((s) => s.healthcheck).length
   const diagnosable = present.filter((s) => s.healthEndpoint).length
   const detail = { services: present.map(({ dockerfile, healthcheck, healthEndpoint }) => ({ dockerfile, healthcheck, healthEndpoint })) }
+  const structured = usesStructuredLogs(variant.roots ?? [], repoRoot)
 
   return {
     'ship.services.count': ok(present.length, detail),
     'ship.healthcheck.coverage': ok(round((guarded / present.length) * 100, 0), detail),
     'run.inspection.surfaces': ok(present.length, detail),
-    'run.health.coverage': ok(round((diagnosable / present.length) * 100, 0), detail)
+    'run.health.coverage': ok(round((diagnosable / present.length) * 100, 0), detail),
+    'run.structuredLogs.present': ok(structured ? 100 : 0, {
+      method: 'leveled/contextual logger invoked by non-test runtime code (tracing/tracing_subscriber, createLogger, logger.info|warn|error)'
+    })
   }
 }

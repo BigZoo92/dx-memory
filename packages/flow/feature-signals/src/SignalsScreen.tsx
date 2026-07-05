@@ -46,7 +46,11 @@ const cap = (v: string) => v.charAt(0).toUpperCase() + v.slice(1)
 const SEVERITY_OPTIONS = opt(SIGNAL_SEVERITIES, cap)
 const STATUS_OPTIONS = opt(SIGNAL_STATUSES, cap)
 const SOURCE_OPTIONS = opt(SIGNAL_SOURCES, (v) => (v === 'api' ? 'API' : cap(v)))
-const RISK_TREND_LABELS: Record<string, string> = { up: 'Rising', stable: 'Stable', down: 'Falling' }
+const RISK_TREND_LABELS: Record<string, string> = {
+  up: 'Rising',
+  stable: 'Stable',
+  down: 'Falling'
+}
 const RISK_TREND_OPTIONS = opt(RISK_TRENDS, (v) => RISK_TREND_LABELS[v] ?? cap(v))
 const ASSIGNED_OPTIONS: SelectOption[] = [
   { value: '', label: 'All' },

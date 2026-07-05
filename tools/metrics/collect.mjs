@@ -198,6 +198,7 @@ async function main() {
   const summary = {
     generatedAt: started,
     collectorVersion: variantsCfg.collectorVersion,
+    modelVersion: scoringCfg.modelVersion ?? null,
     source: 'collected',
     // Provenance of the measurement: the dashboard must display numbers measured at the
     // SAME commit as the deployed applications. verify-summary.mjs enforces this in the

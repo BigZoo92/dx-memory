@@ -201,11 +201,17 @@ export default function App() {
                 Run — when production misbehaves
               </div>
               <MetricBarGroup
-                metricKeys={['run.inspection.surfaces', 'run.health.coverage', 'variant.docker.startup.duration']}
+                metricKeys={[
+                  'run.inspection.surfaces',
+                  'run.health.coverage',
+                  'run.structuredLogs.present',
+                  'variant.docker.startup.duration'
+                ]}
               />
               <p className="chart-note">
-                How many runtimes to inspect, whether each exposes a dedicated health endpoint, and how fast a container
-                returns to healthy (restore speed, probed in CI).
+                Fragmentation (how many runtimes to inspect) and the QUALITY of the signal found there: dedicated health
+                endpoints, structured leveled logs, and how fast a container returns to healthy (restore speed, probed in
+                CI). One unreadable log stream doesn&rsquo;t beat two well-instrumented services.
               </p>
             </Reveal>
             <Reveal className="card">
@@ -214,10 +220,9 @@ export default function App() {
               </div>
               <MetricBarGroup
                 metricKeys={[
-                  'change.experiment.sourceFilesTouched',
-                  'change.experiment.projectsTouched',
-                  'change.experiment.testsTouched',
-                  'change.experiment.docsTouched',
+                  'change.footprint.sourceFiles',
+                  'change.footprint.projects',
+                  'change.footprint.docs',
                   'change.contract.restatements',
                   'nxProjects',
                   'avgComplexity',
@@ -225,7 +230,7 @@ export default function App() {
                 ]}
               />
               <p className="chart-note">
-                Two families: the <b>observed</b> cost of the same product change (60% of the axis) and the{' '}
+                Two families: the <b>footprint</b> of the same product capability (60% of the axis) and the{' '}
                 <b>structural</b> signals that explain it (40%). Project count is scored on <i>balance</i>: a 2-project
                 tangle and a 31-project sprawl are both expensive to change.
               </p>

@@ -18,7 +18,10 @@ import type { FlowNotFoundError } from '@signalops/flow-effect'
  * `@signalops/flow-domain` so the API and any client compute them identically. This stays a plain
  * function (no Effect): wrapping deterministic, infallible compute in `Effect` would only add noise.
  */
-export function querySignals(query: FlowSignalsQuery, source: readonly Signal[]): Paginated<Signal> {
+export function querySignals(
+  query: FlowSignalsQuery,
+  source: readonly Signal[]
+): Paginated<Signal> {
   const filtered = filterSignals(source, query)
   const sorted = sortSignals(filtered, query.sortBy ?? 'riskScore', query.sortDirection ?? 'desc')
 

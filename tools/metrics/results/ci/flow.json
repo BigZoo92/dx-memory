@@ -1,7 +1,7 @@
 {
   "variant": "flow",
   "label": "Flow",
-  "generatedAt": "2026-07-04T19:29:44.830Z",
+  "generatedAt": "2026-07-05T17:59:37.814Z",
   "runner": {
     "node": "v22.17.0",
     "os": "darwin",
@@ -18,29 +18,29 @@
       "command": "nx run-many -t build --projects=tag:scope:flow --skip-nx-cache",
       "status": "ok",
       "exitCode": 0,
-      "durationMs": 6997,
-      "ramPeakKb": 551008
+      "durationMs": 6710,
+      "ramPeakKb": 474928
     },
     "typecheck": {
       "command": "nx run-many -t typecheck --projects=tag:scope:flow --skip-nx-cache",
       "status": "ok",
       "exitCode": 0,
-      "durationMs": 6682,
-      "ramPeakKb": 443728
+      "durationMs": 6710,
+      "ramPeakKb": 465488
     },
     "lint": {
       "command": "nx run-many -t lint --projects=tag:scope:flow --skip-nx-cache",
       "status": "ok",
       "exitCode": 0,
-      "durationMs": 3545,
-      "ramPeakKb": 135728
+      "durationMs": 3523,
+      "ramPeakKb": 136096
     },
     "test": {
       "command": "nx run-many -t test --projects=tag:scope:flow --skip-nx-cache",
       "status": "ok",
       "exitCode": 0,
-      "durationMs": 10191,
-      "ramPeakKb": 169424,
+      "durationMs": 9550,
+      "ramPeakKb": 174784,
       "tests": {
         "executed": 169,
         "passed": 169,
@@ -54,25 +54,29 @@
       "command": "nx run-many -t build --projects=tag:scope:flow",
       "status": "ok",
       "exitCode": 0,
-      "durationMs": 1475
+      "durationMs": 1478,
+      "primed": true
     },
     "typecheck": {
       "command": "nx run-many -t typecheck --projects=tag:scope:flow",
       "status": "ok",
       "exitCode": 0,
-      "durationMs": 1438
+      "durationMs": 1412,
+      "primed": true
     },
     "lint": {
       "command": "nx run-many -t lint --projects=tag:scope:flow",
       "status": "ok",
       "exitCode": 0,
-      "durationMs": 1348
+      "durationMs": 1493,
+      "primed": true
     },
     "test": {
       "command": "nx run-many -t test --projects=tag:scope:flow",
       "status": "ok",
       "exitCode": 0,
-      "durationMs": 1397
+      "durationMs": 1406,
+      "primed": true
     }
   },
   "diagnostics": {

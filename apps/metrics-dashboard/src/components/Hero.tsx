@@ -12,6 +12,10 @@ export function Hero() {
   )
   const live = variants.reduce((s, v) => s + v.statuses.ok, 0)
   const pending = variants.reduce((s, v) => s + v.statuses.unavailable, 0)
+  // The verdict is FINAL only when measured by CI at the deployed SHA with every scored
+  // member present (verify-summary gates that in the release pipeline). Anything else —
+  // local collection, partial docker coverage — is a provisional snapshot and says so.
+  const provisional = summary.provenance?.source !== 'ci' || pending > 0
 
   return (
     <header className="shell hero" id="verdict">
@@ -59,7 +63,7 @@ export function Hero() {
                   <span className="n" style={{ color: c.glow }}>
                     {total?.toFixed(1) ?? '—'}
                   </span>
-                  <span className="u">/ 100 delivery score</span>
+                  <span className="u">/ 100 {provisional ? 'provisional score' : 'delivery score'}</span>
                 </div>
                 <div style={{ marginTop: 12 }}>
                   <ScoreMeter value={total} color={c.glow} />

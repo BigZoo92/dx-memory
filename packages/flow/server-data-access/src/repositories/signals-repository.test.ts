@@ -69,8 +69,7 @@ describe('querySignals (pure) — filtering', () => {
     const signals = getSignals()
     expect(
       signals.every(
-        (s) =>
-          s.riskTrend === (s.riskScore >= 80 ? 'up' : s.riskScore <= 35 ? 'down' : 'stable')
+        (s) => s.riskTrend === (s.riskScore >= 80 ? 'up' : s.riskScore <= 35 ? 'down' : 'stable')
       )
     ).toBe(true)
     const result = querySignals({ riskTrend: 'up', pageSize: 200 }, signals)

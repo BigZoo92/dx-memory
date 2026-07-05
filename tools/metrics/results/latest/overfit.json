@@ -6,10 +6,10 @@
     "thesis": "Technically impressive, dangerously expensive — over-engineered past its payoff.",
     "stack": "Next.js · Rust/Axum · CQRS · 17 crates + 14 packages",
     "accent": "#a98bff",
-    "commit": "271240f99e5cae54d0cb71b22264ae0fb0ebd9bc",
-    "commitShort": "271240f",
+    "commit": "b1840964d08aad639c12b6d60678ada1947de814",
+    "commitShort": "b184096",
     "branch": "main",
-    "timestamp": "2026-07-04T19:31:39.691Z",
+    "timestamp": "2026-07-05T18:02:46.470Z",
     "ciPipelineId": null,
     "ciRunNumber": null,
     "environment": "local",
@@ -425,10 +425,10 @@
       "description": "Total size of the deployable build output."
     },
     "variant.ci.build.duration": {
-      "value": 8139,
+      "value": 8740,
       "status": "ok",
       "command": "pnpm overfit:build && pnpm overfit:api:build",
-      "at": "2026-07-04T19:29:44.830Z",
+      "at": "2026-07-05T17:59:37.814Z",
       "label": "Variant build time (cold)",
       "unit": "ms",
       "direction": "lower",
@@ -438,10 +438,10 @@
       "description": "Cache-DISABLED cold build of this variant's app(s) (Flow: nx --skip-nx-cache; Friction/Overfit: pnpm/cargo/next). Intrinsic build cost, independent of CI cache strategy. NOT the real cached CI feedback time."
     },
     "variant.ci.typecheck.duration": {
-      "value": 5681,
+      "value": 6301,
       "status": "ok",
       "command": "pnpm overfit:typecheck",
-      "at": "2026-07-04T19:29:44.830Z",
+      "at": "2026-07-05T17:59:37.814Z",
       "label": "Variant typecheck time (cold)",
       "unit": "ms",
       "direction": "lower",
@@ -451,10 +451,10 @@
       "description": "Cache-disabled cold typecheck of this variant. Intrinsic cost, cache-immune."
     },
     "variant.ci.lint.duration": {
-      "value": 1940,
+      "value": 2021,
       "status": "ok",
       "command": "pnpm overfit:boundaries && pnpm overfit:api:clippy",
-      "at": "2026-07-04T19:29:44.830Z",
+      "at": "2026-07-05T17:59:37.814Z",
       "label": "Variant lint time (cold)",
       "unit": "ms",
       "direction": "lower",
@@ -464,10 +464,10 @@
       "description": "Cache-disabled cold lint / boundary check of this variant. Intrinsic cost, cache-immune."
     },
     "variant.ci.test.duration": {
-      "value": 6599,
+      "value": 6174,
       "status": "ok",
       "command": "pnpm overfit:test && pnpm overfit:api:test",
-      "at": "2026-07-04T19:29:44.830Z",
+      "at": "2026-07-05T17:59:37.814Z",
       "label": "Variant test time (cold)",
       "unit": "ms",
       "direction": "lower",
@@ -477,14 +477,14 @@
       "description": "Cache-disabled cold unit-test run of this variant (vitest). Intrinsic cost, cache-immune."
     },
     "variant.ci.validation.cold": {
-      "value": 22359,
+      "value": 23236,
       "status": "ok",
-      "at": "2026-07-04T19:29:44.830Z",
+      "at": "2026-07-05T17:59:37.814Z",
       "steps": {
-        "build": 8139,
-        "typecheck": 5681,
-        "lint": 1940,
-        "test": 6599
+        "build": 8740,
+        "typecheck": 6301,
+        "lint": 2021,
+        "test": 6174
       },
       "label": "Full validation (cold)",
       "unit": "ms",
@@ -495,14 +495,14 @@
       "description": "Total cache-disabled cost of the variant's whole validation protocol: build + typecheck + lint + test, summed. The intrinsic worst-case price of one trustworthy signal."
     },
     "variant.ci.validation.warm": {
-      "value": 21717,
+      "value": 22651,
       "status": "ok",
-      "at": "2026-07-04T19:29:44.830Z",
+      "at": "2026-07-05T17:59:37.814Z",
       "steps": {
-        "build": 8131,
-        "typecheck": 5771,
-        "lint": 1885,
-        "test": 5930
+        "build": 8264,
+        "typecheck": 6604,
+        "lint": 1859,
+        "test": 5924
       },
       "label": "Full re-validation (warm)",
       "unit": "ms",
@@ -510,12 +510,12 @@
       "category": "Cold validation",
       "axis": "Build",
       "scope": "variant",
-      "description": "The SAME four gates re-run immediately after the cold pass, with the variant's real cache strategy in play (Flow: Nx computation cache; Friction/Overfit: whatever their toolchains cache). The everyday 'is my change still green?' cost — paid dozens of times a day."
+      "description": "The SAME four gates re-run after the cold pass with the variant's real cache strategy in play, PRIMED first (one untimed cache-enabled run for every variant) so the number is the steady-state daily loop, not a first-run cache miss. The everyday 'is my change still green?' cost — paid dozens of times a day."
     },
     "variant.ci.tests.executed": {
       "value": 60,
       "status": "ok",
-      "at": "2026-07-04T19:29:44.830Z",
+      "at": "2026-07-05T17:59:37.814Z",
       "label": "Tests executed",
       "unit": "count",
       "direction": "neutral",
@@ -527,7 +527,7 @@
     "variant.ci.tests.passed": {
       "value": 60,
       "status": "ok",
-      "at": "2026-07-04T19:29:44.830Z",
+      "at": "2026-07-05T17:59:37.814Z",
       "label": "Tests passed",
       "unit": "count",
       "direction": "neutral",
@@ -539,7 +539,7 @@
     "variant.ci.tests.failed": {
       "value": 0,
       "status": "ok",
-      "at": "2026-07-04T19:29:44.830Z",
+      "at": "2026-07-05T17:59:37.814Z",
       "label": "Tests failed",
       "unit": "count",
       "direction": "lower",
@@ -551,7 +551,7 @@
     "variant.ci.tests.skipped": {
       "value": 0,
       "status": "ok",
-      "at": "2026-07-04T19:29:44.830Z",
+      "at": "2026-07-05T17:59:37.814Z",
       "label": "Tests skipped",
       "unit": "count",
       "direction": "lower",
@@ -563,7 +563,7 @@
     "variant.ci.warnings.count": {
       "value": 3,
       "status": "ok",
-      "at": "2026-07-04T19:29:44.830Z",
+      "at": "2026-07-05T17:59:37.814Z",
       "method": "heuristic parse of tool output",
       "label": "CI warnings",
       "unit": "count",
@@ -576,7 +576,7 @@
     "variant.ci.errors.count": {
       "value": 0,
       "status": "ok",
-      "at": "2026-07-04T19:29:44.830Z",
+      "at": "2026-07-05T17:59:37.814Z",
       "method": "heuristic parse of tool output",
       "label": "CI errors",
       "unit": "count",
@@ -587,9 +587,9 @@
       "description": "Errors parsed from this variant's build/lint/typecheck output (heuristic)."
     },
     "variant.ci.ramPeak.build": {
-      "value": 540576,
+      "value": 489648,
       "status": "ok",
-      "at": "2026-07-04T19:29:44.830Z",
+      "at": "2026-07-05T17:59:37.814Z",
       "label": "Build peak RAM",
       "unit": "kb",
       "direction": "lower",
@@ -599,9 +599,9 @@
       "description": "Peak resident memory of the build step (from /usr/bin/time on the CI runner). Unavailable where the runner lacks GNU/BSD time."
     },
     "variant.ci.ramPeak.tests": {
-      "value": 204496,
+      "value": 174560,
       "status": "ok",
-      "at": "2026-07-04T19:29:44.830Z",
+      "at": "2026-07-05T17:59:37.814Z",
       "label": "Test peak RAM",
       "unit": "kb",
       "direction": "lower",
@@ -613,7 +613,7 @@
     "variant.ci.artifact.distSize": {
       "value": 704.4,
       "status": "ok",
-      "at": "2026-07-04T19:29:44.830Z",
+      "at": "2026-07-05T17:59:37.814Z",
       "label": "Variant dist size (CI)",
       "unit": "kb",
       "direction": "lower",
@@ -822,6 +822,18 @@
       "scope": "variant",
       "description": "Share of the variant's services that expose a dedicated health endpoint (a health route in their source, or a HEALTHCHECK that targets a health path — not just the home page)."
     },
+    "run.structuredLogs.present": {
+      "value": 100,
+      "status": "ok",
+      "method": "leveled/contextual logger invoked by non-test runtime code (tracing/tracing_subscriber, createLogger, logger.info|warn|error)",
+      "label": "Structured logs",
+      "unit": "%",
+      "direction": "higher",
+      "category": "Diagnosis surface",
+      "axis": "Run",
+      "scope": "variant",
+      "description": "Does the runtime emit structured, leveled, contextual logs (tracing/tracing_subscriber in Rust, a leveled createLogger in TS) — or only bare console output? Signal QUALITY: one unreadable stream must not beat two well-instrumented services just because it is a single place to look."
+    },
     "change.contract.restatements": {
       "value": 3,
       "status": "ok",
@@ -840,7 +852,7 @@
       "scope": "variant",
       "description": "Hand-written files that re-declare the shared Signal contract (measured on the riskScore field). 0 = the variant imports the single source of truth; each extra copy is one more place a schema change must propagate to — and one more place it can silently diverge."
     },
-    "change.experiment.sourceFilesTouched": {
+    "change.footprint.sourceFiles": {
       "value": 28,
       "status": "ok",
       "experiment": "risk-trend",
@@ -874,34 +886,45 @@
         "packages/overfit/ui/src/format.ts",
         "packages/overfit/ui/src/index.tsx"
       ],
-      "label": "Same change — source files",
+      "label": "Footprint — source files",
       "unit": "count",
       "direction": "lower",
-      "category": "Change experiment",
+      "category": "Change footprint",
       "axis": "Change",
       "scope": "variant",
-      "description": "Hand-written production source files that carry the Risk trend capability — how far one identical product intent propagated into this codebase."
+      "description": "Hand-written production source files that carry the Risk trend capability — the propagation surface of one identical product intent in this codebase. A footprint (where the capability lives today), not a git diff."
     },
-    "change.experiment.testsTouched": {
-      "value": 5,
+    "change.footprint.testSupport": {
+      "value": 15,
       "status": "ok",
       "experiment": "risk-trend",
       "files": [
         "apps/overfit-api/tests/api.rs",
+        "crates/overfit-adapters-fixtures/src/generate.rs",
+        "crates/overfit-adapters-fixtures/src/lib.rs",
+        "crates/overfit-application/src/lib.rs",
+        "crates/overfit-commands/src/lib.rs",
+        "crates/overfit-contracts/src/lib.rs",
+        "crates/overfit-domain/src/lib.rs",
+        "crates/overfit-event-store/src/lib.rs",
+        "crates/overfit-feature-flags/src/lib.rs",
+        "crates/overfit-read-models/src/lib.rs",
+        "crates/overfit-test-support/src/lib.rs",
         "packages/overfit/ai-governance/src/index.test.ts",
         "packages/overfit/api-client/src/client.test.ts",
         "packages/overfit/feature-signals/src/viewModel.test.ts",
         "packages/overfit/ui/src/ui.test.tsx"
       ],
-      "label": "Same change — test files",
+      "note": "NON-exclusive: dedicated test files + source files with inline #[cfg(test)] modules. Context only — overlaps sourceFiles by design.",
+      "label": "Footprint — test support",
       "unit": "count",
-      "direction": "lower",
-      "category": "Change experiment",
+      "direction": "neutral",
+      "category": "Change footprint",
       "axis": "Change",
       "scope": "variant",
-      "description": "Test files the same capability reaches. A propagation COST, not a confidence bonus: needing 3× the tests for the same intent means 3× the files to keep coherent."
+      "description": "Test surface behind the capability: dedicated test files PLUS Rust sources with inline #[cfg(test)] modules (non-exclusive with source files). Context only — not scored: it ties across variants today and an exclusive classification would bias against Rust idioms."
     },
-    "change.experiment.docsTouched": {
+    "change.footprint.docs": {
       "value": 14,
       "status": "ok",
       "experiment": "risk-trend",
@@ -921,15 +944,15 @@
         "docs/overfit/policies/testing-policy.md",
         "docs/overfit/quality-gates/quality-gates.md"
       ],
-      "label": "Same change — docs",
+      "label": "Footprint — documentation",
       "unit": "count",
       "direction": "lower",
-      "category": "Change experiment",
+      "category": "Change footprint",
       "axis": "Change",
       "scope": "variant",
-      "description": "Documentation files the same capability reaches — the writing needed to keep the system coherent after one product intent."
+      "description": "Hand-maintained documentation files that carry the capability (ADRs, policies, governance). A synchronization surface: every copy must stay coherent when the capability moves. Not a judgment that documentation is bad — a measure of what must be kept in sync."
     },
-    "change.experiment.projectsTouched": {
+    "change.footprint.projects": {
       "value": 17,
       "status": "ok",
       "experiment": "risk-trend",
@@ -952,28 +975,28 @@
         "packages/overfit/quality-gates",
         "packages/overfit/ui"
       ],
-      "label": "Same change — projects",
+      "label": "Footprint — projects",
       "unit": "count",
       "direction": "lower",
-      "category": "Change experiment",
+      "category": "Change footprint",
       "axis": "Change",
       "scope": "variant",
       "description": "Distinct workspace projects (packages/crates/apps) the capability's footprint spans — the coordination surface of one change."
     },
-    "change.experiment.filesTouched": {
+    "change.footprint.files": {
       "value": 47,
       "status": "ok",
       "experiment": "risk-trend",
-      "note": "hand-written files (source + tests + docs + config); generated mirrors counted separately",
-      "label": "Same change — total files",
+      "note": "hand-written files carrying the capability (source + dedicated tests + docs + config); generated mirrors counted separately",
+      "label": "Footprint — total files",
       "unit": "count",
       "direction": "neutral",
-      "category": "Change experiment",
+      "category": "Change footprint",
       "axis": "Change",
       "scope": "variant",
-      "description": "Total hand-written files carrying the capability (source + tests + docs + config). Context — the scored members are the classified counts."
+      "description": "Total hand-written files carrying the capability (source + dedicated tests + docs + config). Context — the scored members are the classified counts."
     },
-    "change.experiment.generatedTouched": {
+    "change.footprint.generated": {
       "value": 5,
       "status": "ok",
       "experiment": "risk-trend",
@@ -984,10 +1007,10 @@
         "packages/overfit/contracts-generated/src/index.ts",
         "packages/overfit/contracts-generated/src/runtime.ts"
       ],
-      "label": "Same change — generated files",
+      "label": "Footprint — generated files",
       "unit": "count",
       "direction": "neutral",
-      "category": "Change experiment",
+      "category": "Change footprint",
       "axis": "Change",
       "scope": "variant",
       "description": "Generated mirrors (OpenAPI spec, generated clients) that carry the capability. Context — regenerating is cheap; the hand-written counts are what score."
@@ -1727,7 +1750,7 @@
     "build": {
       "label": "Build",
       "kind": "axis",
-      "value": 28,
+      "value": 28.1,
       "coverage": "2/2",
       "coverageFrac": 1,
       "complete": true,
@@ -1745,17 +1768,17 @@
     "run": {
       "label": "Run",
       "kind": "axis",
-      "value": 59.5,
-      "coverage": "2/3",
-      "coverageFrac": 0.7,
+      "value": 70,
+      "coverage": "3/4",
+      "coverageFrac": 0.75,
       "complete": false,
       "gated": false
     },
     "change": {
       "label": "Change",
       "kind": "axis",
-      "value": 51.2,
-      "coverage": "11/11",
+      "value": 43.9,
+      "coverage": "10/10",
       "coverageFrac": 1,
       "complete": true,
       "gated": false
@@ -1799,7 +1822,7 @@
     "totalDeliveryScore": {
       "label": "Total Delivery Score",
       "kind": "headline",
-      "value": 52.1,
+      "value": 50.1,
       "method": "weighted-mean-over-measured-axes",
       "axesUsed": [
         "Build",
@@ -1810,7 +1833,7 @@
     }
   },
   "statuses": {
-    "ok": 63,
+    "ok": 64,
     "unavailable": 20,
     "error": 0
   },

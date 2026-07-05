@@ -234,15 +234,29 @@ export async function runVariant(variant, repoRoot, { steps, docker = true, warm
   }
 
   // ---- Warm re-validation pass ------------------------------------------------
-  // Same steps re-run immediately after the cold pass, with each variant's REAL cache
-  // behaviour in play (`ci.warmCommands` overrides where the cold command explicitly
-  // disabled a cache, e.g. Flow's `--skip-nx-cache`; otherwise the same command re-runs).
-  // This measures the everyday feedback loop — "re-validate after a change" — as opposed
-  // to the cold pass's intrinsic worst-case cost. Skipped for failed cold steps (a warm
-  // number after a failed cold run would be meaningless).
+  // Same steps re-run after the cold pass, with each variant's REAL cache behaviour in
+  // play (`ci.warmCommands` overrides where the cold command explicitly disabled a cache,
+  // e.g. Flow's `--skip-nx-cache`; otherwise the same command re-runs). This measures the
+  // everyday feedback loop — "re-validate after a change" — as opposed to the cold pass's
+  // intrinsic worst-case cost.
+  //
+  // PRIMING (measurement-bug fix): the timed warm pass must measure the STEADY STATE. On a
+  // developer machine the caches already exist, but on a fresh CI runner the first
+  // cache-enabled run is a cache MISS (the cold pass deliberately skipped cache reads AND
+  // writes) — timing it published a "warm" number that was actually a second cold run and
+  // punished precisely the variants that HAVE a cache strategy. So every variant first runs
+  // its warm commands once UNTIMED (filling whatever caches its toolchain really has: Nx
+  // computation cache, tsc incremental state, Next build cache, cargo target/), then the
+  // timed pass measures the real steady-state re-validation cost. Identical protocol for
+  // all three variants. Skipped for failed cold steps (a warm number after a failed cold
+  // run would be meaningless).
   const warmSteps = {}
   if (warm) {
     const warmCommands = ci.warmCommands ?? {}
+    const warmable = STEP_ORDER.filter((s) => wanted.includes(s) && stepResults[s]?.status === 'ok')
+    for (const step of warmable) {
+      runStep(warmCommands[step] ?? commands[step], repoRoot, null) // prime — result discarded
+    }
     for (const step of STEP_ORDER) {
       if (!wanted.includes(step)) continue
       const cold = stepResults[step]
@@ -257,6 +271,7 @@ export async function runVariant(variant, repoRoot, { steps, docker = true, warm
         status: r.status,
         exitCode: r.exitCode,
         durationMs: r.durationMs,
+        primed: true,
         ...(r.status !== 'ok' ? { reason: `\`${cmd}\` exited ${r.exitCode}.` } : {})
       }
     }
