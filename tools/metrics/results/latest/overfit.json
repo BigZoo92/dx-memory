@@ -6,30 +6,19 @@
     "thesis": "Technically impressive, dangerously expensive — over-engineered past its payoff.",
     "stack": "Next.js · Rust/Axum · CQRS · 17 crates + 14 packages",
     "accent": "#a98bff",
-    "commit": "4383eff261e76e72a6a5094aa3d96714d0018230",
-    "commitShort": "4383eff",
-    "branch": "v1.0.6",
-    "timestamp": "2026-07-05T18:17:14.948Z",
-    "ciPipelineId": "28750093448",
-    "ciRunNumber": "6",
-    "environment": "ci",
+    "commit": "cafc870af5b2747f4a79b696fb27998912367ddb",
+    "commitShort": "cafc870",
+    "branch": "main",
+    "timestamp": "2026-07-06T14:42:53.278Z",
+    "ciPipelineId": null,
+    "ciRunNumber": null,
+    "environment": "local",
     "appUrl": "http://localhost:3300",
     "apiUrl": "http://localhost:3200"
   },
   "metrics": {
-    "nxProjects": {
-      "value": 31,
-      "status": "ok",
-      "label": "Workspace projects",
-      "unit": "count",
-      "direction": "balance",
-      "category": "Architecture",
-      "axis": "Change",
-      "scope": "variant",
-      "description": "Buildable projects (npm packages + Rust crates). Scored on balance: a monolith is under-modularized, dozens of projects is over-fragmented; the healthy band is in between."
-    },
     "sourceFiles": {
-      "value": 78,
+      "value": 81,
       "status": "ok",
       "label": "Source files",
       "unit": "count",
@@ -39,8 +28,19 @@
       "scope": "variant",
       "description": "Source files (ts/tsx/js/rs/css), excluding tests, config, docs and generated code. Scored on balance."
     },
+    "configFiles": {
+      "value": 76,
+      "status": "ok",
+      "label": "Config files",
+      "unit": "count",
+      "direction": "lower",
+      "category": "Architecture",
+      "axis": "Change",
+      "scope": "variant",
+      "description": "Number of configuration files (json/yaml/toml/rc/*.config.*)."
+    },
     "locTotal": {
-      "value": 7632,
+      "value": 7744,
       "status": "ok",
       "label": "Total LOC",
       "unit": "loc",
@@ -51,7 +51,7 @@
       "description": "Non-empty lines of source code. Scored on balance — too little means missing structure, too much means bloat."
     },
     "locFrontend": {
-      "value": 3356,
+      "value": 3381,
       "status": "ok",
       "label": "Frontend LOC",
       "unit": "loc",
@@ -62,7 +62,7 @@
       "description": "Lines of front-end code (heuristic classification)."
     },
     "locBackend": {
-      "value": 4276,
+      "value": 4363,
       "status": "ok",
       "label": "Backend LOC",
       "unit": "loc",
@@ -73,7 +73,7 @@
       "description": "Lines of back-end / server code (heuristic classification, includes Rust)."
     },
     "locTests": {
-      "value": 247,
+      "value": 160,
       "status": "ok",
       "label": "Test LOC",
       "unit": "loc",
@@ -93,17 +93,6 @@
       "axis": "Change",
       "scope": "variant",
       "description": "Lines of Markdown documentation."
-    },
-    "configFiles": {
-      "value": 76,
-      "status": "ok",
-      "label": "Config files",
-      "unit": "count",
-      "direction": "lower",
-      "category": "Architecture",
-      "axis": "Change",
-      "scope": "variant",
-      "description": "Number of configuration files (json/yaml/toml/rc/*.config.*)."
     },
     "todoCount": {
       "value": 0,
@@ -194,7 +183,7 @@
       "description": "Source files longer than 300 lines."
     },
     "businessRatio": {
-      "value": 0.547,
+      "value": 0.826,
       "status": "ok",
       "label": "Business/boilerplate ratio",
       "unit": "ratio",
@@ -205,7 +194,7 @@
       "description": "Share of code that is product logic vs config/generated/barrel boilerplate. Higher = more signal per line."
     },
     "directDeps": {
-      "value": 21,
+      "value": 0,
       "status": "ok",
       "label": "Direct dependencies",
       "unit": "count",
@@ -214,6 +203,94 @@
       "axis": "Change",
       "scope": "variant",
       "description": "Distinct third-party runtime + dev dependencies declared across the variant's manifests."
+    },
+    "nxProjects": {
+      "value": 0,
+      "status": "ok",
+      "label": "Workspace projects",
+      "unit": "count",
+      "direction": "balance",
+      "category": "Architecture",
+      "axis": "Change",
+      "scope": "variant",
+      "description": "Buildable projects (npm packages + Rust crates). Scored on balance: a monolith is under-modularized, dozens of projects is over-fragmented; the healthy band is in between."
+    },
+    "graphNodes": {
+      "value": 0,
+      "status": "ok",
+      "label": "Graph nodes",
+      "unit": "count",
+      "direction": "balance",
+      "category": "Graph",
+      "axis": "Change",
+      "scope": "variant",
+      "description": "Projects in the variant's internal dependency graph. Scored on balance."
+    },
+    "graphEdges": {
+      "value": 0,
+      "status": "ok",
+      "label": "Graph edges",
+      "unit": "count",
+      "direction": "lower",
+      "category": "Graph",
+      "axis": "Change",
+      "scope": "variant",
+      "description": "Internal dependency edges between the variant's projects."
+    },
+    "graphDensity": {
+      "value": 0,
+      "status": "ok",
+      "label": "Graph density",
+      "unit": "ratio",
+      "direction": "lower",
+      "category": "Graph",
+      "axis": "Change",
+      "scope": "variant",
+      "description": "Edges / possible-edges — how tangled the internal graph is."
+    },
+    "fanInAvg": {
+      "value": 0,
+      "status": "ok",
+      "label": "Avg fan-in",
+      "unit": "index",
+      "direction": "neutral",
+      "category": "Graph",
+      "axis": "Change",
+      "scope": "variant",
+      "description": "Average number of projects that depend on a given project."
+    },
+    "fanOutAvg": {
+      "value": 0,
+      "status": "ok",
+      "label": "Avg fan-out",
+      "unit": "index",
+      "direction": "lower",
+      "category": "Graph",
+      "axis": "Change",
+      "scope": "variant",
+      "description": "Average number of projects a given project depends on."
+    },
+    "fanInMax": {
+      "value": 0,
+      "status": "ok",
+      "label": "Max fan-in",
+      "unit": "count",
+      "direction": "lower",
+      "category": "Graph",
+      "axis": "Change",
+      "scope": "variant",
+      "description": "Most-depended-upon project's fan-in — the blast radius of a change to the busiest hub."
+    },
+    "fanOutMax": {
+      "value": 0,
+      "status": "ok",
+      "label": "Max fan-out",
+      "unit": "count",
+      "direction": "lower",
+      "category": "Graph",
+      "axis": "Change",
+      "scope": "variant",
+      "description": "Highest number of dependencies a single project pulls in."
     },
     "circularDeps": {
       "value": 0,
@@ -225,83 +302,6 @@
       "axis": "Change",
       "scope": "variant",
       "description": "Import cycles between the variant's own projects (detected from workspace manifests)."
-    },
-    "graphNodes": {
-      "value": 31,
-      "status": "ok",
-      "label": "Graph nodes",
-      "unit": "count",
-      "direction": "balance",
-      "category": "Graph",
-      "axis": "Change",
-      "scope": "variant",
-      "description": "Projects in the variant's internal dependency graph. Scored on balance."
-    },
-    "graphEdges": {
-      "value": 66,
-      "status": "ok",
-      "label": "Graph edges",
-      "unit": "count",
-      "direction": "lower",
-      "category": "Graph",
-      "axis": "Change",
-      "scope": "variant",
-      "description": "Internal dependency edges between the variant's projects."
-    },
-    "graphDensity": {
-      "value": 0.071,
-      "status": "ok",
-      "label": "Graph density",
-      "unit": "ratio",
-      "direction": "lower",
-      "category": "Graph",
-      "axis": "Change",
-      "scope": "variant",
-      "description": "Edges / possible-edges — how tangled the internal graph is."
-    },
-    "fanInAvg": {
-      "value": 2.13,
-      "status": "ok",
-      "label": "Avg fan-in",
-      "unit": "index",
-      "direction": "neutral",
-      "category": "Graph",
-      "axis": "Change",
-      "scope": "variant",
-      "description": "Average number of projects that depend on a given project."
-    },
-    "fanOutAvg": {
-      "value": 2.13,
-      "status": "ok",
-      "label": "Avg fan-out",
-      "unit": "index",
-      "direction": "lower",
-      "category": "Graph",
-      "axis": "Change",
-      "scope": "variant",
-      "description": "Average number of projects a given project depends on."
-    },
-    "fanInMax": {
-      "value": 10,
-      "status": "ok",
-      "label": "Max fan-in",
-      "unit": "count",
-      "direction": "lower",
-      "category": "Graph",
-      "axis": "Change",
-      "scope": "variant",
-      "description": "Most-depended-upon project's fan-in — the blast radius of a change to the busiest hub."
-    },
-    "fanOutMax": {
-      "value": 14,
-      "status": "ok",
-      "label": "Max fan-out",
-      "unit": "count",
-      "direction": "lower",
-      "category": "Graph",
-      "axis": "Change",
-      "scope": "variant",
-      "description": "Highest number of dependencies a single project pulls in."
     },
     "bundleJsKb": {
       "value": 687.3,
@@ -424,23 +424,11 @@
       "scope": "variant",
       "description": "Total size of the deployable build output."
     },
-    "$comment_variant_ci": {
-      "status": "unavailable",
-      "value": null,
-      "reason": "not collected",
-      "label": null,
-      "unit": null,
-      "direction": "neutral",
-      "category": "Other",
-      "axis": null,
-      "scope": "variant",
-      "description": null
-    },
     "variant.ci.build.duration": {
-      "value": 10576,
+      "value": 43227,
       "status": "ok",
-      "command": "pnpm overfit:build && pnpm overfit:api:build",
-      "at": "2026-07-05T18:10:53.289Z",
+      "command": "pnpm overfit:contracts:generate && pnpm exec nx run-many -t build --projects=tag:scope:overfit --exclude=overfit-api --skip-nx-cache && pnpm overfit:api:build",
+      "at": "2026-07-06T14:21:59.063Z",
       "label": "Variant build time (cold)",
       "unit": "ms",
       "direction": "lower",
@@ -450,10 +438,10 @@
       "description": "Cache-DISABLED cold build of this variant's app(s) (Flow: nx --skip-nx-cache; Friction/Overfit: pnpm/cargo/next). Intrinsic build cost, independent of CI cache strategy. NOT the real cached CI feedback time."
     },
     "variant.ci.typecheck.duration": {
-      "value": 16705,
+      "value": 9544,
       "status": "ok",
-      "command": "pnpm overfit:typecheck",
-      "at": "2026-07-05T18:10:53.289Z",
+      "command": "pnpm exec nx run-many -t typecheck --projects=tag:scope:overfit --exclude=overfit-api --skip-nx-cache",
+      "at": "2026-07-06T14:21:59.063Z",
       "label": "Variant typecheck time (cold)",
       "unit": "ms",
       "direction": "lower",
@@ -463,10 +451,10 @@
       "description": "Cache-disabled cold typecheck of this variant. Intrinsic cost, cache-immune."
     },
     "variant.ci.lint.duration": {
-      "value": 10451,
+      "value": 11924,
       "status": "ok",
       "command": "pnpm overfit:boundaries && pnpm overfit:api:clippy",
-      "at": "2026-07-05T18:10:53.289Z",
+      "at": "2026-07-06T14:21:59.063Z",
       "label": "Variant lint time (cold)",
       "unit": "ms",
       "direction": "lower",
@@ -476,10 +464,10 @@
       "description": "Cache-disabled cold lint / boundary check of this variant. Intrinsic cost, cache-immune."
     },
     "variant.ci.test.duration": {
-      "value": 7070,
+      "value": 14031,
       "status": "ok",
-      "command": "pnpm overfit:test && pnpm overfit:api:test",
-      "at": "2026-07-05T18:10:53.289Z",
+      "command": "pnpm exec nx run-many -t test --projects=tag:scope:overfit --exclude=overfit-api --skip-nx-cache && pnpm overfit:api:test",
+      "at": "2026-07-06T14:21:59.063Z",
       "label": "Variant test time (cold)",
       "unit": "ms",
       "direction": "lower",
@@ -489,14 +477,14 @@
       "description": "Cache-disabled cold unit-test run of this variant (vitest). Intrinsic cost, cache-immune."
     },
     "variant.ci.validation.cold": {
-      "value": 44802,
+      "value": 78726,
       "status": "ok",
-      "at": "2026-07-05T18:10:53.289Z",
+      "at": "2026-07-06T14:21:59.063Z",
       "steps": {
-        "build": 10576,
-        "typecheck": 16705,
-        "lint": 10451,
-        "test": 7070
+        "build": 43227,
+        "typecheck": 9544,
+        "lint": 11924,
+        "test": 14031
       },
       "label": "Full validation (cold)",
       "unit": "ms",
@@ -507,14 +495,14 @@
       "description": "Total cache-disabled cost of the variant's whole validation protocol: build + typecheck + lint + test, summed. The intrinsic worst-case price of one trustworthy signal."
     },
     "variant.ci.validation.warm": {
-      "value": 35485,
+      "value": 24506,
       "status": "ok",
-      "at": "2026-07-05T18:10:53.289Z",
+      "at": "2026-07-06T14:21:59.063Z",
       "steps": {
-        "build": 10868,
-        "typecheck": 15444,
-        "lint": 2086,
-        "test": 7087
+        "build": 14063,
+        "typecheck": 1891,
+        "lint": 3163,
+        "test": 5389
       },
       "label": "Full re-validation (warm)",
       "unit": "ms",
@@ -527,7 +515,7 @@
     "variant.ci.tests.executed": {
       "value": 60,
       "status": "ok",
-      "at": "2026-07-05T18:10:53.289Z",
+      "at": "2026-07-06T14:21:59.063Z",
       "label": "Tests executed",
       "unit": "count",
       "direction": "neutral",
@@ -539,7 +527,7 @@
     "variant.ci.tests.passed": {
       "value": 60,
       "status": "ok",
-      "at": "2026-07-05T18:10:53.289Z",
+      "at": "2026-07-06T14:21:59.063Z",
       "label": "Tests passed",
       "unit": "count",
       "direction": "neutral",
@@ -551,7 +539,7 @@
     "variant.ci.tests.failed": {
       "value": 0,
       "status": "ok",
-      "at": "2026-07-05T18:10:53.289Z",
+      "at": "2026-07-06T14:21:59.063Z",
       "label": "Tests failed",
       "unit": "count",
       "direction": "lower",
@@ -563,7 +551,7 @@
     "variant.ci.tests.skipped": {
       "value": 0,
       "status": "ok",
-      "at": "2026-07-05T18:10:53.289Z",
+      "at": "2026-07-06T14:21:59.063Z",
       "label": "Tests skipped",
       "unit": "count",
       "direction": "lower",
@@ -573,9 +561,9 @@
       "description": "Number of skipped unit tests."
     },
     "variant.ci.warnings.count": {
-      "value": 0,
+      "value": 3,
       "status": "ok",
-      "at": "2026-07-05T18:10:53.289Z",
+      "at": "2026-07-06T14:21:59.063Z",
       "method": "heuristic parse of tool output",
       "label": "CI warnings",
       "unit": "count",
@@ -588,7 +576,7 @@
     "variant.ci.errors.count": {
       "value": 0,
       "status": "ok",
-      "at": "2026-07-05T18:10:53.289Z",
+      "at": "2026-07-06T14:21:59.063Z",
       "method": "heuristic parse of tool output",
       "label": "CI gate errors",
       "unit": "count",
@@ -599,9 +587,9 @@
       "description": "Errors parsed from this variant's build/lint/typecheck output (heuristic). Scored in Ship v1.1 as gate cleanliness: the result of the release-control path, not the number of checks."
     },
     "variant.ci.ramPeak.build": {
-      "value": 612484,
-      "status": "ok",
-      "at": "2026-07-05T18:10:53.289Z",
+      "value": null,
+      "status": "unavailable",
+      "reason": "Peak RAM not captured (no /usr/bin/time on runner).",
       "label": "Build peak RAM",
       "unit": "kb",
       "direction": "lower",
@@ -611,9 +599,9 @@
       "description": "Peak resident memory of the build step (from /usr/bin/time on the CI runner). Unavailable where the runner lacks GNU/BSD time."
     },
     "variant.ci.ramPeak.tests": {
-      "value": 211952,
-      "status": "ok",
-      "at": "2026-07-05T18:10:53.289Z",
+      "value": null,
+      "status": "unavailable",
+      "reason": "Peak RAM not captured (no /usr/bin/time on runner).",
       "label": "Test peak RAM",
       "unit": "kb",
       "direction": "lower",
@@ -625,7 +613,7 @@
     "variant.ci.artifact.distSize": {
       "value": 704.4,
       "status": "ok",
-      "at": "2026-07-05T18:10:53.289Z",
+      "at": "2026-07-06T14:21:59.063Z",
       "label": "Variant dist size (CI)",
       "unit": "kb",
       "direction": "lower",
@@ -634,46 +622,10 @@
       "scope": "variant",
       "description": "Build-output size measured in the CI job right after build. Informational — `distTotalKb` (bundle collector) is the scored artifact size."
     },
-    "$comment_variant_feedback": {
-      "status": "unavailable",
-      "value": null,
-      "reason": "not collected",
-      "label": null,
-      "unit": null,
-      "direction": "neutral",
-      "category": "Other",
-      "axis": null,
-      "scope": "variant",
-      "description": null
-    },
-    "variant.ci.feedback.duration": {
-      "value": null,
-      "status": "unavailable",
-      "reason": "No eligible push-to-main overfit-ci.yml quality job (gate, conclusion success|failure|timed_out) sampled yet.",
-      "label": "CI feedback to signal (main)",
-      "unit": "ms",
-      "direction": "lower",
-      "category": "CI feedback",
-      "axis": null,
-      "scope": "variant",
-      "description": "Mean delay from a push-to-main run starting to this variant's primary quality signal (its *-ci.yml quality job), with its real cache strategy: max(quality_job.completed_at) − run.run_started_at, over push-to-main runs (conclusions success|failure|timed_out; cancelled/skipped excluded). Observational only (not scored). Interpret with nxProjects / sourceFiles / locTotal — the scopes differ (Friction 2 projects vs Flow 15 vs Overfit 31). `unavailable` until a real push-to-main run exists."
-    },
-    "variant.ci.feedback.samples": {
-      "value": null,
-      "status": "unavailable",
-      "reason": "No eligible push-to-main overfit-ci.yml quality job (gate, conclusion success|failure|timed_out) sampled yet.",
-      "label": "CI feedback samples",
-      "unit": "count",
-      "direction": "neutral",
-      "category": "CI feedback",
-      "axis": null,
-      "scope": "variant",
-      "description": "Number of push-to-main runs the feedback duration was averaged over. Informational."
-    },
     "variant.docker.build.duration": {
-      "value": 32853,
+      "value": 77038,
       "status": "ok",
-      "at": "2026-07-05T18:10:53.289Z",
+      "at": "2026-07-06T14:21:59.063Z",
       "label": "Docker build time",
       "unit": "ms",
       "direction": "lower",
@@ -683,21 +635,34 @@
       "description": "Wall-clock `docker build --no-cache` for this variant's image. Ship v1.1 keeps it as packaging/pipeline cost, with a reduced weight so it does not double-count Build's feedback-cost axis."
     },
     "variant.docker.image.size": {
-      "value": 283406.1,
+      "value": 374352.2,
       "status": "ok",
-      "at": "2026-07-05T18:10:53.289Z",
+      "at": "2026-07-06T14:21:59.063Z",
+      "aggregation": "sum of deployable release images",
+      "images": [
+        {
+          "label": "web",
+          "image": "signalops-metrics-overfit-web:ci",
+          "sizeKb": 284527.1
+        },
+        {
+          "label": "api",
+          "image": "signalops-metrics-overfit-api:ci",
+          "sizeKb": 89825.1
+        }
+      ],
       "label": "Docker image size",
       "unit": "kb",
       "direction": "lower",
       "category": "Docker",
       "axis": "Ship",
       "scope": "variant",
-      "description": "Final image size via `docker image inspect`. Ship v1.1 treats it as artifact transfer/storage/pull context, not a primary confidence signal."
+      "description": "Sum of deployable release image sizes via `docker image inspect`. Ship v1.1 treats it as artifact transfer/storage/pull context, not a primary confidence signal."
     },
     "variant.docker.layers.count": {
-      "value": 9,
+      "value": 13,
       "status": "ok",
-      "at": "2026-07-05T18:10:53.289Z",
+      "at": "2026-07-06T14:21:59.063Z",
       "label": "Docker layers",
       "unit": "count",
       "direction": "lower",
@@ -709,7 +674,7 @@
     "variant.docker.layer.maxSize": {
       "value": 148480,
       "status": "ok",
-      "at": "2026-07-05T18:10:53.289Z",
+      "at": "2026-07-06T14:21:59.063Z",
       "label": "Largest Docker layer",
       "unit": "kb",
       "direction": "lower",
@@ -719,9 +684,9 @@
       "description": "Biggest single layer (from `docker history`). Informational."
     },
     "variant.docker.startup.duration": {
-      "value": 545,
+      "value": 561,
       "status": "ok",
-      "at": "2026-07-05T18:10:53.289Z",
+      "at": "2026-07-06T14:21:59.063Z",
       "label": "Container startup",
       "unit": "ms",
       "direction": "lower",
@@ -733,7 +698,7 @@
     "variant.docker.healthcheck.status": {
       "value": "ok",
       "status": "ok",
-      "at": "2026-07-05T18:10:53.289Z",
+      "at": "2026-07-06T14:21:59.063Z",
       "label": "Container healthcheck",
       "unit": "status",
       "direction": "neutral",
@@ -743,9 +708,9 @@
       "description": "Whether the started container served its health endpoint (ok/fail). Informational."
     },
     "variant.docker.healthcheck.duration": {
-      "value": 34,
+      "value": 32,
       "status": "ok",
-      "at": "2026-07-05T18:10:53.289Z",
+      "at": "2026-07-06T14:21:59.063Z",
       "label": "Healthcheck latency",
       "unit": "ms",
       "direction": "lower",
@@ -754,17 +719,29 @@
       "scope": "variant",
       "description": "Latency of the first successful health request once the container is up. Informational."
     },
-    "$comment_delivery": {
-      "status": "unavailable",
+    "variant.ci.feedback.duration": {
       "value": null,
-      "reason": "not collected",
-      "label": null,
-      "unit": null,
-      "direction": "neutral",
-      "category": "Other",
+      "status": "unavailable",
+      "reason": "No GitHub Actions data (no token, or no workflow runs) — real CI feedback requires a completed run.",
+      "label": "CI feedback to signal (main)",
+      "unit": "ms",
+      "direction": "lower",
+      "category": "CI feedback",
       "axis": null,
       "scope": "variant",
-      "description": null
+      "description": "Mean delay from a push-to-main run starting to this variant's primary quality signal (its *-ci.yml quality job), with its real cache strategy: max(quality_job.completed_at) − run.run_started_at, over push-to-main runs (conclusions success|failure|timed_out; cancelled/skipped excluded). Observational only (not scored). Interpret with nxProjects / sourceFiles / locTotal — the scopes differ (Friction 2 projects vs Flow 15 vs Overfit 31). `unavailable` until a real push-to-main run exists."
+    },
+    "variant.ci.feedback.samples": {
+      "value": null,
+      "status": "unavailable",
+      "reason": "No GitHub Actions data (no token, or no workflow runs) — real CI feedback requires a completed run.",
+      "label": "CI feedback samples",
+      "unit": "count",
+      "direction": "neutral",
+      "category": "CI feedback",
+      "axis": null,
+      "scope": "variant",
+      "description": "Number of push-to-main runs the feedback duration was averaged over. Informational."
     },
     "ship.services.count": {
       "value": 2,
@@ -773,11 +750,13 @@
         {
           "dockerfile": "apps/overfit-web/Dockerfile",
           "healthcheck": true,
-          "healthEndpoint": false
+          "healthcheckTargetsHealth": true,
+          "healthEndpoint": true
         },
         {
           "dockerfile": "apps/overfit-api/Dockerfile",
           "healthcheck": true,
+          "healthcheckTargetsHealth": true,
           "healthEndpoint": true
         }
       ],
@@ -790,14 +769,14 @@
       "description": "Images the variant must build, push and deploy for one release (its Dockerfiles). Every extra service is an extra build, push, deploy and coordination step."
     },
     "ship.healthcheck.coverage": {
-      "value": 50,
+      "value": 100,
       "status": "ok",
       "services": [
         {
           "dockerfile": "apps/overfit-web/Dockerfile",
           "healthcheck": true,
-          "healthcheckTargetsHealth": false,
-          "healthEndpoint": false
+          "healthcheckTargetsHealth": true,
+          "healthEndpoint": true
         },
         {
           "dockerfile": "apps/overfit-api/Dockerfile",
@@ -821,11 +800,13 @@
         {
           "dockerfile": "apps/overfit-web/Dockerfile",
           "healthcheck": true,
-          "healthEndpoint": false
+          "healthcheckTargetsHealth": true,
+          "healthEndpoint": true
         },
         {
           "dockerfile": "apps/overfit-api/Dockerfile",
           "healthcheck": true,
+          "healthcheckTargetsHealth": true,
           "healthEndpoint": true
         }
       ],
@@ -838,17 +819,19 @@
       "description": "When production misbehaves, how many separate runtimes must be inspected before the fault can even be localized."
     },
     "run.health.coverage": {
-      "value": 50,
+      "value": 100,
       "status": "ok",
       "services": [
         {
           "dockerfile": "apps/overfit-web/Dockerfile",
           "healthcheck": true,
-          "healthEndpoint": false
+          "healthcheckTargetsHealth": true,
+          "healthEndpoint": true
         },
         {
           "dockerfile": "apps/overfit-api/Dockerfile",
           "healthcheck": true,
+          "healthcheckTargetsHealth": true,
           "healthEndpoint": true
         }
       ],
@@ -872,26 +855,14 @@
       "scope": "variant",
       "description": "Does the runtime emit structured, leveled, contextual logs (tracing/tracing_subscriber in Rust, a leveled createLogger in TS) — or only bare console output? Signal QUALITY: one unreadable stream must not beat two well-instrumented services just because it is a single place to look."
     },
-    "$comment_change_surface": {
-      "status": "unavailable",
-      "value": null,
-      "reason": "not collected",
-      "label": null,
-      "unit": null,
-      "direction": "neutral",
-      "category": "Other",
-      "axis": null,
-      "scope": "variant",
-      "description": null
-    },
     "change.contract.restatements": {
       "value": 3,
       "status": "ok",
       "field": "riskScore",
       "files": [
-        "packages/overfit/feature-signals/src/viewModel.ts",
-        "crates/overfit-domain/src/entities.rs",
-        "crates/overfit-contracts/src/entities.rs"
+        "packages\\overfit\\feature-signals\\src\\viewModel.ts",
+        "crates\\overfit-domain\\src\\entities.rs",
+        "crates\\overfit-contracts\\src\\entities.rs"
       ],
       "method": "files under the variant roots that DECLARE the field (TS `riskScore: number` / Rust `pub risk_score:`), hand-written code only",
       "label": "Contract restatements",
@@ -902,51 +873,40 @@
       "scope": "variant",
       "description": "Hand-written files that re-declare the shared Signal contract (measured on the riskScore field). 0 = the variant imports the single source of truth; each extra copy is one more place a schema change must propagate to — and one more place it can silently diverge."
     },
-    "$comment_change_footprint": {
-      "status": "unavailable",
-      "value": null,
-      "reason": "not collected",
-      "label": null,
-      "unit": null,
-      "direction": "neutral",
-      "category": "Other",
-      "axis": null,
-      "scope": "variant",
-      "description": null
-    },
     "change.footprint.sourceFiles": {
-      "value": 28,
+      "value": 29,
       "status": "ok",
       "experiment": "risk-trend",
       "files": [
-        "crates/overfit-adapters-fixtures/src/generate.rs",
-        "crates/overfit-adapters-fixtures/src/lib.rs",
-        "crates/overfit-application/src/lib.rs",
-        "crates/overfit-commands/src/lib.rs",
-        "crates/overfit-contracts/src/entities.rs",
-        "crates/overfit-contracts/src/lib.rs",
-        "crates/overfit-contracts/src/query.rs",
-        "crates/overfit-domain/src/aggregates.rs",
-        "crates/overfit-domain/src/entities.rs",
-        "crates/overfit-domain/src/enums.rs",
-        "crates/overfit-domain/src/events.rs",
-        "crates/overfit-domain/src/lib.rs",
-        "crates/overfit-event-store/src/lib.rs",
-        "crates/overfit-feature-flags/src/lib.rs",
-        "crates/overfit-read-models/src/lib.rs",
-        "crates/overfit-read-models/src/signals.rs",
-        "crates/overfit-read-models/src/wire.rs",
-        "crates/overfit-test-support/src/lib.rs",
-        "packages/overfit/ai-governance/src/index.ts",
-        "packages/overfit/feature-dx-metrics/src/index.tsx",
-        "packages/overfit/feature-signal-detail/src/index.tsx",
-        "packages/overfit/feature-signals/src/index.tsx",
-        "packages/overfit/feature-signals/src/viewModel.ts",
-        "packages/overfit/quality-gates/scripts/check-contracts.mjs",
-        "packages/overfit/quality-gates/scripts/check-docs.mjs",
-        "packages/overfit/quality-gates/scripts/check-policy.mjs",
-        "packages/overfit/ui/src/format.ts",
-        "packages/overfit/ui/src/index.tsx"
+        "apps\\overfit-api\\tests\\api.rs",
+        "crates\\overfit-adapters-fixtures\\src\\generate.rs",
+        "crates\\overfit-adapters-fixtures\\src\\lib.rs",
+        "crates\\overfit-application\\src\\lib.rs",
+        "crates\\overfit-commands\\src\\lib.rs",
+        "crates\\overfit-contracts\\src\\entities.rs",
+        "crates\\overfit-contracts\\src\\lib.rs",
+        "crates\\overfit-contracts\\src\\query.rs",
+        "crates\\overfit-domain\\src\\aggregates.rs",
+        "crates\\overfit-domain\\src\\entities.rs",
+        "crates\\overfit-domain\\src\\enums.rs",
+        "crates\\overfit-domain\\src\\events.rs",
+        "crates\\overfit-domain\\src\\lib.rs",
+        "crates\\overfit-event-store\\src\\lib.rs",
+        "crates\\overfit-feature-flags\\src\\lib.rs",
+        "crates\\overfit-read-models\\src\\lib.rs",
+        "crates\\overfit-read-models\\src\\signals.rs",
+        "crates\\overfit-read-models\\src\\wire.rs",
+        "crates\\overfit-test-support\\src\\lib.rs",
+        "packages\\overfit\\ai-governance\\src\\index.ts",
+        "packages\\overfit\\feature-dx-metrics\\src\\index.tsx",
+        "packages\\overfit\\feature-signal-detail\\src\\index.tsx",
+        "packages\\overfit\\feature-signals\\src\\index.tsx",
+        "packages\\overfit\\feature-signals\\src\\viewModel.ts",
+        "packages\\overfit\\quality-gates\\scripts\\check-contracts.mjs",
+        "packages\\overfit\\quality-gates\\scripts\\check-docs.mjs",
+        "packages\\overfit\\quality-gates\\scripts\\check-policy.mjs",
+        "packages\\overfit\\ui\\src\\format.ts",
+        "packages\\overfit\\ui\\src\\index.tsx"
       ],
       "label": "Footprint — source files",
       "unit": "count",
@@ -957,25 +917,24 @@
       "description": "Hand-written production source files that carry the Risk trend capability — the propagation surface of one identical product intent in this codebase. A footprint (where the capability lives today), not a git diff."
     },
     "change.footprint.testSupport": {
-      "value": 15,
+      "value": 14,
       "status": "ok",
       "experiment": "risk-trend",
       "files": [
-        "apps/overfit-api/tests/api.rs",
-        "crates/overfit-adapters-fixtures/src/generate.rs",
-        "crates/overfit-adapters-fixtures/src/lib.rs",
-        "crates/overfit-application/src/lib.rs",
-        "crates/overfit-commands/src/lib.rs",
-        "crates/overfit-contracts/src/lib.rs",
-        "crates/overfit-domain/src/lib.rs",
-        "crates/overfit-event-store/src/lib.rs",
-        "crates/overfit-feature-flags/src/lib.rs",
-        "crates/overfit-read-models/src/lib.rs",
-        "crates/overfit-test-support/src/lib.rs",
-        "packages/overfit/ai-governance/src/index.test.ts",
-        "packages/overfit/api-client/src/client.test.ts",
-        "packages/overfit/feature-signals/src/viewModel.test.ts",
-        "packages/overfit/ui/src/ui.test.tsx"
+        "crates\\overfit-adapters-fixtures\\src\\generate.rs",
+        "crates\\overfit-adapters-fixtures\\src\\lib.rs",
+        "crates\\overfit-application\\src\\lib.rs",
+        "crates\\overfit-commands\\src\\lib.rs",
+        "crates\\overfit-contracts\\src\\lib.rs",
+        "crates\\overfit-domain\\src\\lib.rs",
+        "crates\\overfit-event-store\\src\\lib.rs",
+        "crates\\overfit-feature-flags\\src\\lib.rs",
+        "crates\\overfit-read-models\\src\\lib.rs",
+        "crates\\overfit-test-support\\src\\lib.rs",
+        "packages\\overfit\\ai-governance\\src\\index.test.ts",
+        "packages\\overfit\\api-client\\src\\client.test.ts",
+        "packages\\overfit\\feature-signals\\src\\viewModel.test.ts",
+        "packages\\overfit\\ui\\src\\ui.test.tsx"
       ],
       "note": "NON-exclusive: dedicated test files + source files with inline #[cfg(test)] modules. Context only — overlaps sourceFiles by design.",
       "label": "Footprint — test support",
@@ -991,20 +950,20 @@
       "status": "ok",
       "experiment": "risk-trend",
       "files": [
-        "docs/overfit/IMPLEMENTATION_REPORT.md",
-        "docs/overfit/README.md",
-        "docs/overfit/adr/0001-next-rust-polyglot.md",
-        "docs/overfit/adr/0002-cqrs-event-sourcing-memory.md",
-        "docs/overfit/ai-governance/ai-change-manifest.md",
-        "docs/overfit/ai-governance/ai-policy.md",
-        "docs/overfit/ai-governance/reviewer-matrix.md",
-        "docs/overfit/architecture/boundaries.md",
-        "docs/overfit/architecture/polyglot-cost.md",
-        "docs/overfit/change-management/risk-trend-change-surface.md",
-        "docs/overfit/policies/release-policy.md",
-        "docs/overfit/policies/schema-policy.md",
-        "docs/overfit/policies/testing-policy.md",
-        "docs/overfit/quality-gates/quality-gates.md"
+        "docs\\overfit\\IMPLEMENTATION_REPORT.md",
+        "docs\\overfit\\README.md",
+        "docs\\overfit\\adr\\0001-next-rust-polyglot.md",
+        "docs\\overfit\\adr\\0002-cqrs-event-sourcing-memory.md",
+        "docs\\overfit\\ai-governance\\ai-change-manifest.md",
+        "docs\\overfit\\ai-governance\\ai-policy.md",
+        "docs\\overfit\\ai-governance\\reviewer-matrix.md",
+        "docs\\overfit\\architecture\\boundaries.md",
+        "docs\\overfit\\architecture\\polyglot-cost.md",
+        "docs\\overfit\\change-management\\risk-trend-change-surface.md",
+        "docs\\overfit\\policies\\release-policy.md",
+        "docs\\overfit\\policies\\schema-policy.md",
+        "docs\\overfit\\policies\\testing-policy.md",
+        "docs\\overfit\\quality-gates\\quality-gates.md"
       ],
       "label": "Footprint — documentation",
       "unit": "count",
@@ -1015,28 +974,10 @@
       "description": "Hand-maintained documentation files that carry the capability (ADRs, policies, governance). A synchronization surface: every copy must stay coherent when the capability moves. Not a judgment that documentation is bad — a measure of what must be kept in sync."
     },
     "change.footprint.projects": {
-      "value": 17,
+      "value": 0,
       "status": "ok",
       "experiment": "risk-trend",
-      "projects": [
-        "apps/overfit-api",
-        "crates/overfit-adapters-fixtures",
-        "crates/overfit-application",
-        "crates/overfit-commands",
-        "crates/overfit-contracts",
-        "crates/overfit-domain",
-        "crates/overfit-event-store",
-        "crates/overfit-feature-flags",
-        "crates/overfit-read-models",
-        "crates/overfit-test-support",
-        "packages/overfit/ai-governance",
-        "packages/overfit/api-client",
-        "packages/overfit/feature-dx-metrics",
-        "packages/overfit/feature-signal-detail",
-        "packages/overfit/feature-signals",
-        "packages/overfit/quality-gates",
-        "packages/overfit/ui"
-      ],
+      "projects": [],
       "label": "Footprint — projects",
       "unit": "count",
       "direction": "lower",
@@ -1063,11 +1004,11 @@
       "status": "ok",
       "experiment": "risk-trend",
       "files": [
-        "generated/overfit/contracts.lock.json",
-        "generated/overfit/openapi.json",
-        "packages/overfit/contracts-generated/src/contracts.test.ts",
-        "packages/overfit/contracts-generated/src/index.ts",
-        "packages/overfit/contracts-generated/src/runtime.ts"
+        "generated\\overfit\\contracts.lock.json",
+        "generated\\overfit\\openapi.json",
+        "packages\\overfit\\contracts-generated\\src\\contracts.test.ts",
+        "packages\\overfit\\contracts-generated\\src\\index.ts",
+        "packages\\overfit\\contracts-generated\\src\\runtime.ts"
       ],
       "label": "Footprint — generated files",
       "unit": "count",
@@ -1208,687 +1149,13 @@
       "axis": "Run",
       "scope": "variant",
       "description": "Estimated CO₂ per page view (SWD model from transferred bytes)."
-    },
-    "$comment_github": {
-      "status": "unavailable",
-      "value": null,
-      "reason": "not collected",
-      "label": null,
-      "unit": null,
-      "direction": "neutral",
-      "category": "Other",
-      "axis": null,
-      "scope": "variant",
-      "description": null
-    },
-    "ship.ci.wallTime.avg": {
-      "status": "unavailable",
-      "value": null,
-      "reason": "not collected",
-      "label": "CI wall time (avg)",
-      "unit": "ms",
-      "direction": "lower",
-      "category": "Delivery",
-      "axis": "Ship",
-      "scope": "repo",
-      "description": "Mean wall-clock time of the last N completed workflow runs (updated_at − run_started_at). Repo-level."
-    },
-    "ship.ci.wallTime.p95": {
-      "status": "unavailable",
-      "value": null,
-      "reason": "not collected",
-      "label": "CI wall time (p95)",
-      "unit": "ms",
-      "direction": "lower",
-      "category": "Delivery",
-      "axis": "Ship",
-      "scope": "repo",
-      "description": "95th-percentile wall-clock run time — the tail a developer occasionally waits through. Repo-level (display only)."
-    },
-    "ship.ci.successRate.lastN": {
-      "status": "unavailable",
-      "value": null,
-      "reason": "not collected",
-      "label": "CI success rate",
-      "unit": "%",
-      "direction": "higher",
-      "category": "Delivery",
-      "axis": "Ship",
-      "scope": "repo",
-      "description": "Successful ÷ completed runs over the last N. Repo-level."
-    },
-    "ship.ci.flakyProxy.rate": {
-      "status": "unavailable",
-      "value": null,
-      "reason": "not collected",
-      "label": "CI instability proxy",
-      "unit": "ratio",
-      "direction": "lower",
-      "category": "Delivery",
-      "axis": "Ship",
-      "scope": "repo",
-      "description": "Share of jobs that both passed AND failed across the sampled runs. A job-level instability proxy — NOT a test-level flaky rate. Repo-level."
-    },
-    "ship.ci.artifacts.totalSize": {
-      "status": "unavailable",
-      "value": null,
-      "reason": "not collected",
-      "label": "CI artifacts (total)",
-      "unit": "kb",
-      "direction": "lower",
-      "category": "Delivery",
-      "axis": "Ship",
-      "scope": "repo",
-      "description": "Total size of non-expired workflow artifacts. Repo-level."
-    },
-    "ship.deploy.avgDuration": {
-      "status": "unavailable",
-      "value": null,
-      "reason": "not collected",
-      "label": "Deploy duration (avg)",
-      "unit": "ms",
-      "direction": "lower",
-      "category": "Delivery",
-      "axis": "Ship",
-      "scope": "repo",
-      "description": "Average deployment duration (GitHub Deployments API, else deploy-named Actions jobs). Repo-level; unavailable if neither exists."
-    },
-    "change.pr.avgChangedFiles": {
-      "status": "unavailable",
-      "value": null,
-      "reason": "not collected",
-      "label": "PR changed files (avg)",
-      "unit": "count",
-      "direction": "lower",
-      "category": "Pull requests",
-      "axis": "Change",
-      "scope": "repo",
-      "description": "Average files touched per merged PR — a proxy for change surface. Repo-level, mixes all chantiers; not a controlled per-variant scenario."
-    },
-    "change.pr.avgAdditions": {
-      "status": "unavailable",
-      "value": null,
-      "reason": "not collected",
-      "label": "PR additions (avg)",
-      "unit": "loc",
-      "direction": "lower",
-      "category": "Pull requests",
-      "axis": "Change",
-      "scope": "repo",
-      "description": "Average lines added per merged PR. Repo-level (display only)."
-    },
-    "change.pr.avgDeletions": {
-      "status": "unavailable",
-      "value": null,
-      "reason": "not collected",
-      "label": "PR deletions (avg)",
-      "unit": "loc",
-      "direction": "lower",
-      "category": "Pull requests",
-      "axis": "Change",
-      "scope": "repo",
-      "description": "Average lines deleted per merged PR. Repo-level (display only)."
-    },
-    "change.pr.avgTimeToMerge": {
-      "status": "unavailable",
-      "value": null,
-      "reason": "not collected",
-      "label": "PR time to merge (avg)",
-      "unit": "ms",
-      "direction": "lower",
-      "category": "Pull requests",
-      "axis": "Change",
-      "scope": "repo",
-      "description": "Average created→merged duration for merged PRs — a proxy for review/merge latency. Repo-level."
-    },
-    "change.pr.avgReviewCount": {
-      "status": "unavailable",
-      "value": null,
-      "reason": "not collected",
-      "label": "PR reviews (avg)",
-      "unit": "count",
-      "direction": "higher",
-      "category": "Pull requests",
-      "axis": "Change",
-      "scope": "repo",
-      "description": "Average number of reviews per merged PR. Repo-level (display only)."
     }
   },
   "graph": {
-    "nodes": [
-      {
-        "id": "@signalops/overfit-web",
-        "short": "web",
-        "dir": "apps/overfit-web",
-        "kind": "npm",
-        "fanIn": 0,
-        "fanOut": 10
-      },
-      {
-        "id": "overfit-api",
-        "short": "api",
-        "dir": "apps/overfit-api",
-        "kind": "rust",
-        "fanIn": 0,
-        "fanOut": 4
-      },
-      {
-        "id": "@signalops/overfit-ui",
-        "short": "ui",
-        "dir": "packages/overfit/ui",
-        "kind": "npm",
-        "fanIn": 9,
-        "fanOut": 0
-      },
-      {
-        "id": "@signalops/overfit-quality-gates",
-        "short": "quality-gates",
-        "dir": "packages/overfit/quality-gates",
-        "kind": "npm",
-        "fanIn": 0,
-        "fanOut": 0
-      },
-      {
-        "id": "@signalops/overfit-feature-signals",
-        "short": "feature-signals",
-        "dir": "packages/overfit/feature-signals",
-        "kind": "npm",
-        "fanIn": 1,
-        "fanOut": 2
-      },
-      {
-        "id": "@signalops/overfit-feature-signal-detail",
-        "short": "feature-signal-detail",
-        "dir": "packages/overfit/feature-signal-detail",
-        "kind": "npm",
-        "fanIn": 1,
-        "fanOut": 2
-      },
-      {
-        "id": "@signalops/overfit-feature-settings",
-        "short": "feature-settings",
-        "dir": "packages/overfit/feature-settings",
-        "kind": "npm",
-        "fanIn": 1,
-        "fanOut": 2
-      },
-      {
-        "id": "@signalops/overfit-feature-ops",
-        "short": "feature-ops",
-        "dir": "packages/overfit/feature-ops",
-        "kind": "npm",
-        "fanIn": 1,
-        "fanOut": 2
-      },
-      {
-        "id": "@signalops/overfit-feature-incidents",
-        "short": "feature-incidents",
-        "dir": "packages/overfit/feature-incidents",
-        "kind": "npm",
-        "fanIn": 1,
-        "fanOut": 2
-      },
-      {
-        "id": "@signalops/overfit-feature-dx-metrics",
-        "short": "feature-dx-metrics",
-        "dir": "packages/overfit/feature-dx-metrics",
-        "kind": "npm",
-        "fanIn": 1,
-        "fanOut": 2
-      },
-      {
-        "id": "@signalops/overfit-feature-dashboard",
-        "short": "feature-dashboard",
-        "dir": "packages/overfit/feature-dashboard",
-        "kind": "npm",
-        "fanIn": 1,
-        "fanOut": 2
-      },
-      {
-        "id": "@signalops/overfit-feature-compare",
-        "short": "feature-compare",
-        "dir": "packages/overfit/feature-compare",
-        "kind": "npm",
-        "fanIn": 1,
-        "fanOut": 2
-      },
-      {
-        "id": "@signalops/overfit-api-client",
-        "short": "api-client",
-        "dir": "packages/overfit/api-client",
-        "kind": "npm",
-        "fanIn": 9,
-        "fanOut": 0
-      },
-      {
-        "id": "@signalops/overfit-ai-governance",
-        "short": "ai-governance",
-        "dir": "packages/overfit/ai-governance",
-        "kind": "npm",
-        "fanIn": 0,
-        "fanOut": 0
-      },
-      {
-        "id": "overfit-test-support",
-        "short": "test-support",
-        "dir": "crates/overfit-test-support",
-        "kind": "rust",
-        "fanIn": 1,
-        "fanOut": 3
-      },
-      {
-        "id": "overfit-schema-registry",
-        "short": "schema-registry",
-        "dir": "crates/overfit-schema-registry",
-        "kind": "rust",
-        "fanIn": 1,
-        "fanOut": 0
-      },
-      {
-        "id": "overfit-repositories",
-        "short": "repositories",
-        "dir": "crates/overfit-repositories",
-        "kind": "rust",
-        "fanIn": 3,
-        "fanOut": 1
-      },
-      {
-        "id": "overfit-read-models",
-        "short": "read-models",
-        "dir": "crates/overfit-read-models",
-        "kind": "rust",
-        "fanIn": 3,
-        "fanOut": 2
-      },
-      {
-        "id": "overfit-queries",
-        "short": "queries",
-        "dir": "crates/overfit-queries",
-        "kind": "rust",
-        "fanIn": 1,
-        "fanOut": 4
-      },
-      {
-        "id": "overfit-policies",
-        "short": "policies",
-        "dir": "crates/overfit-policies",
-        "kind": "rust",
-        "fanIn": 1,
-        "fanOut": 0
-      },
-      {
-        "id": "overfit-observability",
-        "short": "observability",
-        "dir": "crates/overfit-observability",
-        "kind": "rust",
-        "fanIn": 2,
-        "fanOut": 0
-      },
-      {
-        "id": "overfit-feature-flags",
-        "short": "feature-flags",
-        "dir": "crates/overfit-feature-flags",
-        "kind": "rust",
-        "fanIn": 1,
-        "fanOut": 0
-      },
-      {
-        "id": "overfit-events",
-        "short": "events",
-        "dir": "crates/overfit-events",
-        "kind": "rust",
-        "fanIn": 3,
-        "fanOut": 1
-      },
-      {
-        "id": "overfit-event-store",
-        "short": "event-store",
-        "dir": "crates/overfit-event-store",
-        "kind": "rust",
-        "fanIn": 1,
-        "fanOut": 2
-      },
-      {
-        "id": "overfit-domain",
-        "short": "domain",
-        "dir": "crates/overfit-domain",
-        "kind": "rust",
-        "fanIn": 10,
-        "fanOut": 0
-      },
-      {
-        "id": "overfit-contracts",
-        "short": "contracts",
-        "dir": "crates/overfit-contracts",
-        "kind": "rust",
-        "fanIn": 6,
-        "fanOut": 1
-      },
-      {
-        "id": "overfit-commands",
-        "short": "commands",
-        "dir": "crates/overfit-commands",
-        "kind": "rust",
-        "fanIn": 1,
-        "fanOut": 2
-      },
-      {
-        "id": "overfit-audit",
-        "short": "audit",
-        "dir": "crates/overfit-audit",
-        "kind": "rust",
-        "fanIn": 1,
-        "fanOut": 1
-      },
-      {
-        "id": "overfit-application",
-        "short": "application",
-        "dir": "crates/overfit-application",
-        "kind": "rust",
-        "fanIn": 3,
-        "fanOut": 14
-      },
-      {
-        "id": "overfit-adapters-http",
-        "short": "adapters-http",
-        "dir": "crates/overfit-adapters-http",
-        "kind": "rust",
-        "fanIn": 1,
-        "fanOut": 3
-      },
-      {
-        "id": "overfit-adapters-fixtures",
-        "short": "adapters-fixtures",
-        "dir": "crates/overfit-adapters-fixtures",
-        "kind": "rust",
-        "fanIn": 1,
-        "fanOut": 2
-      }
-    ],
-    "edges": [
-      {
-        "source": "@signalops/overfit-web",
-        "target": "@signalops/overfit-api-client"
-      },
-      {
-        "source": "@signalops/overfit-web",
-        "target": "@signalops/overfit-ui"
-      },
-      {
-        "source": "@signalops/overfit-web",
-        "target": "@signalops/overfit-feature-dashboard"
-      },
-      {
-        "source": "@signalops/overfit-web",
-        "target": "@signalops/overfit-feature-signals"
-      },
-      {
-        "source": "@signalops/overfit-web",
-        "target": "@signalops/overfit-feature-signal-detail"
-      },
-      {
-        "source": "@signalops/overfit-web",
-        "target": "@signalops/overfit-feature-incidents"
-      },
-      {
-        "source": "@signalops/overfit-web",
-        "target": "@signalops/overfit-feature-compare"
-      },
-      {
-        "source": "@signalops/overfit-web",
-        "target": "@signalops/overfit-feature-dx-metrics"
-      },
-      {
-        "source": "@signalops/overfit-web",
-        "target": "@signalops/overfit-feature-settings"
-      },
-      {
-        "source": "@signalops/overfit-web",
-        "target": "@signalops/overfit-feature-ops"
-      },
-      {
-        "source": "overfit-api",
-        "target": "overfit-application"
-      },
-      {
-        "source": "overfit-api",
-        "target": "overfit-adapters-http"
-      },
-      {
-        "source": "overfit-api",
-        "target": "overfit-test-support"
-      },
-      {
-        "source": "overfit-api",
-        "target": "overfit-contracts"
-      },
-      {
-        "source": "@signalops/overfit-feature-signals",
-        "target": "@signalops/overfit-api-client"
-      },
-      {
-        "source": "@signalops/overfit-feature-signals",
-        "target": "@signalops/overfit-ui"
-      },
-      {
-        "source": "@signalops/overfit-feature-signal-detail",
-        "target": "@signalops/overfit-api-client"
-      },
-      {
-        "source": "@signalops/overfit-feature-signal-detail",
-        "target": "@signalops/overfit-ui"
-      },
-      {
-        "source": "@signalops/overfit-feature-settings",
-        "target": "@signalops/overfit-api-client"
-      },
-      {
-        "source": "@signalops/overfit-feature-settings",
-        "target": "@signalops/overfit-ui"
-      },
-      {
-        "source": "@signalops/overfit-feature-ops",
-        "target": "@signalops/overfit-api-client"
-      },
-      {
-        "source": "@signalops/overfit-feature-ops",
-        "target": "@signalops/overfit-ui"
-      },
-      {
-        "source": "@signalops/overfit-feature-incidents",
-        "target": "@signalops/overfit-api-client"
-      },
-      {
-        "source": "@signalops/overfit-feature-incidents",
-        "target": "@signalops/overfit-ui"
-      },
-      {
-        "source": "@signalops/overfit-feature-dx-metrics",
-        "target": "@signalops/overfit-api-client"
-      },
-      {
-        "source": "@signalops/overfit-feature-dx-metrics",
-        "target": "@signalops/overfit-ui"
-      },
-      {
-        "source": "@signalops/overfit-feature-dashboard",
-        "target": "@signalops/overfit-api-client"
-      },
-      {
-        "source": "@signalops/overfit-feature-dashboard",
-        "target": "@signalops/overfit-ui"
-      },
-      {
-        "source": "@signalops/overfit-feature-compare",
-        "target": "@signalops/overfit-api-client"
-      },
-      {
-        "source": "@signalops/overfit-feature-compare",
-        "target": "@signalops/overfit-ui"
-      },
-      {
-        "source": "overfit-test-support",
-        "target": "overfit-domain"
-      },
-      {
-        "source": "overfit-test-support",
-        "target": "overfit-contracts"
-      },
-      {
-        "source": "overfit-test-support",
-        "target": "overfit-application"
-      },
-      {
-        "source": "overfit-repositories",
-        "target": "overfit-domain"
-      },
-      {
-        "source": "overfit-read-models",
-        "target": "overfit-domain"
-      },
-      {
-        "source": "overfit-read-models",
-        "target": "overfit-contracts"
-      },
-      {
-        "source": "overfit-queries",
-        "target": "overfit-domain"
-      },
-      {
-        "source": "overfit-queries",
-        "target": "overfit-contracts"
-      },
-      {
-        "source": "overfit-queries",
-        "target": "overfit-read-models"
-      },
-      {
-        "source": "overfit-queries",
-        "target": "overfit-repositories"
-      },
-      {
-        "source": "overfit-events",
-        "target": "overfit-domain"
-      },
-      {
-        "source": "overfit-event-store",
-        "target": "overfit-events"
-      },
-      {
-        "source": "overfit-event-store",
-        "target": "overfit-domain"
-      },
-      {
-        "source": "overfit-contracts",
-        "target": "overfit-domain"
-      },
-      {
-        "source": "overfit-commands",
-        "target": "overfit-domain"
-      },
-      {
-        "source": "overfit-commands",
-        "target": "overfit-events"
-      },
-      {
-        "source": "overfit-audit",
-        "target": "overfit-observability"
-      },
-      {
-        "source": "overfit-application",
-        "target": "overfit-domain"
-      },
-      {
-        "source": "overfit-application",
-        "target": "overfit-contracts"
-      },
-      {
-        "source": "overfit-application",
-        "target": "overfit-events"
-      },
-      {
-        "source": "overfit-application",
-        "target": "overfit-event-store"
-      },
-      {
-        "source": "overfit-application",
-        "target": "overfit-read-models"
-      },
-      {
-        "source": "overfit-application",
-        "target": "overfit-repositories"
-      },
-      {
-        "source": "overfit-application",
-        "target": "overfit-adapters-fixtures"
-      },
-      {
-        "source": "overfit-application",
-        "target": "overfit-queries"
-      },
-      {
-        "source": "overfit-application",
-        "target": "overfit-commands"
-      },
-      {
-        "source": "overfit-application",
-        "target": "overfit-observability"
-      },
-      {
-        "source": "overfit-application",
-        "target": "overfit-policies"
-      },
-      {
-        "source": "overfit-application",
-        "target": "overfit-schema-registry"
-      },
-      {
-        "source": "overfit-application",
-        "target": "overfit-audit"
-      },
-      {
-        "source": "overfit-application",
-        "target": "overfit-feature-flags"
-      },
-      {
-        "source": "overfit-adapters-http",
-        "target": "overfit-application"
-      },
-      {
-        "source": "overfit-adapters-http",
-        "target": "overfit-contracts"
-      },
-      {
-        "source": "overfit-adapters-http",
-        "target": "overfit-read-models"
-      },
-      {
-        "source": "overfit-adapters-fixtures",
-        "target": "overfit-domain"
-      },
-      {
-        "source": "overfit-adapters-fixtures",
-        "target": "overfit-repositories"
-      }
-    ],
-    "central": [
-      {
-        "name": "overfit-domain",
-        "fanIn": 10
-      },
-      {
-        "name": "@signalops/overfit-ui",
-        "fanIn": 9
-      },
-      {
-        "name": "@signalops/overfit-api-client",
-        "fanIn": 9
-      }
-    ],
-    "isolated": [
-      "@signalops/overfit-quality-gates",
-      "@signalops/overfit-ai-governance"
-    ]
+    "nodes": [],
+    "edges": [],
+    "central": [],
+    "isolated": []
   },
   "topChunks": [
     {
@@ -1956,7 +1223,7 @@
     "build": {
       "label": "Build",
       "kind": "axis",
-      "value": 20.5,
+      "value": 23.9,
       "coverage": "2/2",
       "coverageFrac": 1,
       "complete": true,
@@ -1965,7 +1232,7 @@
     "ship": {
       "label": "Ship",
       "kind": "axis",
-      "value": 65.4,
+      "value": 84.1,
       "coverage": "5/5",
       "coverageFrac": 1,
       "complete": true,
@@ -1974,7 +1241,7 @@
     "run": {
       "label": "Run",
       "kind": "axis",
-      "value": 75.9,
+      "value": 68,
       "coverage": "4/4",
       "coverageFrac": 1,
       "complete": true,
@@ -1983,7 +1250,7 @@
     "change": {
       "label": "Change",
       "kind": "axis",
-      "value": 43.9,
+      "value": 58.8,
       "coverage": "10/10",
       "coverageFrac": 1,
       "complete": true,
@@ -2019,7 +1286,7 @@
     "architectureComplexity": {
       "label": "Architecture Health",
       "kind": "derived",
-      "value": 68.6,
+      "value": 73.1,
       "coverage": "11/11",
       "coverageFrac": 1,
       "complete": true,
@@ -2028,7 +1295,7 @@
     "totalDeliveryScore": {
       "label": "Total Delivery Score",
       "kind": "headline",
-      "value": 47.2,
+      "value": 57,
       "method": "weighted-mean-over-measured-axes",
       "axesUsed": [
         "Build",
@@ -2039,8 +1306,8 @@
     }
   },
   "statuses": {
-    "ok": 71,
-    "unavailable": 13,
+    "ok": 69,
+    "unavailable": 15,
     "error": 0
   },
   "collectorErrors": [],

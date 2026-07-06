@@ -1,11 +1,11 @@
 {
   "variant": "friction",
   "label": "Friction",
-  "generatedAt": "2026-07-05T17:59:37.814Z",
+  "generatedAt": "2026-07-06T14:21:59.063Z",
   "runner": {
-    "node": "v22.17.0",
-    "os": "darwin",
-    "ramWrapper": "/usr/bin/time",
+    "node": "v22.19.0",
+    "os": "win32",
+    "ramWrapper": null,
     "steps": [
       "build",
       "typecheck",
@@ -18,29 +18,29 @@
       "command": "pnpm --filter @signalops/friction-web --filter @signalops/friction-api run build",
       "status": "ok",
       "exitCode": 0,
-      "durationMs": 2578,
-      "ramPeakKb": 227504
+      "durationMs": 5484,
+      "ramPeakKb": null
     },
     "typecheck": {
-      "command": "pnpm --filter @signalops/friction-web --filter @signalops/friction-api run typecheck",
+      "command": "pnpm friction:contract:check && pnpm --filter @signalops/friction-web --filter @signalops/friction-api run typecheck",
       "status": "ok",
       "exitCode": 0,
-      "durationMs": 1682,
-      "ramPeakKb": 222160
+      "durationMs": 4014,
+      "ramPeakKb": null
     },
     "lint": {
       "command": "pnpm --filter @signalops/friction-web --filter @signalops/friction-api run lint",
       "status": "ok",
       "exitCode": 0,
-      "durationMs": 1702,
-      "ramPeakKb": 255632
+      "durationMs": 4109,
+      "ramPeakKb": null
     },
     "test": {
       "command": "pnpm --filter @signalops/friction-web --filter @signalops/friction-api run test",
       "status": "ok",
       "exitCode": 0,
-      "durationMs": 1884,
-      "ramPeakKb": 134592,
+      "durationMs": 3666,
+      "ramPeakKb": null,
       "tests": {
         "executed": 134,
         "passed": 134,
@@ -54,28 +54,28 @@
       "command": "pnpm --filter @signalops/friction-web --filter @signalops/friction-api run build",
       "status": "ok",
       "exitCode": 0,
-      "durationMs": 2587,
+      "durationMs": 4311,
       "primed": true
     },
     "typecheck": {
-      "command": "pnpm --filter @signalops/friction-web --filter @signalops/friction-api run typecheck",
+      "command": "pnpm friction:contract:check && pnpm --filter @signalops/friction-web --filter @signalops/friction-api run typecheck",
       "status": "ok",
       "exitCode": 0,
-      "durationMs": 1582,
+      "durationMs": 3537,
       "primed": true
     },
     "lint": {
       "command": "pnpm --filter @signalops/friction-web --filter @signalops/friction-api run lint",
       "status": "ok",
       "exitCode": 0,
-      "durationMs": 1431,
+      "durationMs": 3255,
       "primed": true
     },
     "test": {
       "command": "pnpm --filter @signalops/friction-web --filter @signalops/friction-api run test",
       "status": "ok",
       "exitCode": 0,
-      "durationMs": 1635,
+      "durationMs": 3435,
       "primed": true
     }
   },
@@ -85,11 +85,72 @@
   },
   "artifact": {
     "status": "ok",
-    "distSizeKb": 282.7,
+    "distSizeKb": 282.8,
     "dist": "apps/friction-web/dist"
   },
   "docker": {
-    "status": "skipped",
-    "reason": "Docker disabled via --no-docker."
+    "status": "ok",
+    "engine": "29.2.1",
+    "image": "signalops-metrics-friction-web:ci",
+    "dockerfile": "infra/docker/friction-web.Dockerfile",
+    "build": {
+      "status": "ok",
+      "durationMs": 56322
+    },
+    "imageStats": {
+      "status": "ok",
+      "sizeKb": 47402.5,
+      "layers": 11,
+      "maxLayerKb": 37171.2
+    },
+    "releaseImages": [
+      {
+        "label": "web",
+        "image": "signalops-metrics-friction-web:ci",
+        "dockerfile": "infra/docker/friction-web.Dockerfile",
+        "context": ".",
+        "build": {
+          "status": "ok",
+          "durationMs": 56322
+        },
+        "imageStats": {
+          "status": "ok",
+          "sizeKb": 47402.5,
+          "layers": 11,
+          "maxLayerKb": 37171.2
+        }
+      },
+      {
+        "label": "api",
+        "image": "signalops-metrics-friction-api:ci",
+        "dockerfile": "infra/docker/friction-api.Dockerfile",
+        "context": ".",
+        "build": {
+          "status": "ok",
+          "durationMs": 68078
+        },
+        "imageStats": {
+          "status": "ok",
+          "sizeKb": 232837.1,
+          "layers": 9,
+          "maxLayerKb": 148480
+        }
+      }
+    ],
+    "releaseImageStats": {
+      "status": "ok",
+      "sizeKb": 280239.6,
+      "layers": 20,
+      "maxLayerKb": 148480,
+      "aggregation": "sum of deployable release images"
+    },
+    "runtime": {
+      "status": "ok",
+      "startupMs": 67,
+      "healthcheck": {
+        "status": "ok",
+        "durationMs": 67
+      }
+    }
   }
 }

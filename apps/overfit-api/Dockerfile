@@ -11,7 +11,9 @@ COPY Cargo.toml Cargo.lock* ./
 COPY crates ./crates
 COPY apps/overfit-api ./apps/overfit-api
 # Prime the dependency cache (source is copied again in the builder for the real compile).
-RUN cargo fetch
+RUN --mount=type=cache,id=overfit-cargo-registry,target=/usr/local/cargo/registry \
+    --mount=type=cache,id=overfit-cargo-git,target=/usr/local/cargo/git \
+    cargo fetch
 
 # ---- builder ---------------------------------------------------------------
 FROM rust:1.83-bookworm AS builder
@@ -21,11 +23,19 @@ COPY Cargo.toml Cargo.lock* ./
 COPY crates ./crates
 COPY apps/overfit-api ./apps/overfit-api
 COPY generated ./generated
-RUN cargo build --release -p overfit-api
+RUN --mount=type=cache,id=overfit-cargo-registry,target=/usr/local/cargo/registry \
+    --mount=type=cache,id=overfit-cargo-git,target=/usr/local/cargo/git \
+    --mount=type=cache,id=overfit-cargo-target,target=/build/target \
+    cargo build --release -p overfit-api \
+    && mkdir -p /out \
+    && cp target/release/overfit-api /out/overfit-api
 
 # ---- test stage (optional; `docker build --target test`) -------------------
 FROM builder AS test
-RUN cargo test --workspace --release
+RUN --mount=type=cache,id=overfit-cargo-registry,target=/usr/local/cargo/registry \
+    --mount=type=cache,id=overfit-cargo-git,target=/usr/local/cargo/git \
+    --mount=type=cache,id=overfit-cargo-target,target=/build/target \
+    cargo test --workspace --release
 
 # ---- runtime: slim, non-root, healthchecked --------------------------------
 FROM debian:bookworm-slim AS runtime
@@ -44,7 +54,7 @@ RUN apt-get update \
   && rm -rf /var/lib/apt/lists/* \
   && useradd --system --uid 10001 --home /app overfit
 WORKDIR /app
-COPY --from=builder /build/target/release/overfit-api /usr/local/bin/overfit-api
+COPY --from=builder /out/overfit-api /usr/local/bin/overfit-api
 USER overfit
 ENV OVERFIT_API_PORT=3200
 EXPOSE 3200

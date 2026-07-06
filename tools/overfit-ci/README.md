@@ -13,6 +13,7 @@ Compare, before adding anything here, with Flow's equivalent: `scripts/flow/ci-s
 | `scope-manifest.json`  | Declarative isolation contract: roots, allowed/forbidden scopes, required projects, expected count bounds. |
 | `verify-isolation.mjs` | Enforces the manifest against the **real Nx graph**. Exits non-zero on any violation; writes `overfit-isolation.json`. |
 | `cache-key.mjs`        | Computes content-hash cache keys + restore-key cascades for the six Overfit cache layers. |
+| `artifact-manifest.mjs` | Hashes release-critical Docker, lockfile, OpenAPI, manifest and CI inputs into `generated/overfit/artifact-manifest.json`. |
 
 ## Isolation guard (`verify-isolation.mjs`)
 
@@ -63,3 +64,12 @@ Six layers, each `<prefix>-<runnerOs>-<sha256(inputs)>` with a two-step restore 
 Flow caches two things (pnpm store, `.nx/cache`) with two inline keys and stops. Overfit maintains a
 manifest, a graph verifier, a key calculator, a warm-up job, six cache layers and two BuildKit
 scopes. Both are correct. Only one of them is cheap to understand and change.
+
+## Artifact manifest
+
+Run: `pnpm overfit:artifacts:write` to regenerate, `pnpm overfit:artifacts:check` to verify.
+
+The manifest is a small provenance ledger for the release path. It hashes the Overfit Dockerfiles,
+lockfiles, OpenAPI and generated contract locks, endpoint manifest, variant Docker probe config, and
+CI cache/isolation scripts. A real release can compare the aggregate hash before publishing; the
+cost is that every legitimate change to these inputs now has one more generated artifact to update.

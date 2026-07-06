@@ -9,7 +9,8 @@ const GATES = [
   'check-schema.mjs',
   'check-docs.mjs',
   'check-policy.mjs',
-  'check-bundle.mjs'
+  'check-bundle.mjs',
+  'check-artifacts.mjs'
 ]
 
 let failed = 0

@@ -1,0 +1,116 @@
+{
+  "manifestVersion": "1.0.0",
+  "variant": "overfit",
+  "purpose": "release artifact provenance and cache-input drift detection",
+  "inputs": [
+    {
+      "path": ".github/workflows/overfit-ci.yml",
+      "status": "ok",
+      "bytes": 10264,
+      "sha256": "f0521395276727a49453043bc0a3fa12f54580a1809fa789ba0940f17e73e535"
+    },
+    {
+      "path": "apps/overfit-api/Dockerfile",
+      "status": "ok",
+      "bytes": 2978,
+      "sha256": "33f7582f6ff015771fdccd53931e2713a1db80a88d995bcad317a8bdf636ae0f"
+    },
+    {
+      "path": "apps/overfit-api/Cargo.toml",
+      "status": "ok",
+      "bytes": 737,
+      "sha256": "1f6f530d4446156619439b05906ddac2eb4d3e196fc07a02c282c4254a4956e6"
+    },
+    {
+      "path": "apps/overfit-web/Dockerfile",
+      "status": "ok",
+      "bytes": 2439,
+      "sha256": "0888cfefc00b400dc600ee140f70e05eae4b41b90709accbc55d99bb8b45bde5"
+    },
+    {
+      "path": "apps/overfit-web/next.config.ts",
+      "status": "ok",
+      "bytes": 1537,
+      "sha256": "bf25b47b4ce3ccdf7b2c6cecd804eac754d58146a6e036965d32d86996c13306"
+    },
+    {
+      "path": "apps/overfit-web/project.json",
+      "status": "ok",
+      "bytes": 1754,
+      "sha256": "abc2b9e3167d78ae3c360a9548fe7b773c020451bd3fee307b367bad6970d337"
+    },
+    {
+      "path": "Cargo.lock",
+      "status": "ok",
+      "bytes": 21378,
+      "sha256": "214ddea1189c087cb403c4a3bfc5ab13a39bdd419cf8f1e2037e62e49a18356f"
+    },
+    {
+      "path": "Cargo.toml",
+      "status": "ok",
+      "bytes": 3131,
+      "sha256": "d15670c4a567220e1a34aa5505b8b083b9f6c577441f12a5f725fc458c105846"
+    },
+    {
+      "path": "generated/overfit/bundle-budget.json",
+      "status": "ok",
+      "bytes": 154,
+      "sha256": "28d4ee1bd675e52057a440d516b98afcc533399c947f29ff9896de104b5758c0"
+    },
+    {
+      "path": "generated/overfit/contracts.lock.json",
+      "status": "ok",
+      "bytes": 1587,
+      "sha256": "479d585e682a80c4208bc7710e910196d7080509e95b630444d9e60c516b62fe"
+    },
+    {
+      "path": "generated/overfit/openapi.json",
+      "status": "ok",
+      "bytes": 19075,
+      "sha256": "7f12699193abaea9d39651750b2d00ba1bfc171afe7a148e49b61cfdaadacbce"
+    },
+    {
+      "path": "nx.json",
+      "status": "ok",
+      "bytes": 915,
+      "sha256": "a9f2506ba92dbc79f2fcb9111475950b5017e1524262b061ebd982b620f032e5"
+    },
+    {
+      "path": "package.json",
+      "status": "ok",
+      "bytes": 8215,
+      "sha256": "e08f65c9a75d29bd4b26399a829e6ed94f0ef82ffa24f8e23a9f96505c45367d"
+    },
+    {
+      "path": "packages/overfit/generated-manifests/src/endpoint.manifest.json",
+      "status": "ok",
+      "bytes": 701,
+      "sha256": "42d800610280e15639b84f6114c13a4a95b8cffad70e780b439edc580bb02e28"
+    },
+    {
+      "path": "tools/metrics/config/variants.config.json",
+      "status": "ok",
+      "bytes": 11169,
+      "sha256": "c03c21ec645c4ca42b0dd7fdfd1e5f6c9510da794501c5a1b81764a3c1341c77"
+    },
+    {
+      "path": "tools/overfit-ci/artifact-manifest.mjs",
+      "status": "ok",
+      "bytes": 4062,
+      "sha256": "6d60d0ab059d9c0a8dcceb361ae26acdc7c4c85fd7bedf55ee68591d10406c3c"
+    },
+    {
+      "path": "tools/overfit-ci/cache-key.mjs",
+      "status": "ok",
+      "bytes": 4897,
+      "sha256": "bf190a2629dcf129ce46d3c37dd4ae09db5c830b77b918bc0e798a8362aa5edb"
+    },
+    {
+      "path": "tools/overfit-ci/scope-manifest.json",
+      "status": "ok",
+      "bytes": 1526,
+      "sha256": "4394521ebfd0d5da417ba822406f8b03940840e75b223b975b3434c6507fd004"
+    }
+  ],
+  "aggregateSha256": "220faaedb7489f1b8f144333fd226f04ae539c9a67e3aa48f2fda8a0c8f2b434"
+}

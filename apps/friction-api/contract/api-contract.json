@@ -1,0 +1,48 @@
+{
+  "owner": "friction-api",
+  "contractVersion": "manual-v2.4-risk-trend",
+  "basePath": "/api",
+  "routes": [
+    { "name": "health", "method": "GET", "path": "/api/health" },
+    { "name": "dashboard.summary", "method": "GET", "path": "/api/dashboard/summary" },
+    { "name": "signals.list", "method": "GET", "path": "/api/signals" },
+    { "name": "signals.detail", "method": "GET", "path": "/api/signals/:id" },
+    { "name": "signals.events", "method": "GET", "path": "/api/signals/:id/events" },
+    { "name": "incidents.list", "method": "GET", "path": "/api/incidents" },
+    { "name": "compare.detail", "method": "GET", "path": "/api/compare/:id" },
+    { "name": "dxMetrics.read", "method": "GET", "path": "/api/dx-metrics" },
+    { "name": "simulateError.create", "method": "POST", "path": "/api/simulate-error" }
+  ],
+  "signalsQueryParams": [
+    "search",
+    "severity",
+    "status",
+    "source",
+    "riskTrend",
+    "assignedTo",
+    "dateFrom",
+    "dateTo",
+    "page",
+    "pageSize",
+    "sortBy",
+    "sortDirection"
+  ],
+  "signalFields": [
+    "id",
+    "title",
+    "description",
+    "severity",
+    "status",
+    "source",
+    "confidence",
+    "riskScore",
+    "riskTrend",
+    "region",
+    "assignedTo",
+    "createdAt",
+    "updatedAt",
+    "tags",
+    "hasLinkedIncident"
+  ],
+  "errorEnvelopeRequiredFields": ["code", "message", "requestId"]
+}

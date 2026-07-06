@@ -36,7 +36,7 @@ RUN rm -rf \
   /prod/flow-app/node_modules/.pnpm/@signalops+test-scenarios@*
 
 # ---- runtime: small, non-root image with only dist + prod node_modules ----
-FROM node:22-slim AS runtime
+FROM node:22-alpine AS runtime
 ARG APP_VERSION=0.0.0
 ARG APP_COMMIT_SHA=unknown
 ARG APP_BUILD_TIME=unknown

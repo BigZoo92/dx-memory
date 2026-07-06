@@ -9,7 +9,7 @@ ENV PNPM_HOME="/pnpm" PATH="/pnpm:$PATH"
 RUN corepack enable
 WORKDIR /repo
 COPY . .
-RUN pnpm install --frozen-lockfile || pnpm install
+RUN --mount=type=cache,id=overfit-pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 
 # ---- builder: build the Next standalone output -----------------------------
 FROM deps AS builder
@@ -19,8 +19,9 @@ ARG NEXT_PUBLIC_OVERFIT_BASE_PATH=
 ARG NEXT_PUBLIC_OVERFIT_API_BASE=/api
 ENV OVERFIT_BASE_PATH=$OVERFIT_BASE_PATH \
     NEXT_PUBLIC_OVERFIT_BASE_PATH=$NEXT_PUBLIC_OVERFIT_BASE_PATH \
-    NEXT_PUBLIC_OVERFIT_API_BASE=$NEXT_PUBLIC_OVERFIT_API_BASE
-RUN pnpm --filter @signalops/overfit-web build
+    NEXT_PUBLIC_OVERFIT_API_BASE=$NEXT_PUBLIC_OVERFIT_API_BASE \
+    NEXT_TELEMETRY_DISABLED=1
+RUN --mount=type=cache,id=overfit-next,target=/repo/apps/overfit-web/.next/cache pnpm --filter @signalops/overfit-web build
 
 # ---- runtime: slim, non-root, healthchecked --------------------------------
 FROM node:22-bookworm-slim AS runtime
@@ -42,12 +43,13 @@ WORKDIR /app
 ENV NODE_ENV=production \
     HOSTNAME=0.0.0.0 \
     PORT=3300 \
-    NEXT_PUBLIC_OVERFIT_BASE_PATH=$NEXT_PUBLIC_OVERFIT_BASE_PATH
+    NEXT_PUBLIC_OVERFIT_BASE_PATH=$NEXT_PUBLIC_OVERFIT_BASE_PATH \
+    NEXT_TELEMETRY_DISABLED=1
 # Next standalone output bundles the server + only the needed node_modules.
 COPY --from=builder /repo/apps/overfit-web/.next/standalone ./
 COPY --from=builder /repo/apps/overfit-web/.next/static ./apps/overfit-web/.next/static
 USER overfit
 EXPOSE 3300
 HEALTHCHECK --interval=30s --timeout=3s --start-period=15s --retries=3 \
-  CMD curl -fsS http://localhost:3300${NEXT_PUBLIC_OVERFIT_BASE_PATH:-}/ || exit 1
+  CMD curl -fsS http://localhost:3300${NEXT_PUBLIC_OVERFIT_BASE_PATH:-}/api/web-health/ || exit 1
 CMD ["node", "apps/overfit-web/server.js"]

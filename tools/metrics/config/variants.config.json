@@ -82,7 +82,7 @@
       "lighthouseUrlHint": "localhost:3100",
       "timings": {
         "build": "pnpm --filter @signalops/friction-web --filter @signalops/friction-api run build",
-        "typecheck": "pnpm --filter @signalops/friction-web --filter @signalops/friction-api run typecheck",
+        "typecheck": "pnpm friction:contract:check && pnpm --filter @signalops/friction-web --filter @signalops/friction-api run typecheck",
         "test": "pnpm --filter @signalops/friction-web --filter @signalops/friction-api run test",
         "lint": "pnpm --filter @signalops/friction-web --filter @signalops/friction-api run lint"
       },
@@ -90,7 +90,7 @@
         "testRunner": "vitest",
         "commands": {
           "build": "pnpm --filter @signalops/friction-web --filter @signalops/friction-api run build",
-          "typecheck": "pnpm --filter @signalops/friction-web --filter @signalops/friction-api run typecheck",
+          "typecheck": "pnpm friction:contract:check && pnpm --filter @signalops/friction-web --filter @signalops/friction-api run typecheck",
           "lint": "pnpm --filter @signalops/friction-web --filter @signalops/friction-api run lint",
           "test": "pnpm --filter @signalops/friction-web --filter @signalops/friction-api run test"
         },
@@ -148,10 +148,16 @@
         "testRunner": "vitest",
         "$comment": "Overfit is deliberately polyglot, and its own CI gate (ci:overfit) validates BOTH toolchains: TS/Next AND the Rust workspace (fmt/clippy/test/release build). Excluding cargo would hide the variant's real validation burden, so each step chains its TS gate with its Rust twin. Test counts are parsed from the combined vitest + cargo output.",
         "commands": {
-          "build": "pnpm overfit:build && pnpm overfit:api:build",
-          "typecheck": "pnpm overfit:typecheck",
+          "build": "pnpm overfit:contracts:generate && pnpm exec nx run-many -t build --projects=tag:scope:overfit --exclude=overfit-api --skip-nx-cache && pnpm overfit:api:build",
+          "typecheck": "pnpm exec nx run-many -t typecheck --projects=tag:scope:overfit --exclude=overfit-api --skip-nx-cache",
           "lint": "pnpm overfit:boundaries && pnpm overfit:api:clippy",
-          "test": "pnpm overfit:test && pnpm overfit:api:test"
+          "test": "pnpm exec nx run-many -t test --projects=tag:scope:overfit --exclude=overfit-api --skip-nx-cache && pnpm overfit:api:test"
+        },
+        "warmCommands": {
+          "build": "pnpm overfit:contracts:generate && pnpm exec nx run-many -t build --projects=tag:scope:overfit --exclude=overfit-api && pnpm overfit:api:build",
+          "typecheck": "pnpm exec nx run-many -t typecheck --projects=tag:scope:overfit --exclude=overfit-api",
+          "lint": "pnpm overfit:boundaries && pnpm overfit:api:clippy",
+          "test": "pnpm exec nx run-many -t test --projects=tag:scope:overfit --exclude=overfit-api && pnpm overfit:api:test"
         },
         "docker": {
           "enabled": true,
@@ -160,7 +166,7 @@
           "context": ".",
           "image": "signalops-metrics-overfit-web:ci",
           "port": 3300,
-          "healthPath": "/",
+          "healthPath": "/api/web-health/",
           "releaseImages": [
             {
               "label": "web",

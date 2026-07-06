@@ -1,11 +1,11 @@
 {
   "variant": "overfit",
   "label": "Overfit",
-  "generatedAt": "2026-07-05T17:59:37.814Z",
+  "generatedAt": "2026-07-06T14:21:59.063Z",
   "runner": {
-    "node": "v22.17.0",
-    "os": "darwin",
-    "ramWrapper": "/usr/bin/time",
+    "node": "v22.19.0",
+    "os": "win32",
+    "ramWrapper": null,
     "steps": [
       "build",
       "typecheck",
@@ -15,32 +15,32 @@
   },
   "steps": {
     "build": {
-      "command": "pnpm overfit:build && pnpm overfit:api:build",
+      "command": "pnpm overfit:contracts:generate && pnpm exec nx run-many -t build --projects=tag:scope:overfit --exclude=overfit-api --skip-nx-cache && pnpm overfit:api:build",
       "status": "ok",
       "exitCode": 0,
-      "durationMs": 8740,
-      "ramPeakKb": 489648
+      "durationMs": 43227,
+      "ramPeakKb": null
     },
     "typecheck": {
-      "command": "pnpm overfit:typecheck",
+      "command": "pnpm exec nx run-many -t typecheck --projects=tag:scope:overfit --exclude=overfit-api --skip-nx-cache",
       "status": "ok",
       "exitCode": 0,
-      "durationMs": 6301,
-      "ramPeakKb": 314352
+      "durationMs": 9544,
+      "ramPeakKb": null
     },
     "lint": {
       "command": "pnpm overfit:boundaries && pnpm overfit:api:clippy",
       "status": "ok",
       "exitCode": 0,
-      "durationMs": 2021,
-      "ramPeakKb": 206448
+      "durationMs": 11924,
+      "ramPeakKb": null
     },
     "test": {
-      "command": "pnpm overfit:test && pnpm overfit:api:test",
+      "command": "pnpm exec nx run-many -t test --projects=tag:scope:overfit --exclude=overfit-api --skip-nx-cache && pnpm overfit:api:test",
       "status": "ok",
       "exitCode": 0,
-      "durationMs": 6174,
-      "ramPeakKb": 174560,
+      "durationMs": 14031,
+      "ramPeakKb": null,
       "tests": {
         "executed": 60,
         "passed": 60,
@@ -51,31 +51,31 @@
   },
   "warmSteps": {
     "build": {
-      "command": "pnpm overfit:build && pnpm overfit:api:build",
+      "command": "pnpm overfit:contracts:generate && pnpm exec nx run-many -t build --projects=tag:scope:overfit --exclude=overfit-api && pnpm overfit:api:build",
       "status": "ok",
       "exitCode": 0,
-      "durationMs": 8264,
+      "durationMs": 14063,
       "primed": true
     },
     "typecheck": {
-      "command": "pnpm overfit:typecheck",
+      "command": "pnpm exec nx run-many -t typecheck --projects=tag:scope:overfit --exclude=overfit-api",
       "status": "ok",
       "exitCode": 0,
-      "durationMs": 6604,
+      "durationMs": 1891,
       "primed": true
     },
     "lint": {
       "command": "pnpm overfit:boundaries && pnpm overfit:api:clippy",
       "status": "ok",
       "exitCode": 0,
-      "durationMs": 1859,
+      "durationMs": 3163,
       "primed": true
     },
     "test": {
-      "command": "pnpm overfit:test && pnpm overfit:api:test",
+      "command": "pnpm exec nx run-many -t test --projects=tag:scope:overfit --exclude=overfit-api && pnpm overfit:api:test",
       "status": "ok",
       "exitCode": 0,
-      "durationMs": 5924,
+      "durationMs": 5389,
       "primed": true
     }
   },
@@ -89,7 +89,68 @@
     "dist": "apps/overfit-web/.next/static"
   },
   "docker": {
-    "status": "skipped",
-    "reason": "Docker disabled via --no-docker."
+    "status": "ok",
+    "engine": "29.2.1",
+    "image": "signalops-metrics-overfit-web:ci",
+    "dockerfile": "apps/overfit-web/Dockerfile",
+    "build": {
+      "status": "ok",
+      "durationMs": 77038
+    },
+    "imageStats": {
+      "status": "ok",
+      "sizeKb": 284527.1,
+      "layers": 9,
+      "maxLayerKb": 148480
+    },
+    "releaseImages": [
+      {
+        "label": "web",
+        "image": "signalops-metrics-overfit-web:ci",
+        "dockerfile": "apps/overfit-web/Dockerfile",
+        "context": ".",
+        "build": {
+          "status": "ok",
+          "durationMs": 77038
+        },
+        "imageStats": {
+          "status": "ok",
+          "sizeKb": 284527.1,
+          "layers": 9,
+          "maxLayerKb": 148480
+        }
+      },
+      {
+        "label": "api",
+        "image": "signalops-metrics-overfit-api:ci",
+        "dockerfile": "apps/overfit-api/Dockerfile",
+        "context": ".",
+        "build": {
+          "status": "ok",
+          "durationMs": 41767
+        },
+        "imageStats": {
+          "status": "ok",
+          "sizeKb": 89825.1,
+          "layers": 4,
+          "maxLayerKb": 76595.2
+        }
+      }
+    ],
+    "releaseImageStats": {
+      "status": "ok",
+      "sizeKb": 374352.2,
+      "layers": 13,
+      "maxLayerKb": 148480,
+      "aggregation": "sum of deployable release images"
+    },
+    "runtime": {
+      "status": "ok",
+      "startupMs": 561,
+      "healthcheck": {
+        "status": "ok",
+        "durationMs": 32
+      }
+    }
   }
 }

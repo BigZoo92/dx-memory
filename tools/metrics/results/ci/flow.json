@@ -1,11 +1,11 @@
 {
   "variant": "flow",
   "label": "Flow",
-  "generatedAt": "2026-07-05T17:59:37.814Z",
+  "generatedAt": "2026-07-06T14:38:47.925Z",
   "runner": {
-    "node": "v22.17.0",
-    "os": "darwin",
-    "ramWrapper": "/usr/bin/time",
+    "node": "v22.19.0",
+    "os": "win32",
+    "ramWrapper": null,
     "steps": [
       "build",
       "typecheck",
@@ -18,29 +18,29 @@
       "command": "nx run-many -t build --projects=tag:scope:flow --skip-nx-cache",
       "status": "ok",
       "exitCode": 0,
-      "durationMs": 6710,
-      "ramPeakKb": 474928
+      "durationMs": 12048,
+      "ramPeakKb": null
     },
     "typecheck": {
       "command": "nx run-many -t typecheck --projects=tag:scope:flow --skip-nx-cache",
       "status": "ok",
       "exitCode": 0,
-      "durationMs": 6710,
-      "ramPeakKb": 465488
+      "durationMs": 11367,
+      "ramPeakKb": null
     },
     "lint": {
       "command": "nx run-many -t lint --projects=tag:scope:flow --skip-nx-cache",
       "status": "ok",
       "exitCode": 0,
-      "durationMs": 3523,
-      "ramPeakKb": 136096
+      "durationMs": 4421,
+      "ramPeakKb": null
     },
     "test": {
       "command": "nx run-many -t test --projects=tag:scope:flow --skip-nx-cache",
       "status": "ok",
       "exitCode": 0,
-      "durationMs": 9550,
-      "ramPeakKb": 174784,
+      "durationMs": 18227,
+      "ramPeakKb": null,
       "tests": {
         "executed": 169,
         "passed": 169,
@@ -54,28 +54,28 @@
       "command": "nx run-many -t build --projects=tag:scope:flow",
       "status": "ok",
       "exitCode": 0,
-      "durationMs": 1478,
+      "durationMs": 1820,
       "primed": true
     },
     "typecheck": {
       "command": "nx run-many -t typecheck --projects=tag:scope:flow",
       "status": "ok",
       "exitCode": 0,
-      "durationMs": 1412,
+      "durationMs": 1688,
       "primed": true
     },
     "lint": {
       "command": "nx run-many -t lint --projects=tag:scope:flow",
       "status": "ok",
       "exitCode": 0,
-      "durationMs": 1493,
+      "durationMs": 1191,
       "primed": true
     },
     "test": {
       "command": "nx run-many -t test --projects=tag:scope:flow",
       "status": "ok",
       "exitCode": 0,
-      "durationMs": 1406,
+      "durationMs": 1374,
       "primed": true
     }
   },
@@ -85,11 +85,56 @@
   },
   "artifact": {
     "status": "ok",
-    "distSizeKb": 740.5,
+    "distSizeKb": 740.8,
     "dist": "apps/flow-app/dist/client"
   },
   "docker": {
-    "status": "skipped",
-    "reason": "Docker disabled via --no-docker."
+    "status": "ok",
+    "engine": "29.2.1",
+    "image": "signalops-metrics-flow:ci",
+    "dockerfile": "apps/flow-app/Dockerfile",
+    "build": {
+      "status": "ok",
+      "durationMs": 151118
+    },
+    "imageStats": {
+      "status": "ok",
+      "sizeKb": 241250,
+      "layers": 9,
+      "maxLayerKb": 152576
+    },
+    "releaseImages": [
+      {
+        "label": "flow",
+        "image": "signalops-metrics-flow:ci",
+        "dockerfile": "apps/flow-app/Dockerfile",
+        "context": ".",
+        "build": {
+          "status": "ok",
+          "durationMs": 151118
+        },
+        "imageStats": {
+          "status": "ok",
+          "sizeKb": 241250,
+          "layers": 9,
+          "maxLayerKb": 152576
+        }
+      }
+    ],
+    "releaseImageStats": {
+      "status": "ok",
+      "sizeKb": 241250,
+      "layers": 9,
+      "maxLayerKb": 152576,
+      "aggregation": "sum of deployable release images"
+    },
+    "runtime": {
+      "status": "ok",
+      "startupMs": 14582,
+      "healthcheck": {
+        "status": "ok",
+        "durationMs": 2194
+      }
+    }
   }
 }

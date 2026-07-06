@@ -7,6 +7,7 @@
  * metric as `unavailable` with the reason surfaced here.
  */
 import { existsSync } from 'node:fs'
+import { get as httpGet } from 'node:http'
 import { timeCommand, capture } from './exec.mjs'
 
 /** Is a working Docker CLI + daemon reachable? */
@@ -93,12 +94,23 @@ export async function dockerRunAndProbe({ image, port, hostPort, healthPath = '/
 
 /* ------------------------------------------------------------------- helpers */
 async function probe(url) {
-  try {
-    const res = await fetch(url, { signal: AbortSignal.timeout(4000) })
-    return res.ok || (res.status >= 200 && res.status < 500) // any served response = process is up
-  } catch {
-    return false
-  }
+  return new Promise((resolve) => {
+    let settled = false
+    const finish = (ok) => {
+      if (settled) return
+      settled = true
+      resolve(ok)
+    }
+    const req = httpGet(url, (res) => {
+      res.resume()
+      finish(res.statusCode >= 200 && res.statusCode < 500) // any served response = process is up
+    })
+    req.setTimeout(4000, () => {
+      req.destroy()
+      finish(false)
+    })
+    req.on('error', () => finish(false))
+  })
 }
 function sleep(ms) {
   return new Promise((r) => setTimeout(r, ms))

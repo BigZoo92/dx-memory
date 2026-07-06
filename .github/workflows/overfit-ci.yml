@@ -228,7 +228,7 @@ jobs:
       - name: Typecheck (tsc via Nx, Overfit scope)
         run: pnpm exec nx run-many -t typecheck --projects=tag:scope:overfit --exclude=overfit-api
 
-      - name: Overfit quality gates (contracts / schema / docs / policy / bundle)
+      - name: Overfit quality gates (contracts / schema / docs / policy / bundle / artifacts)
         run: |
           pnpm overfit:contracts:check
           pnpm overfit:quality

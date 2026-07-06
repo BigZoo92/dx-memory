@@ -64,6 +64,9 @@ jobs:
           pnpm --filter @signalops/friction-api typecheck
           pnpm --filter @signalops/friction-web typecheck
 
+      - name: Manual contract copy check
+        run: pnpm friction:contract:check
+
       - name: Test (backend)
         run: pnpm --filter @signalops/friction-api test
 

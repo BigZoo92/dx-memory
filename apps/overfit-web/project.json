@@ -13,7 +13,8 @@
       "executor": "nx:run-commands",
       "inputs": ["production", "^production"],
       "outputs": ["{projectRoot}/.next"],
-      "cache": true,
+      "cache": false,
+      "$comment_cache": "Do not cache the full .next output on Windows: restoring standalone output can require filesystem privileges the contributor may not have. Nx still caches package-level checks, while Next and Docker keep their own incremental caches.",
       "dependsOn": ["typecheck"],
       "$comment_dependsOn": "next build rewrites .next/types while the standalone tsc typecheck reads them. Serializing build after typecheck removes that race so the gate is deterministic; next build still fully type-validates the generated route types.",
       "options": { "command": "next build", "cwd": "apps/overfit-web" }
