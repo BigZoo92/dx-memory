@@ -6,17 +6,28 @@
     "thesis": "The balanced choice — modular, readable, and the cheapest to change.",
     "stack": "TanStack Start · React 19 · Vite · TypeScript",
     "accent": "#38e8c6",
-    "commit": "b1840964d08aad639c12b6d60678ada1947de814",
-    "commitShort": "b184096",
-    "branch": "main",
-    "timestamp": "2026-07-05T18:02:46.470Z",
-    "ciPipelineId": null,
-    "ciRunNumber": null,
-    "environment": "local",
+    "commit": "4383eff261e76e72a6a5094aa3d96714d0018230",
+    "commitShort": "4383eff",
+    "branch": "v1.0.6",
+    "timestamp": "2026-07-05T18:17:14.948Z",
+    "ciPipelineId": "28750093448",
+    "ciRunNumber": "6",
+    "environment": "ci",
     "appUrl": "http://localhost:3000",
     "apiUrl": null
   },
   "metrics": {
+    "nxProjects": {
+      "value": 15,
+      "status": "ok",
+      "label": "Workspace projects",
+      "unit": "count",
+      "direction": "balance",
+      "category": "Architecture",
+      "axis": "Change",
+      "scope": "variant",
+      "description": "Buildable projects (npm packages + Rust crates). Scored on balance: a monolith is under-modularized, dozens of projects is over-fragmented; the healthy band is in between."
+    },
     "sourceFiles": {
       "value": 182,
       "status": "ok",
@@ -27,17 +38,6 @@
       "axis": "Change",
       "scope": "variant",
       "description": "Source files (ts/tsx/js/rs/css), excluding tests, config, docs and generated code. Scored on balance."
-    },
-    "configFiles": {
-      "value": 74,
-      "status": "ok",
-      "label": "Config files",
-      "unit": "count",
-      "direction": "lower",
-      "category": "Architecture",
-      "axis": "Change",
-      "scope": "variant",
-      "description": "Number of configuration files (json/yaml/toml/rc/*.config.*)."
     },
     "locTotal": {
       "value": 7561,
@@ -93,6 +93,17 @@
       "axis": "Change",
       "scope": "variant",
       "description": "Lines of Markdown documentation."
+    },
+    "configFiles": {
+      "value": 73,
+      "status": "ok",
+      "label": "Config files",
+      "unit": "count",
+      "direction": "lower",
+      "category": "Architecture",
+      "axis": "Change",
+      "scope": "variant",
+      "description": "Number of configuration files (json/yaml/toml/rc/*.config.*)."
     },
     "todoCount": {
       "value": 0,
@@ -183,7 +194,7 @@
       "description": "Source files longer than 300 lines."
     },
     "businessRatio": {
-      "value": 0.764,
+      "value": 0.765,
       "status": "ok",
       "label": "Business/boilerplate ratio",
       "unit": "ratio",
@@ -204,16 +215,16 @@
       "scope": "variant",
       "description": "Distinct third-party runtime + dev dependencies declared across the variant's manifests."
     },
-    "nxProjects": {
-      "value": 15,
+    "circularDeps": {
+      "value": 0,
       "status": "ok",
-      "label": "Workspace projects",
+      "label": "Circular dependencies",
       "unit": "count",
-      "direction": "balance",
+      "direction": "lower",
       "category": "Architecture",
       "axis": "Change",
       "scope": "variant",
-      "description": "Buildable projects (npm packages + Rust crates). Scored on balance: a monolith is under-modularized, dozens of projects is over-fragmented; the healthy band is in between."
+      "description": "Import cycles between the variant's own projects (detected from workspace manifests)."
     },
     "graphNodes": {
       "value": 15,
@@ -291,17 +302,6 @@
       "axis": "Change",
       "scope": "variant",
       "description": "Highest number of dependencies a single project pulls in."
-    },
-    "circularDeps": {
-      "value": 0,
-      "status": "ok",
-      "label": "Circular dependencies",
-      "unit": "count",
-      "direction": "lower",
-      "category": "Architecture",
-      "axis": "Change",
-      "scope": "variant",
-      "description": "Import cycles between the variant's own projects (detected from workspace manifests)."
     },
     "bundleJsKb": {
       "value": 699.7,
@@ -424,11 +424,23 @@
       "scope": "variant",
       "description": "Total size of the deployable build output."
     },
+    "$comment_variant_ci": {
+      "status": "unavailable",
+      "value": null,
+      "reason": "not collected",
+      "label": null,
+      "unit": null,
+      "direction": "neutral",
+      "category": "Other",
+      "axis": null,
+      "scope": "variant",
+      "description": null
+    },
     "variant.ci.build.duration": {
-      "value": 6710,
+      "value": 30423,
       "status": "ok",
       "command": "nx run-many -t build --projects=tag:scope:flow --skip-nx-cache",
-      "at": "2026-07-05T17:59:37.814Z",
+      "at": "2026-07-05T18:10:53.289Z",
       "label": "Variant build time (cold)",
       "unit": "ms",
       "direction": "lower",
@@ -438,10 +450,10 @@
       "description": "Cache-DISABLED cold build of this variant's app(s) (Flow: nx --skip-nx-cache; Friction/Overfit: pnpm/cargo/next). Intrinsic build cost, independent of CI cache strategy. NOT the real cached CI feedback time."
     },
     "variant.ci.typecheck.duration": {
-      "value": 6710,
+      "value": 10151,
       "status": "ok",
       "command": "nx run-many -t typecheck --projects=tag:scope:flow --skip-nx-cache",
-      "at": "2026-07-05T17:59:37.814Z",
+      "at": "2026-07-05T18:10:53.289Z",
       "label": "Variant typecheck time (cold)",
       "unit": "ms",
       "direction": "lower",
@@ -451,10 +463,10 @@
       "description": "Cache-disabled cold typecheck of this variant. Intrinsic cost, cache-immune."
     },
     "variant.ci.lint.duration": {
-      "value": 3523,
+      "value": 4432,
       "status": "ok",
       "command": "nx run-many -t lint --projects=tag:scope:flow --skip-nx-cache",
-      "at": "2026-07-05T17:59:37.814Z",
+      "at": "2026-07-05T18:10:53.289Z",
       "label": "Variant lint time (cold)",
       "unit": "ms",
       "direction": "lower",
@@ -464,10 +476,10 @@
       "description": "Cache-disabled cold lint / boundary check of this variant. Intrinsic cost, cache-immune."
     },
     "variant.ci.test.duration": {
-      "value": 9550,
+      "value": 17661,
       "status": "ok",
       "command": "nx run-many -t test --projects=tag:scope:flow --skip-nx-cache",
-      "at": "2026-07-05T17:59:37.814Z",
+      "at": "2026-07-05T18:10:53.289Z",
       "label": "Variant test time (cold)",
       "unit": "ms",
       "direction": "lower",
@@ -477,14 +489,14 @@
       "description": "Cache-disabled cold unit-test run of this variant (vitest). Intrinsic cost, cache-immune."
     },
     "variant.ci.validation.cold": {
-      "value": 26493,
+      "value": 62667,
       "status": "ok",
-      "at": "2026-07-05T17:59:37.814Z",
+      "at": "2026-07-05T18:10:53.289Z",
       "steps": {
-        "build": 6710,
-        "typecheck": 6710,
-        "lint": 3523,
-        "test": 9550
+        "build": 30423,
+        "typecheck": 10151,
+        "lint": 4432,
+        "test": 17661
       },
       "label": "Full validation (cold)",
       "unit": "ms",
@@ -495,14 +507,14 @@
       "description": "Total cache-disabled cost of the variant's whole validation protocol: build + typecheck + lint + test, summed. The intrinsic worst-case price of one trustworthy signal."
     },
     "variant.ci.validation.warm": {
-      "value": 5789,
+      "value": 5710,
       "status": "ok",
-      "at": "2026-07-05T17:59:37.814Z",
+      "at": "2026-07-05T18:10:53.289Z",
       "steps": {
-        "build": 1478,
-        "typecheck": 1412,
-        "lint": 1493,
-        "test": 1406
+        "build": 1449,
+        "typecheck": 1441,
+        "lint": 1410,
+        "test": 1410
       },
       "label": "Full re-validation (warm)",
       "unit": "ms",
@@ -515,7 +527,7 @@
     "variant.ci.tests.executed": {
       "value": 169,
       "status": "ok",
-      "at": "2026-07-05T17:59:37.814Z",
+      "at": "2026-07-05T18:10:53.289Z",
       "label": "Tests executed",
       "unit": "count",
       "direction": "neutral",
@@ -527,7 +539,7 @@
     "variant.ci.tests.passed": {
       "value": 169,
       "status": "ok",
-      "at": "2026-07-05T17:59:37.814Z",
+      "at": "2026-07-05T18:10:53.289Z",
       "label": "Tests passed",
       "unit": "count",
       "direction": "neutral",
@@ -539,7 +551,7 @@
     "variant.ci.tests.failed": {
       "value": 0,
       "status": "ok",
-      "at": "2026-07-05T17:59:37.814Z",
+      "at": "2026-07-05T18:10:53.289Z",
       "label": "Tests failed",
       "unit": "count",
       "direction": "lower",
@@ -551,7 +563,7 @@
     "variant.ci.tests.skipped": {
       "value": 0,
       "status": "ok",
-      "at": "2026-07-05T17:59:37.814Z",
+      "at": "2026-07-05T18:10:53.289Z",
       "label": "Tests skipped",
       "unit": "count",
       "direction": "lower",
@@ -561,9 +573,9 @@
       "description": "Number of skipped unit tests."
     },
     "variant.ci.warnings.count": {
-      "value": 0,
+      "value": 2,
       "status": "ok",
-      "at": "2026-07-05T17:59:37.814Z",
+      "at": "2026-07-05T18:10:53.289Z",
       "method": "heuristic parse of tool output",
       "label": "CI warnings",
       "unit": "count",
@@ -576,20 +588,20 @@
     "variant.ci.errors.count": {
       "value": 0,
       "status": "ok",
-      "at": "2026-07-05T17:59:37.814Z",
+      "at": "2026-07-05T18:10:53.289Z",
       "method": "heuristic parse of tool output",
-      "label": "CI errors",
+      "label": "CI gate errors",
       "unit": "count",
       "direction": "lower",
-      "category": "Build CI",
-      "axis": "Build",
+      "category": "CI gate",
+      "axis": "Ship",
       "scope": "variant",
-      "description": "Errors parsed from this variant's build/lint/typecheck output (heuristic)."
+      "description": "Errors parsed from this variant's build/lint/typecheck output (heuristic). Scored in Ship v1.1 as gate cleanliness: the result of the release-control path, not the number of checks."
     },
     "variant.ci.ramPeak.build": {
-      "value": 474928,
+      "value": 610936,
       "status": "ok",
-      "at": "2026-07-05T17:59:37.814Z",
+      "at": "2026-07-05T18:10:53.289Z",
       "label": "Build peak RAM",
       "unit": "kb",
       "direction": "lower",
@@ -599,9 +611,9 @@
       "description": "Peak resident memory of the build step (from /usr/bin/time on the CI runner). Unavailable where the runner lacks GNU/BSD time."
     },
     "variant.ci.ramPeak.tests": {
-      "value": 174784,
+      "value": 202412,
       "status": "ok",
-      "at": "2026-07-05T17:59:37.814Z",
+      "at": "2026-07-05T18:10:53.289Z",
       "label": "Test peak RAM",
       "unit": "kb",
       "direction": "lower",
@@ -613,7 +625,7 @@
     "variant.ci.artifact.distSize": {
       "value": 740.5,
       "status": "ok",
-      "at": "2026-07-05T17:59:37.814Z",
+      "at": "2026-07-05T18:10:53.289Z",
       "label": "Variant dist size (CI)",
       "unit": "kb",
       "direction": "lower",
@@ -622,94 +634,29 @@
       "scope": "variant",
       "description": "Build-output size measured in the CI job right after build. Informational — `distTotalKb` (bundle collector) is the scored artifact size."
     },
-    "variant.docker.build.duration": {
-      "value": null,
+    "$comment_variant_feedback": {
       "status": "unavailable",
-      "reason": "Docker disabled via --no-docker.",
-      "label": "Docker build time",
-      "unit": "ms",
-      "direction": "lower",
-      "category": "Docker",
-      "axis": "Ship",
-      "scope": "variant",
-      "description": "Wall-clock `docker build --no-cache` for this variant's image. Best-effort: `unavailable` if Docker isn't present or has no Dockerfile."
-    },
-    "variant.docker.image.size": {
       "value": null,
-      "status": "unavailable",
-      "reason": "Docker disabled via --no-docker.",
-      "label": "Docker image size",
-      "unit": "kb",
-      "direction": "lower",
-      "category": "Docker",
-      "axis": "Ship",
-      "scope": "variant",
-      "description": "Final image size via `docker image inspect`. The user-facing (web) image where a variant ships several."
-    },
-    "variant.docker.layers.count": {
-      "value": null,
-      "status": "unavailable",
-      "reason": "Docker disabled via --no-docker.",
-      "label": "Docker layers",
-      "unit": "count",
-      "direction": "lower",
-      "category": "Docker",
-      "axis": "Ship",
-      "scope": "variant",
-      "description": "RootFS content layers in the image — a proxy for build-cache friendliness."
-    },
-    "variant.docker.layer.maxSize": {
-      "value": null,
-      "status": "unavailable",
-      "reason": "Docker disabled via --no-docker.",
-      "label": "Largest Docker layer",
-      "unit": "kb",
-      "direction": "lower",
-      "category": "Docker",
-      "axis": "Ship",
-      "scope": "variant",
-      "description": "Biggest single layer (from `docker history`). Informational."
-    },
-    "variant.docker.startup.duration": {
-      "value": null,
-      "status": "unavailable",
-      "reason": "Docker disabled via --no-docker.",
-      "label": "Container startup",
-      "unit": "ms",
-      "direction": "lower",
-      "category": "Docker",
-      "axis": "Ship",
-      "scope": "variant",
-      "description": "Time from `docker run` to the container answering its health endpoint. Best-effort."
-    },
-    "variant.docker.healthcheck.status": {
-      "value": null,
-      "status": "unavailable",
-      "reason": "Docker disabled via --no-docker.",
-      "label": "Container healthcheck",
-      "unit": "status",
+      "reason": "not collected",
+      "label": null,
+      "unit": null,
       "direction": "neutral",
-      "category": "Docker",
-      "axis": "Ship",
+      "category": "Other",
+      "axis": null,
       "scope": "variant",
-      "description": "Whether the started container served its health endpoint (ok/fail). Informational."
-    },
-    "variant.docker.healthcheck.duration": {
-      "value": null,
-      "status": "unavailable",
-      "reason": "Docker disabled via --no-docker.",
-      "label": "Healthcheck latency",
-      "unit": "ms",
-      "direction": "lower",
-      "category": "Docker",
-      "axis": "Ship",
-      "scope": "variant",
-      "description": "Latency of the first successful health request once the container is up. Informational."
+      "description": null
     },
     "variant.ci.feedback.duration": {
-      "value": null,
-      "status": "unavailable",
-      "reason": "No GitHub Actions data (no token, or no workflow runs) — real CI feedback requires a completed run.",
+      "value": 85500,
+      "status": "ok",
+      "workflow": "flow-ci.yml",
+      "qualityJobs": [
+        "affected",
+        "main"
+      ],
+      "samples": 2,
+      "population": "push-to-main, latest attempt, conclusions success|failure|timed_out",
+      "timing": "max(quality_job.completed_at) − run.run_started_at (excludes GitHub queue)",
       "label": "CI feedback to signal (main)",
       "unit": "ms",
       "direction": "lower",
@@ -719,9 +666,8 @@
       "description": "Mean delay from a push-to-main run starting to this variant's primary quality signal (its *-ci.yml quality job), with its real cache strategy: max(quality_job.completed_at) − run.run_started_at, over push-to-main runs (conclusions success|failure|timed_out; cancelled/skipped excluded). Observational only (not scored). Interpret with nxProjects / sourceFiles / locTotal — the scopes differ (Friction 2 projects vs Flow 15 vs Overfit 31). `unavailable` until a real push-to-main run exists."
     },
     "variant.ci.feedback.samples": {
-      "value": null,
-      "status": "unavailable",
-      "reason": "No GitHub Actions data (no token, or no workflow runs) — real CI feedback requires a completed run.",
+      "value": 2,
+      "status": "ok",
       "label": "CI feedback samples",
       "unit": "count",
       "direction": "neutral",
@@ -729,6 +675,102 @@
       "axis": null,
       "scope": "variant",
       "description": "Number of push-to-main runs the feedback duration was averaged over. Informational."
+    },
+    "variant.docker.build.duration": {
+      "value": 47413,
+      "status": "ok",
+      "at": "2026-07-05T18:10:53.289Z",
+      "label": "Docker build time",
+      "unit": "ms",
+      "direction": "lower",
+      "category": "Docker",
+      "axis": "Ship",
+      "scope": "variant",
+      "description": "Wall-clock `docker build --no-cache` for this variant's image. Ship v1.1 keeps it as packaging/pipeline cost, with a reduced weight so it does not double-count Build's feedback-cost axis."
+    },
+    "variant.docker.image.size": {
+      "value": 414902.4,
+      "status": "ok",
+      "at": "2026-07-05T18:10:53.289Z",
+      "label": "Docker image size",
+      "unit": "kb",
+      "direction": "lower",
+      "category": "Docker",
+      "axis": "Ship",
+      "scope": "variant",
+      "description": "Final image size via `docker image inspect`. Ship v1.1 treats it as artifact transfer/storage/pull context, not a primary confidence signal."
+    },
+    "variant.docker.layers.count": {
+      "value": 10,
+      "status": "ok",
+      "at": "2026-07-05T18:10:53.289Z",
+      "label": "Docker layers",
+      "unit": "count",
+      "direction": "lower",
+      "category": "Docker",
+      "axis": "Ship",
+      "scope": "variant",
+      "description": "RootFS content layers in the image — a proxy for build-cache friendliness."
+    },
+    "variant.docker.layer.maxSize": {
+      "value": 200704,
+      "status": "ok",
+      "at": "2026-07-05T18:10:53.289Z",
+      "label": "Largest Docker layer",
+      "unit": "kb",
+      "direction": "lower",
+      "category": "Docker",
+      "axis": "Ship",
+      "scope": "variant",
+      "description": "Biggest single layer (from `docker history`). Informational."
+    },
+    "variant.docker.startup.duration": {
+      "value": 1012,
+      "status": "ok",
+      "at": "2026-07-05T18:10:53.289Z",
+      "label": "Container startup",
+      "unit": "ms",
+      "direction": "lower",
+      "category": "Docker",
+      "axis": "Ship",
+      "scope": "variant",
+      "description": "Time from `docker run` to the container answering its health endpoint. Best-effort."
+    },
+    "variant.docker.healthcheck.status": {
+      "value": "ok",
+      "status": "ok",
+      "at": "2026-07-05T18:10:53.289Z",
+      "label": "Container healthcheck",
+      "unit": "status",
+      "direction": "neutral",
+      "category": "Docker",
+      "axis": "Ship",
+      "scope": "variant",
+      "description": "Whether the started container served its health endpoint (ok/fail). Informational."
+    },
+    "variant.docker.healthcheck.duration": {
+      "value": 468,
+      "status": "ok",
+      "at": "2026-07-05T18:10:53.289Z",
+      "label": "Healthcheck latency",
+      "unit": "ms",
+      "direction": "lower",
+      "category": "Docker",
+      "axis": "Ship",
+      "scope": "variant",
+      "description": "Latency of the first successful health request once the container is up. Informational."
+    },
+    "$comment_delivery": {
+      "status": "unavailable",
+      "value": null,
+      "reason": "not collected",
+      "label": null,
+      "unit": null,
+      "direction": "neutral",
+      "category": "Other",
+      "axis": null,
+      "scope": "variant",
+      "description": null
     },
     "ship.services.count": {
       "value": 1,
@@ -755,6 +797,7 @@
         {
           "dockerfile": "apps/flow-app/Dockerfile",
           "healthcheck": true,
+          "healthcheckTargetsHealth": true,
           "healthEndpoint": true
         }
       ],
@@ -764,7 +807,7 @@
       "category": "Delivery surface",
       "axis": "Ship",
       "scope": "variant",
-      "description": "Share of the variant's images that declare a Docker HEALTHCHECK — deploys the platform can verify (and roll back) instead of hoping."
+      "description": "Share of the variant's images whose Docker HEALTHCHECK targets a dedicated health endpoint. This is a deploy-confidence guard, not mere presence of a HEALTHCHECK instruction."
     },
     "run.inspection.surfaces": {
       "value": 1,
@@ -814,6 +857,18 @@
       "scope": "variant",
       "description": "Does the runtime emit structured, leveled, contextual logs (tracing/tracing_subscriber in Rust, a leveled createLogger in TS) — or only bare console output? Signal QUALITY: one unreadable stream must not beat two well-instrumented services just because it is a single place to look."
     },
+    "$comment_change_surface": {
+      "status": "unavailable",
+      "value": null,
+      "reason": "not collected",
+      "label": null,
+      "unit": null,
+      "direction": "neutral",
+      "category": "Other",
+      "axis": null,
+      "scope": "variant",
+      "description": null
+    },
     "change.contract.restatements": {
       "value": 1,
       "status": "ok",
@@ -829,6 +884,18 @@
       "axis": "Change",
       "scope": "variant",
       "description": "Hand-written files that re-declare the shared Signal contract (measured on the riskScore field). 0 = the variant imports the single source of truth; each extra copy is one more place a schema change must propagate to — and one more place it can silently diverge."
+    },
+    "$comment_change_footprint": {
+      "status": "unavailable",
+      "value": null,
+      "reason": "not collected",
+      "label": null,
+      "unit": null,
+      "direction": "neutral",
+      "category": "Other",
+      "axis": null,
+      "scope": "variant",
+      "description": null
     },
     "change.footprint.sourceFiles": {
       "value": 13,
@@ -940,8 +1007,9 @@
       "description": "Generated mirrors (OpenAPI spec, generated clients) that carry the capability. Context — regenerating is cheap; the hand-written counts are what score."
     },
     "lighthousePerformance": {
-      "value": 100,
-      "status": "ok",
+      "value": null,
+      "status": "unavailable",
+      "reason": "No .lighthouseci reports present — run the Lighthouse audit.",
       "label": "Lighthouse Performance",
       "unit": "score",
       "direction": "higher",
@@ -951,8 +1019,9 @@
       "description": "Lighthouse performance score (0–100)."
     },
     "lighthouseAccessibility": {
-      "value": 96,
-      "status": "ok",
+      "value": null,
+      "status": "unavailable",
+      "reason": "No .lighthouseci reports present — run the Lighthouse audit.",
       "label": "Lighthouse Accessibility",
       "unit": "score",
       "direction": "higher",
@@ -962,8 +1031,9 @@
       "description": "Lighthouse accessibility score (0–100)."
     },
     "lighthouseBestPractices": {
-      "value": 96,
-      "status": "ok",
+      "value": null,
+      "status": "unavailable",
+      "reason": "No .lighthouseci reports present — run the Lighthouse audit.",
       "label": "Lighthouse Best Practices",
       "unit": "score",
       "direction": "higher",
@@ -973,8 +1043,9 @@
       "description": "Lighthouse best-practices score (0–100)."
     },
     "lcpMs": {
-      "value": 972,
-      "status": "ok",
+      "value": null,
+      "status": "unavailable",
+      "reason": "No .lighthouseci reports present — run the Lighthouse audit.",
       "label": "LCP",
       "unit": "ms",
       "direction": "lower",
@@ -984,8 +1055,9 @@
       "description": "Largest Contentful Paint."
     },
     "cls": {
-      "value": 0,
-      "status": "ok",
+      "value": null,
+      "status": "unavailable",
+      "reason": "No .lighthouseci reports present — run the Lighthouse audit.",
       "label": "CLS",
       "unit": "index",
       "direction": "lower",
@@ -995,8 +1067,9 @@
       "description": "Cumulative Layout Shift."
     },
     "tbtMs": {
-      "value": 0,
-      "status": "ok",
+      "value": null,
+      "status": "unavailable",
+      "reason": "No .lighthouseci reports present — run the Lighthouse audit.",
       "label": "TBT",
       "unit": "ms",
       "direction": "lower",
@@ -1006,8 +1079,9 @@
       "description": "Total Blocking Time."
     },
     "speedIndexMs": {
-      "value": 972,
-      "status": "ok",
+      "value": null,
+      "status": "unavailable",
+      "reason": "No .lighthouseci reports present — run the Lighthouse audit.",
       "label": "Speed Index",
       "unit": "ms",
       "direction": "lower",
@@ -1017,8 +1091,9 @@
       "description": "Lighthouse Speed Index."
     },
     "fcpMs": {
-      "value": 972,
-      "status": "ok",
+      "value": null,
+      "status": "unavailable",
+      "reason": "No .lighthouseci reports present — run the Lighthouse audit.",
       "label": "FCP",
       "unit": "ms",
       "direction": "lower",
@@ -1028,8 +1103,9 @@
       "description": "First Contentful Paint."
     },
     "requests": {
-      "value": 6,
-      "status": "ok",
+      "value": null,
+      "status": "unavailable",
+      "reason": "No .lighthouseci reports present — run the Lighthouse audit.",
       "label": "Initial requests",
       "unit": "count",
       "direction": "lower",
@@ -1039,8 +1115,9 @@
       "description": "Number of network requests to load the main route."
     },
     "transferredKb": {
-      "value": 21.8,
-      "status": "ok",
+      "value": null,
+      "status": "unavailable",
+      "reason": "No .lighthouseci reports present — run the Lighthouse audit.",
       "label": "Transferred weight",
       "unit": "kb",
       "direction": "lower",
@@ -1050,8 +1127,9 @@
       "description": "Total bytes transferred over the wire for the main route."
     },
     "co2PerViewMg": {
-      "value": 10.6,
-      "status": "ok",
+      "value": null,
+      "status": "unavailable",
+      "reason": "No .lighthouseci reports present — run the Lighthouse audit.",
       "label": "CO₂ / page view",
       "unit": "mg",
       "direction": "lower",
@@ -1059,6 +1137,150 @@
       "axis": "Run",
       "scope": "variant",
       "description": "Estimated CO₂ per page view (SWD model from transferred bytes)."
+    },
+    "$comment_github": {
+      "status": "unavailable",
+      "value": null,
+      "reason": "not collected",
+      "label": null,
+      "unit": null,
+      "direction": "neutral",
+      "category": "Other",
+      "axis": null,
+      "scope": "variant",
+      "description": null
+    },
+    "ship.ci.wallTime.avg": {
+      "status": "unavailable",
+      "value": null,
+      "reason": "not collected",
+      "label": "CI wall time (avg)",
+      "unit": "ms",
+      "direction": "lower",
+      "category": "Delivery",
+      "axis": "Ship",
+      "scope": "repo",
+      "description": "Mean wall-clock time of the last N completed workflow runs (updated_at − run_started_at). Repo-level."
+    },
+    "ship.ci.wallTime.p95": {
+      "status": "unavailable",
+      "value": null,
+      "reason": "not collected",
+      "label": "CI wall time (p95)",
+      "unit": "ms",
+      "direction": "lower",
+      "category": "Delivery",
+      "axis": "Ship",
+      "scope": "repo",
+      "description": "95th-percentile wall-clock run time — the tail a developer occasionally waits through. Repo-level (display only)."
+    },
+    "ship.ci.successRate.lastN": {
+      "status": "unavailable",
+      "value": null,
+      "reason": "not collected",
+      "label": "CI success rate",
+      "unit": "%",
+      "direction": "higher",
+      "category": "Delivery",
+      "axis": "Ship",
+      "scope": "repo",
+      "description": "Successful ÷ completed runs over the last N. Repo-level."
+    },
+    "ship.ci.flakyProxy.rate": {
+      "status": "unavailable",
+      "value": null,
+      "reason": "not collected",
+      "label": "CI instability proxy",
+      "unit": "ratio",
+      "direction": "lower",
+      "category": "Delivery",
+      "axis": "Ship",
+      "scope": "repo",
+      "description": "Share of jobs that both passed AND failed across the sampled runs. A job-level instability proxy — NOT a test-level flaky rate. Repo-level."
+    },
+    "ship.ci.artifacts.totalSize": {
+      "status": "unavailable",
+      "value": null,
+      "reason": "not collected",
+      "label": "CI artifacts (total)",
+      "unit": "kb",
+      "direction": "lower",
+      "category": "Delivery",
+      "axis": "Ship",
+      "scope": "repo",
+      "description": "Total size of non-expired workflow artifacts. Repo-level."
+    },
+    "ship.deploy.avgDuration": {
+      "status": "unavailable",
+      "value": null,
+      "reason": "not collected",
+      "label": "Deploy duration (avg)",
+      "unit": "ms",
+      "direction": "lower",
+      "category": "Delivery",
+      "axis": "Ship",
+      "scope": "repo",
+      "description": "Average deployment duration (GitHub Deployments API, else deploy-named Actions jobs). Repo-level; unavailable if neither exists."
+    },
+    "change.pr.avgChangedFiles": {
+      "status": "unavailable",
+      "value": null,
+      "reason": "not collected",
+      "label": "PR changed files (avg)",
+      "unit": "count",
+      "direction": "lower",
+      "category": "Pull requests",
+      "axis": "Change",
+      "scope": "repo",
+      "description": "Average files touched per merged PR — a proxy for change surface. Repo-level, mixes all chantiers; not a controlled per-variant scenario."
+    },
+    "change.pr.avgAdditions": {
+      "status": "unavailable",
+      "value": null,
+      "reason": "not collected",
+      "label": "PR additions (avg)",
+      "unit": "loc",
+      "direction": "lower",
+      "category": "Pull requests",
+      "axis": "Change",
+      "scope": "repo",
+      "description": "Average lines added per merged PR. Repo-level (display only)."
+    },
+    "change.pr.avgDeletions": {
+      "status": "unavailable",
+      "value": null,
+      "reason": "not collected",
+      "label": "PR deletions (avg)",
+      "unit": "loc",
+      "direction": "lower",
+      "category": "Pull requests",
+      "axis": "Change",
+      "scope": "repo",
+      "description": "Average lines deleted per merged PR. Repo-level (display only)."
+    },
+    "change.pr.avgTimeToMerge": {
+      "status": "unavailable",
+      "value": null,
+      "reason": "not collected",
+      "label": "PR time to merge (avg)",
+      "unit": "ms",
+      "direction": "lower",
+      "category": "Pull requests",
+      "axis": "Change",
+      "scope": "repo",
+      "description": "Average created→merged duration for merged PRs — a proxy for review/merge latency. Repo-level."
+    },
+    "change.pr.avgReviewCount": {
+      "status": "unavailable",
+      "value": null,
+      "reason": "not collected",
+      "label": "PR reviews (avg)",
+      "unit": "count",
+      "direction": "higher",
+      "category": "Pull requests",
+      "axis": "Change",
+      "scope": "repo",
+      "description": "Average number of reviews per merged PR. Repo-level (display only)."
     }
   },
   "graph": {
@@ -1432,7 +1654,7 @@
     "build": {
       "label": "Build",
       "kind": "axis",
-      "value": 78.9,
+      "value": 76.6,
       "coverage": "2/2",
       "coverageFrac": 1,
       "complete": true,
@@ -1441,19 +1663,19 @@
     "ship": {
       "label": "Ship",
       "kind": "axis",
-      "value": 100,
-      "coverage": "2/4",
-      "coverageFrac": 0.5,
-      "complete": false,
+      "value": 86.2,
+      "coverage": "5/5",
+      "coverageFrac": 1,
+      "complete": true,
       "gated": false
     },
     "run": {
       "label": "Run",
       "kind": "axis",
-      "value": 100,
-      "coverage": "3/4",
-      "coverageFrac": 0.75,
-      "complete": false,
+      "value": 87.6,
+      "coverage": "4/4",
+      "coverageFrac": 1,
+      "complete": true,
       "gated": false
     },
     "change": {
@@ -1468,28 +1690,28 @@
     "uxQuality": {
       "label": "UX Quality",
       "kind": "derived",
-      "value": 100,
-      "coverage": "6/6",
-      "coverageFrac": 1,
-      "complete": true,
+      "value": null,
+      "coverage": "0/6",
+      "coverageFrac": 0,
+      "complete": false,
       "gated": false
     },
     "accessibility": {
       "label": "Accessibility",
       "kind": "derived",
-      "value": 100,
-      "coverage": "1/1",
-      "coverageFrac": 1,
-      "complete": true,
+      "value": null,
+      "coverage": "0/1",
+      "coverageFrac": 0,
+      "complete": false,
       "gated": false
     },
     "sustainability": {
       "label": "Sustainability",
       "kind": "derived",
-      "value": 87.4,
-      "coverage": "4/4",
-      "coverageFrac": 1,
-      "complete": true,
+      "value": 37.1,
+      "coverage": "1/4",
+      "coverageFrac": 0.2,
+      "complete": false,
       "gated": false
     },
     "architectureComplexity": {
@@ -1504,7 +1726,7 @@
     "totalDeliveryScore": {
       "label": "Total Delivery Score",
       "kind": "headline",
-      "value": 82.5,
+      "value": 78.1,
       "method": "weighted-mean-over-measured-axes",
       "axesUsed": [
         "Build",
@@ -1515,8 +1737,8 @@
     }
   },
   "statuses": {
-    "ok": 75,
-    "unavailable": 9,
+    "ok": 73,
+    "unavailable": 11,
     "error": 0
   },
   "collectorErrors": [],

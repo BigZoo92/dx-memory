@@ -326,6 +326,9 @@ async function runDocker(variant, repoRoot, hostPort) {
   out.imageStats = stats.ok
     ? { status: 'ok', sizeKb: stats.sizeKb, layers: stats.layers, maxLayerKb: stats.maxLayerKb }
     : { status: 'unavailable', reason: stats.reason }
+  const release = buildReleaseImages(cfg, repoRoot, { build, stats })
+  out.releaseImages = release.images
+  out.releaseImageStats = release.stats
 
   const probe = await dockerRunAndProbe({
     image: cfg.image,
@@ -338,4 +341,57 @@ async function runDocker(variant, repoRoot, hostPort) {
     ? { status: 'ok', startupMs: probe.startupMs, healthcheck: probe.healthcheck }
     : { status: 'unavailable', reason: probe.reason, healthcheck: probe.healthcheck }
   return out
+}
+
+function buildReleaseImages(cfg, repoRoot, primary) {
+  const descriptors =
+    Array.isArray(cfg.releaseImages) && cfg.releaseImages.length > 0
+      ? cfg.releaseImages
+      : [{ label: 'primary', dockerfile: cfg.dockerfile, context: cfg.context ?? '.', image: cfg.image }]
+  const images = descriptors.map((descriptor, index) => {
+    const image = descriptor.image
+    const dockerfile = descriptor.dockerfile
+    const context = descriptor.context ?? cfg.context ?? '.'
+    const label = descriptor.label ?? `image-${index + 1}`
+    const isPrimary = image === cfg.image && dockerfile === cfg.dockerfile && context === (cfg.context ?? '.')
+    const build = isPrimary ? primary.build : dockerBuild({ dockerfile, context, image, cwd: repoRoot })
+    const stats = isPrimary ? primary.stats : build.ok ? dockerImageStats({ image, cwd: repoRoot }) : null
+    return {
+      label,
+      image,
+      dockerfile,
+      context,
+      build: build.ok
+        ? { status: 'ok', durationMs: build.durationMs }
+        : { status: 'failed', durationMs: build.durationMs ?? null, reason: build.reason },
+      imageStats:
+        stats?.ok
+          ? { status: 'ok', sizeKb: stats.sizeKb, layers: stats.layers, maxLayerKb: stats.maxLayerKb }
+          : { status: 'unavailable', reason: stats?.reason ?? 'Image not built.' }
+    }
+  })
+  const bad = images.filter((image) => image.build.status !== 'ok' || image.imageStats.status !== 'ok')
+  if (bad.length > 0) {
+    return {
+      images,
+      stats: {
+        status: 'unavailable',
+        reason: `Incomplete release image set: ${bad.map((image) => image.label).join(', ')}.`
+      }
+    }
+  }
+  return {
+    images,
+    stats: {
+      status: 'ok',
+      sizeKb: round1(images.reduce((sum, image) => sum + image.imageStats.sizeKb, 0)),
+      layers: images.reduce((sum, image) => sum + (image.imageStats.layers ?? 0), 0),
+      maxLayerKb: Math.max(...images.map((image) => image.imageStats.maxLayerKb ?? 0)),
+      aggregation: 'sum of deployable release images'
+    }
+  }
+}
+
+function round1(n) {
+  return Math.round(n * 10) / 10
 }

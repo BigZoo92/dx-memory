@@ -3,15 +3,15 @@
  * its Dockerfiles (declared in variants.config.json and shipped by release.yml /
  * docker-compose.prod.yml). Everything here is static, deterministic and
  * variant-agnostic — a service is a Dockerfile, a guarded service is a Dockerfile
- * with a HEALTHCHECK, a diagnosable service is one whose deployment healthcheck
- * targets a dedicated health endpoint (a path containing "health") rather than
- * merely probing the root page.
+ * whose HEALTHCHECK targets a dedicated health endpoint (a path containing "health")
+ * rather than merely probing the root page.
  *
  * Why these signals:
  *   • ship.services.count — every extra image is an extra build, push, deploy and
  *     coordination step. More services is a shipping COST, never a bonus.
  *   • ship.healthcheck.coverage — a deploy you can trust is one the platform can
- *     verify. Coverage = HEALTHCHECKed Dockerfiles ÷ Dockerfiles.
+ *     verify through a dedicated health endpoint. Coverage = Dockerfiles whose
+ *     HEALTHCHECK targets health ÷ Dockerfiles.
  *   • run.inspection.surfaces — when production misbehaves, this is how many
  *     runtimes you must inspect before you can even localize the fault.
  *   • run.health.coverage — share of the variant's services that expose a real,
@@ -130,11 +130,13 @@ export function collectDelivery(variant, repoRoot) {
     const abs = join(repoRoot, rel)
     if (!existsSync(abs)) return { dockerfile: rel, exists: false, healthcheck: null }
     const hc = parseHealthcheck(readFileSync(abs, 'utf8'))
+    const healthcheckTargetsHealth = hc != null && targetsHealthEndpoint(hc)
     return {
       dockerfile: rel,
       exists: true,
       healthcheck: hc != null,
-      healthEndpoint: (hc != null && targetsHealthEndpoint(hc)) || definesHealthRoute(dirname(abs))
+      healthcheckTargetsHealth,
+      healthEndpoint: healthcheckTargetsHealth || definesHealthRoute(dirname(abs))
     }
   })
 
@@ -150,9 +152,16 @@ export function collectDelivery(variant, repoRoot) {
     }
   }
 
-  const guarded = present.filter((s) => s.healthcheck).length
+  const guarded = present.filter((s) => s.healthcheckTargetsHealth).length
   const diagnosable = present.filter((s) => s.healthEndpoint).length
-  const detail = { services: present.map(({ dockerfile, healthcheck, healthEndpoint }) => ({ dockerfile, healthcheck, healthEndpoint })) }
+  const detail = {
+    services: present.map(({ dockerfile, healthcheck, healthcheckTargetsHealth, healthEndpoint }) => ({
+      dockerfile,
+      healthcheck,
+      healthcheckTargetsHealth,
+      healthEndpoint
+    }))
+  }
   const structured = usesStructuredLogs(variant.roots ?? [], repoRoot)
 
   return {

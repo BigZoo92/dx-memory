@@ -1,4 +1,4 @@
-import { variants, summary } from '../data'
+import { variants, summary, publishedVerdictFinal } from '../data'
 import type { VariantId } from '../types'
 import { VARIANT_COLOR, STATUS, scoreColor } from '../lib/theme'
 import { relativeTime } from '../lib/format'
@@ -12,10 +12,9 @@ export function Hero() {
   )
   const live = variants.reduce((s, v) => s + v.statuses.ok, 0)
   const pending = variants.reduce((s, v) => s + v.statuses.unavailable, 0)
-  // The verdict is FINAL only when measured by CI at the deployed SHA with every scored
-  // member present (verify-summary gates that in the release pipeline). Anything else —
-  // local collection, partial docker coverage — is a provisional snapshot and says so.
-  const provisional = summary.provenance?.source !== 'ci' || pending > 0
+  // Same data-driven gate as verify-summary: final means CI provenance and every scored
+  // axis member measured, with no gated axis. Auxiliary pending metrics stay inspectable.
+  const provisional = !publishedVerdictFinal
 
   return (
     <header className="shell hero" id="verdict">

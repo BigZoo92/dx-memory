@@ -49,7 +49,15 @@
           "context": ".",
           "image": "signalops-metrics-flow:ci",
           "port": 3000,
-          "healthPath": "/api/health"
+          "healthPath": "/api/health",
+          "releaseImages": [
+            {
+              "label": "flow",
+              "dockerfile": "apps/flow-app/Dockerfile",
+              "context": ".",
+              "image": "signalops-metrics-flow:ci"
+            }
+          ]
         },
         "feedback": {
           "$comment": "Real cached CI feedback source: the quality job(s) of flow-ci.yml on GitHub Actions. Excludes the advisory a11y job.",
@@ -88,12 +96,26 @@
         },
         "docker": {
           "enabled": true,
-          "$comment": "Friction ships two images (web + api); we build the user-facing web image for a comparable single-image size/startup signal — the SHIPPED one (infra/docker), which is what release.yml pushes to GHCR. The api image is noted but not the scored artifact.",
+          "$comment": "Friction ships two images (web + api). The web image remains the primary runtime probe; releaseImages is summed for the Docker image-size metric so release artifact size is comparable.",
           "dockerfile": "infra/docker/friction-web.Dockerfile",
           "context": ".",
           "image": "signalops-metrics-friction-web:ci",
           "port": 8080,
-          "healthPath": "/health"
+          "healthPath": "/health",
+          "releaseImages": [
+            {
+              "label": "web",
+              "dockerfile": "infra/docker/friction-web.Dockerfile",
+              "context": ".",
+              "image": "signalops-metrics-friction-web:ci"
+            },
+            {
+              "label": "api",
+              "dockerfile": "infra/docker/friction-api.Dockerfile",
+              "context": ".",
+              "image": "signalops-metrics-friction-api:ci"
+            }
+          ]
         },
         "feedback": {
           "$comment": "Real cached CI feedback source: the single quality job of friction-ci.yml on GitHub Actions.",
@@ -133,12 +155,26 @@
         },
         "docker": {
           "enabled": true,
-          "$comment": "Overfit ships web (Next.js) + api (Rust) images; we build the user-facing web image for a comparable single-image signal.",
+          "$comment": "Overfit ships web (Next.js) + api (Rust) images. The web image remains the primary runtime probe; releaseImages is summed for the Docker image-size metric so release artifact size is comparable.",
           "dockerfile": "apps/overfit-web/Dockerfile",
           "context": ".",
           "image": "signalops-metrics-overfit-web:ci",
           "port": 3300,
-          "healthPath": "/"
+          "healthPath": "/",
+          "releaseImages": [
+            {
+              "label": "web",
+              "dockerfile": "apps/overfit-web/Dockerfile",
+              "context": ".",
+              "image": "signalops-metrics-overfit-web:ci"
+            },
+            {
+              "label": "api",
+              "dockerfile": "apps/overfit-api/Dockerfile",
+              "context": ".",
+              "image": "signalops-metrics-overfit-api:ci"
+            }
+          ]
         },
         "feedback": {
           "$comment": "Real cached CI feedback source: the quality job (gate) of overfit-ci.yml on GitHub Actions. Excludes the warm-cache priming job.",

@@ -225,9 +225,17 @@ function collectArtifactCi(variant, repoRoot) {
   const bs = d.build
   out['variant.docker.build.duration'] =
     bs?.status === 'ok' && typeof bs.durationMs === 'number' ? ok(bs.durationMs, { at }) : dockerUnavail(bs?.reason)
-  const im = d.imageStats
+  const im = d.releaseImageStats?.status === 'ok' ? d.releaseImageStats : d.imageStats
   out['variant.docker.image.size'] =
-    im?.status === 'ok' && typeof im.sizeKb === 'number' ? ok(im.sizeKb, { at }) : dockerUnavail(im?.reason)
+    im?.status === 'ok' && typeof im.sizeKb === 'number'
+      ? ok(im.sizeKb, {
+          at,
+          aggregation: im.aggregation ?? 'single image',
+          images: d.releaseImages
+            ?.filter((image) => image.imageStats?.status === 'ok')
+            .map((image) => ({ label: image.label, image: image.image, sizeKb: image.imageStats.sizeKb }))
+        })
+      : dockerUnavail(im?.reason)
   out['variant.docker.layers.count'] =
     im?.status === 'ok' && typeof im.layers === 'number' ? ok(im.layers, { at }) : dockerUnavail(im?.reason)
   out['variant.docker.layer.maxSize'] =

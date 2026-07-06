@@ -1,19 +1,19 @@
 {
-  "generatedAt": "2026-07-05T18:02:46.470Z",
+  "generatedAt": "2026-07-05T18:17:14.948Z",
   "collectorVersion": "1.3.0",
-  "modelVersion": "1.0",
+  "modelVersion": "1.1",
   "source": "collected",
   "provenance": {
-    "commitSha": "b1840964d08aad639c12b6d60678ada1947de814",
-    "generatedAt": "2026-07-05T18:02:46.470Z",
-    "workflowRunId": null,
-    "source": "local"
+    "commitSha": "4383eff261e76e72a6a5094aa3d96714d0018230",
+    "generatedAt": "2026-07-05T18:17:14.948Z",
+    "workflowRunId": "28750093448",
+    "source": "ci"
   },
   "withTimings": false,
-  "commit": "b1840964d08aad639c12b6d60678ada1947de814",
-  "commitShort": "b184096",
-  "branch": "main",
-  "environment": "local",
+  "commit": "4383eff261e76e72a6a5094aa3d96714d0018230",
+  "commitShort": "4383eff",
+  "branch": "v1.0.6",
+  "environment": "ci",
   "axisWeights": {
     "$comment": "Weights of the 4 delivery axes inside the headline. Change dominates at 0.50: it is where lifetime delivery cost concentrates (most of a product's life is spent modifying it, not building it the first time). Build carries 0.20 (the feedback loop is paid dozens of times a day), Ship and Run 0.15 each. When an axis has no data it gates out and the headline renormalizes over the measured axes.",
     "Build": 0.2,
@@ -33,14 +33,15 @@
       }
     },
     "ship": {
-      "$comment": "Ship = the price of turning a validated change into running software. Coordination surface (services to build/push/deploy) and deploy guards are static facts of the variant's real deployment artifacts; image size and no-cache image build time come from the CI matrix and gate out cleanly when Docker is absent (local static runs).",
+      "$comment": "Ship v1.1 = the capability to turn a validated change into releasable running software with confidence. It balances delivery confidence (dedicated healthchecked deploys + clean gate output) and delivery coordination/packaging cost (services to coordinate, Docker build time, image size). Docker image size remains a real cost but is deliberately minor; repo-level release/rollback/provenance is shared by all variants and therefore not scored.",
       "label": "Ship",
       "kind": "axis",
       "members": {
-        "ship.services.count": 0.3,
-        "ship.healthcheck.coverage": 0.2,
-        "variant.docker.image.size": 0.3,
-        "variant.docker.build.duration": 0.2
+        "ship.healthcheck.coverage": 0.35,
+        "ship.services.count": 0.25,
+        "variant.docker.build.duration": 0.15,
+        "variant.ci.errors.count": 0.15,
+        "variant.docker.image.size": 0.1
       }
     },
     "run": {
@@ -452,6 +453,7 @@
       "collector": "bundle",
       "description": "Total size of the deployable build output."
     },
+    "$comment_variant_ci": "Variant-level COLD-VALIDATION metrics (collector: variant-ci, scope: variant). Produced by the measurement matrix in metrics.yml (collect-variant.mjs), which runs each variant's build/typecheck/lint/test with the build cache DISABLED (Flow: nx --skip-nx-cache; Friction/Overfit: pnpm/cargo/next outside the Nx cache). They therefore measure the INTRINSIC, cache-immune cost of the validation protocol and are directly comparable across variants — they are NOT the real cached CI feedback time (see variant.ci.feedback.duration for that). UNLIKE the repo-level GitHub metrics below (which tie across variants), these differentiate Flow / Friction / Overfit. All degrade to `unavailable` when no CI artifact is present (e.g. the default local static run).",
     "variant.ci.build.duration": {
       "label": "Variant build time (cold)",
       "category": "Cold validation",
@@ -563,14 +565,14 @@
       "description": "Warnings parsed from this variant's build/lint/typecheck output (heuristic across tsc/eslint/oxlint/cargo)."
     },
     "variant.ci.errors.count": {
-      "label": "CI errors",
-      "category": "Build CI",
-      "axis": "Build",
+      "label": "CI gate errors",
+      "category": "CI gate",
+      "axis": "Ship",
       "unit": "count",
       "direction": "lower",
       "collector": "variant-ci",
       "scope": "variant",
-      "description": "Errors parsed from this variant's build/lint/typecheck output (heuristic)."
+      "description": "Errors parsed from this variant's build/lint/typecheck output (heuristic). Scored in Ship v1.1 as gate cleanliness: the result of the release-control path, not the number of checks."
     },
     "variant.ci.ramPeak.build": {
       "label": "Build peak RAM",
@@ -602,6 +604,7 @@
       "scope": "variant",
       "description": "Build-output size measured in the CI job right after build. Informational — `distTotalKb` (bundle collector) is the scored artifact size."
     },
+    "$comment_variant_feedback": "REAL cached CI feedback (collector: variant-ci, scope: variant, OBSERVATIONAL — axis:null, not scored). Mean delay from a run starting to that variant's PRIMARY quality signal being ready, WITH the variant's real cache strategy (Flow: pnpm+Nx; Overfit: 6-layer + BuildKit; Friction: pnpm store only). Definition B: max(quality_job.completed_at) − run.run_started_at (excludes the GitHub queue, which is runner-availability noise). Population: PUSH-to-main runs only — on main every variant validates its FULL scope, so samples are comparable AND free of the PR `nx affected` no-op (a cross-variant PR that triggers flow-ci with 0 affected flow projects is NOT counted). Conclusions success/failure/timed_out counted; cancelled/skipped excluded. One sample per run (latest attempt). Side jobs (Flow a11y, Overfit warm-cache) excluded via the qualityJobs allow-list. MUST be read next to the scope/size context (nxProjects, sourceFiles, locTotal, variant.ci.tests.executed): same gate categories != same amount of work. Deliberately NOT scored. `unavailable` until a real push-to-main run exists.",
     "variant.ci.feedback.duration": {
       "label": "CI feedback to signal (main)",
       "category": "CI feedback",
@@ -630,7 +633,7 @@
       "direction": "lower",
       "collector": "variant-ci",
       "scope": "variant",
-      "description": "Wall-clock `docker build --no-cache` for this variant's image. Best-effort: `unavailable` if Docker isn't present or has no Dockerfile."
+      "description": "Wall-clock `docker build --no-cache` for this variant's image. Ship v1.1 keeps it as packaging/pipeline cost, with a reduced weight so it does not double-count Build's feedback-cost axis."
     },
     "variant.docker.image.size": {
       "label": "Docker image size",
@@ -640,7 +643,7 @@
       "direction": "lower",
       "collector": "variant-ci",
       "scope": "variant",
-      "description": "Final image size via `docker image inspect`. The user-facing (web) image where a variant ships several."
+      "description": "Final image size via `docker image inspect`. Ship v1.1 treats it as artifact transfer/storage/pull context, not a primary confidence signal."
     },
     "variant.docker.layers.count": {
       "label": "Docker layers",
@@ -692,6 +695,7 @@
       "scope": "variant",
       "description": "Latency of the first successful health request once the container is up. Informational."
     },
+    "$comment_delivery": "Deployment/diagnosis surface (collector: delivery, scope: variant). Parsed statically from each variant's REAL deployment artifacts — its Dockerfiles (the same ones release.yml ships to GHCR and docker-compose.prod.yml runs). Deterministic and variant-agnostic: a service is a Dockerfile; more services = more coordination, never more points.",
     "ship.services.count": {
       "label": "Services to ship",
       "category": "Delivery surface",
@@ -710,7 +714,7 @@
       "direction": "higher",
       "collector": "delivery",
       "scope": "variant",
-      "description": "Share of the variant's images that declare a Docker HEALTHCHECK — deploys the platform can verify (and roll back) instead of hoping."
+      "description": "Share of the variant's images whose Docker HEALTHCHECK targets a dedicated health endpoint. This is a deploy-confidence guard, not mere presence of a HEALTHCHECK instruction."
     },
     "run.inspection.surfaces": {
       "label": "Runtimes to inspect",
@@ -742,6 +746,7 @@
       "scope": "variant",
       "description": "Does the runtime emit structured, leveled, contextual logs (tracing/tracing_subscriber in Rust, a leveled createLogger in TS) — or only bare console output? Signal QUALITY: one unreadable stream must not beat two well-instrumented services just because it is a single place to look."
     },
+    "$comment_change_surface": "Contract-propagation cost (collector: change-surface, scope: variant). Measured on the shipped-everywhere `riskScore` field of the shared Signal contract: how many hand-written files under the variant's roots RE-DECLARE the field with a type (TS `riskScore: number` / Rust `pub risk_score:`). Importing the shared contract costs 0; every duplicate must be found, edited and kept in sync each time the product's data shape moves.",
     "change.contract.restatements": {
       "label": "Contract restatements",
       "category": "Change surface",
@@ -752,6 +757,7 @@
       "scope": "variant",
       "description": "Hand-written files that re-declare the shared Signal contract (measured on the riskScore field). 0 = the variant imports the single source of truth; each extra copy is one more place a schema change must propagate to — and one more place it can silently diverge."
     },
+    "$comment_change_footprint": "Capability FOOTPRINT (collector: change-experiment, scope: variant). The controlled experiment: the SAME product capability (Risk trend, docs/product/03-ai-task-protocol.md) implemented in all three variants against one spec. The collector measures WHERE the capability lives in each codebase today (files carrying its identifiers under the variant's roots) — a deterministic footprint, NOT a historical git diff (Overfit's implementation has no isolable baseline commit; the same footprint method is applied to all three instead of inventing a fake diff). Cross-checked against the real diffs where they exist (Flow ±0, Friction ±2 files). Deliberately REJECTED from scoring: linesChanged (no honest baseline for Overfit; rewards terseness over readability), boundariesCrossed (no variant-agnostic taxonomy survives scrutiny — projects is the honest proxy), validationCost (already Build's warm/cold gates — double count), testSupport (5/5/5 today — non-discriminating — and an exclusive source-XOR-test split biases against Rust's idiomatic inline #[cfg(test)] modules; kept as NON-exclusive context).",
     "change.footprint.sourceFiles": {
       "label": "Footprint — source files",
       "category": "Change footprint",
@@ -911,6 +917,7 @@
       "collector": "lighthouse",
       "description": "Estimated CO₂ per page view (SWD model from transferred bytes)."
     },
+    "$comment_github": "Repo-level delivery-pipeline metrics from the GitHub Actions API (collector: github, scope: repo). The three variants SHARE one monorepo CI pipeline, so these numbers describe the shared delivery chain — they are identical for all variants and therefore tie at 100 during min-max normalization. They enrich the Ship/Change axes with the real cost of shipping without ever faking per-variant differentiation. All degrade to `unavailable` (score falls back to the differentiating members) when no GITHUB token is present.",
     "ship.ci.wallTime.avg": {
       "label": "CI wall time (avg)",
       "category": "Delivery",
@@ -1035,17 +1042,28 @@
         "thesis": "The balanced choice — modular, readable, and the cheapest to change.",
         "stack": "TanStack Start · React 19 · Vite · TypeScript",
         "accent": "#38e8c6",
-        "commit": "b1840964d08aad639c12b6d60678ada1947de814",
-        "commitShort": "b184096",
-        "branch": "main",
-        "timestamp": "2026-07-05T18:02:46.470Z",
-        "ciPipelineId": null,
-        "ciRunNumber": null,
-        "environment": "local",
+        "commit": "4383eff261e76e72a6a5094aa3d96714d0018230",
+        "commitShort": "4383eff",
+        "branch": "v1.0.6",
+        "timestamp": "2026-07-05T18:17:14.948Z",
+        "ciPipelineId": "28750093448",
+        "ciRunNumber": "6",
+        "environment": "ci",
         "appUrl": "http://localhost:3000",
         "apiUrl": null
       },
       "metrics": {
+        "nxProjects": {
+          "value": 15,
+          "status": "ok",
+          "label": "Workspace projects",
+          "unit": "count",
+          "direction": "balance",
+          "category": "Architecture",
+          "axis": "Change",
+          "scope": "variant",
+          "description": "Buildable projects (npm packages + Rust crates). Scored on balance: a monolith is under-modularized, dozens of projects is over-fragmented; the healthy band is in between."
+        },
         "sourceFiles": {
           "value": 182,
           "status": "ok",
@@ -1056,17 +1074,6 @@
           "axis": "Change",
           "scope": "variant",
           "description": "Source files (ts/tsx/js/rs/css), excluding tests, config, docs and generated code. Scored on balance."
-        },
-        "configFiles": {
-          "value": 74,
-          "status": "ok",
-          "label": "Config files",
-          "unit": "count",
-          "direction": "lower",
-          "category": "Architecture",
-          "axis": "Change",
-          "scope": "variant",
-          "description": "Number of configuration files (json/yaml/toml/rc/*.config.*)."
         },
         "locTotal": {
           "value": 7561,
@@ -1122,6 +1129,17 @@
           "axis": "Change",
           "scope": "variant",
           "description": "Lines of Markdown documentation."
+        },
+        "configFiles": {
+          "value": 73,
+          "status": "ok",
+          "label": "Config files",
+          "unit": "count",
+          "direction": "lower",
+          "category": "Architecture",
+          "axis": "Change",
+          "scope": "variant",
+          "description": "Number of configuration files (json/yaml/toml/rc/*.config.*)."
         },
         "todoCount": {
           "value": 0,
@@ -1212,7 +1230,7 @@
           "description": "Source files longer than 300 lines."
         },
         "businessRatio": {
-          "value": 0.764,
+          "value": 0.765,
           "status": "ok",
           "label": "Business/boilerplate ratio",
           "unit": "ratio",
@@ -1233,16 +1251,16 @@
           "scope": "variant",
           "description": "Distinct third-party runtime + dev dependencies declared across the variant's manifests."
         },
-        "nxProjects": {
-          "value": 15,
+        "circularDeps": {
+          "value": 0,
           "status": "ok",
-          "label": "Workspace projects",
+          "label": "Circular dependencies",
           "unit": "count",
-          "direction": "balance",
+          "direction": "lower",
           "category": "Architecture",
           "axis": "Change",
           "scope": "variant",
-          "description": "Buildable projects (npm packages + Rust crates). Scored on balance: a monolith is under-modularized, dozens of projects is over-fragmented; the healthy band is in between."
+          "description": "Import cycles between the variant's own projects (detected from workspace manifests)."
         },
         "graphNodes": {
           "value": 15,
@@ -1320,17 +1338,6 @@
           "axis": "Change",
           "scope": "variant",
           "description": "Highest number of dependencies a single project pulls in."
-        },
-        "circularDeps": {
-          "value": 0,
-          "status": "ok",
-          "label": "Circular dependencies",
-          "unit": "count",
-          "direction": "lower",
-          "category": "Architecture",
-          "axis": "Change",
-          "scope": "variant",
-          "description": "Import cycles between the variant's own projects (detected from workspace manifests)."
         },
         "bundleJsKb": {
           "value": 699.7,
@@ -1453,11 +1460,23 @@
           "scope": "variant",
           "description": "Total size of the deployable build output."
         },
+        "$comment_variant_ci": {
+          "status": "unavailable",
+          "value": null,
+          "reason": "not collected",
+          "label": null,
+          "unit": null,
+          "direction": "neutral",
+          "category": "Other",
+          "axis": null,
+          "scope": "variant",
+          "description": null
+        },
         "variant.ci.build.duration": {
-          "value": 6710,
+          "value": 30423,
           "status": "ok",
           "command": "nx run-many -t build --projects=tag:scope:flow --skip-nx-cache",
-          "at": "2026-07-05T17:59:37.814Z",
+          "at": "2026-07-05T18:10:53.289Z",
           "label": "Variant build time (cold)",
           "unit": "ms",
           "direction": "lower",
@@ -1467,10 +1486,10 @@
           "description": "Cache-DISABLED cold build of this variant's app(s) (Flow: nx --skip-nx-cache; Friction/Overfit: pnpm/cargo/next). Intrinsic build cost, independent of CI cache strategy. NOT the real cached CI feedback time."
         },
         "variant.ci.typecheck.duration": {
-          "value": 6710,
+          "value": 10151,
           "status": "ok",
           "command": "nx run-many -t typecheck --projects=tag:scope:flow --skip-nx-cache",
-          "at": "2026-07-05T17:59:37.814Z",
+          "at": "2026-07-05T18:10:53.289Z",
           "label": "Variant typecheck time (cold)",
           "unit": "ms",
           "direction": "lower",
@@ -1480,10 +1499,10 @@
           "description": "Cache-disabled cold typecheck of this variant. Intrinsic cost, cache-immune."
         },
         "variant.ci.lint.duration": {
-          "value": 3523,
+          "value": 4432,
           "status": "ok",
           "command": "nx run-many -t lint --projects=tag:scope:flow --skip-nx-cache",
-          "at": "2026-07-05T17:59:37.814Z",
+          "at": "2026-07-05T18:10:53.289Z",
           "label": "Variant lint time (cold)",
           "unit": "ms",
           "direction": "lower",
@@ -1493,10 +1512,10 @@
           "description": "Cache-disabled cold lint / boundary check of this variant. Intrinsic cost, cache-immune."
         },
         "variant.ci.test.duration": {
-          "value": 9550,
+          "value": 17661,
           "status": "ok",
           "command": "nx run-many -t test --projects=tag:scope:flow --skip-nx-cache",
-          "at": "2026-07-05T17:59:37.814Z",
+          "at": "2026-07-05T18:10:53.289Z",
           "label": "Variant test time (cold)",
           "unit": "ms",
           "direction": "lower",
@@ -1506,14 +1525,14 @@
           "description": "Cache-disabled cold unit-test run of this variant (vitest). Intrinsic cost, cache-immune."
         },
         "variant.ci.validation.cold": {
-          "value": 26493,
+          "value": 62667,
           "status": "ok",
-          "at": "2026-07-05T17:59:37.814Z",
+          "at": "2026-07-05T18:10:53.289Z",
           "steps": {
-            "build": 6710,
-            "typecheck": 6710,
-            "lint": 3523,
-            "test": 9550
+            "build": 30423,
+            "typecheck": 10151,
+            "lint": 4432,
+            "test": 17661
           },
           "label": "Full validation (cold)",
           "unit": "ms",
@@ -1524,14 +1543,14 @@
           "description": "Total cache-disabled cost of the variant's whole validation protocol: build + typecheck + lint + test, summed. The intrinsic worst-case price of one trustworthy signal."
         },
         "variant.ci.validation.warm": {
-          "value": 5789,
+          "value": 5710,
           "status": "ok",
-          "at": "2026-07-05T17:59:37.814Z",
+          "at": "2026-07-05T18:10:53.289Z",
           "steps": {
-            "build": 1478,
-            "typecheck": 1412,
-            "lint": 1493,
-            "test": 1406
+            "build": 1449,
+            "typecheck": 1441,
+            "lint": 1410,
+            "test": 1410
           },
           "label": "Full re-validation (warm)",
           "unit": "ms",
@@ -1544,7 +1563,7 @@
         "variant.ci.tests.executed": {
           "value": 169,
           "status": "ok",
-          "at": "2026-07-05T17:59:37.814Z",
+          "at": "2026-07-05T18:10:53.289Z",
           "label": "Tests executed",
           "unit": "count",
           "direction": "neutral",
@@ -1556,7 +1575,7 @@
         "variant.ci.tests.passed": {
           "value": 169,
           "status": "ok",
-          "at": "2026-07-05T17:59:37.814Z",
+          "at": "2026-07-05T18:10:53.289Z",
           "label": "Tests passed",
           "unit": "count",
           "direction": "neutral",
@@ -1568,7 +1587,7 @@
         "variant.ci.tests.failed": {
           "value": 0,
           "status": "ok",
-          "at": "2026-07-05T17:59:37.814Z",
+          "at": "2026-07-05T18:10:53.289Z",
           "label": "Tests failed",
           "unit": "count",
           "direction": "lower",
@@ -1580,7 +1599,7 @@
         "variant.ci.tests.skipped": {
           "value": 0,
           "status": "ok",
-          "at": "2026-07-05T17:59:37.814Z",
+          "at": "2026-07-05T18:10:53.289Z",
           "label": "Tests skipped",
           "unit": "count",
           "direction": "lower",
@@ -1590,9 +1609,9 @@
           "description": "Number of skipped unit tests."
         },
         "variant.ci.warnings.count": {
-          "value": 0,
+          "value": 2,
           "status": "ok",
-          "at": "2026-07-05T17:59:37.814Z",
+          "at": "2026-07-05T18:10:53.289Z",
           "method": "heuristic parse of tool output",
           "label": "CI warnings",
           "unit": "count",
@@ -1605,20 +1624,20 @@
         "variant.ci.errors.count": {
           "value": 0,
           "status": "ok",
-          "at": "2026-07-05T17:59:37.814Z",
+          "at": "2026-07-05T18:10:53.289Z",
           "method": "heuristic parse of tool output",
-          "label": "CI errors",
+          "label": "CI gate errors",
           "unit": "count",
           "direction": "lower",
-          "category": "Build CI",
-          "axis": "Build",
+          "category": "CI gate",
+          "axis": "Ship",
           "scope": "variant",
-          "description": "Errors parsed from this variant's build/lint/typecheck output (heuristic)."
+          "description": "Errors parsed from this variant's build/lint/typecheck output (heuristic). Scored in Ship v1.1 as gate cleanliness: the result of the release-control path, not the number of checks."
         },
         "variant.ci.ramPeak.build": {
-          "value": 474928,
+          "value": 610936,
           "status": "ok",
-          "at": "2026-07-05T17:59:37.814Z",
+          "at": "2026-07-05T18:10:53.289Z",
           "label": "Build peak RAM",
           "unit": "kb",
           "direction": "lower",
@@ -1628,9 +1647,9 @@
           "description": "Peak resident memory of the build step (from /usr/bin/time on the CI runner). Unavailable where the runner lacks GNU/BSD time."
         },
         "variant.ci.ramPeak.tests": {
-          "value": 174784,
+          "value": 202412,
           "status": "ok",
-          "at": "2026-07-05T17:59:37.814Z",
+          "at": "2026-07-05T18:10:53.289Z",
           "label": "Test peak RAM",
           "unit": "kb",
           "direction": "lower",
@@ -1642,7 +1661,7 @@
         "variant.ci.artifact.distSize": {
           "value": 740.5,
           "status": "ok",
-          "at": "2026-07-05T17:59:37.814Z",
+          "at": "2026-07-05T18:10:53.289Z",
           "label": "Variant dist size (CI)",
           "unit": "kb",
           "direction": "lower",
@@ -1651,94 +1670,29 @@
           "scope": "variant",
           "description": "Build-output size measured in the CI job right after build. Informational — `distTotalKb` (bundle collector) is the scored artifact size."
         },
-        "variant.docker.build.duration": {
-          "value": null,
+        "$comment_variant_feedback": {
           "status": "unavailable",
-          "reason": "Docker disabled via --no-docker.",
-          "label": "Docker build time",
-          "unit": "ms",
-          "direction": "lower",
-          "category": "Docker",
-          "axis": "Ship",
-          "scope": "variant",
-          "description": "Wall-clock `docker build --no-cache` for this variant's image. Best-effort: `unavailable` if Docker isn't present or has no Dockerfile."
-        },
-        "variant.docker.image.size": {
           "value": null,
-          "status": "unavailable",
-          "reason": "Docker disabled via --no-docker.",
-          "label": "Docker image size",
-          "unit": "kb",
-          "direction": "lower",
-          "category": "Docker",
-          "axis": "Ship",
-          "scope": "variant",
-          "description": "Final image size via `docker image inspect`. The user-facing (web) image where a variant ships several."
-        },
-        "variant.docker.layers.count": {
-          "value": null,
-          "status": "unavailable",
-          "reason": "Docker disabled via --no-docker.",
-          "label": "Docker layers",
-          "unit": "count",
-          "direction": "lower",
-          "category": "Docker",
-          "axis": "Ship",
-          "scope": "variant",
-          "description": "RootFS content layers in the image — a proxy for build-cache friendliness."
-        },
-        "variant.docker.layer.maxSize": {
-          "value": null,
-          "status": "unavailable",
-          "reason": "Docker disabled via --no-docker.",
-          "label": "Largest Docker layer",
-          "unit": "kb",
-          "direction": "lower",
-          "category": "Docker",
-          "axis": "Ship",
-          "scope": "variant",
-          "description": "Biggest single layer (from `docker history`). Informational."
-        },
-        "variant.docker.startup.duration": {
-          "value": null,
-          "status": "unavailable",
-          "reason": "Docker disabled via --no-docker.",
-          "label": "Container startup",
-          "unit": "ms",
-          "direction": "lower",
-          "category": "Docker",
-          "axis": "Ship",
-          "scope": "variant",
-          "description": "Time from `docker run` to the container answering its health endpoint. Best-effort."
-        },
-        "variant.docker.healthcheck.status": {
-          "value": null,
-          "status": "unavailable",
-          "reason": "Docker disabled via --no-docker.",
-          "label": "Container healthcheck",
-          "unit": "status",
+          "reason": "not collected",
+          "label": null,
+          "unit": null,
           "direction": "neutral",
-          "category": "Docker",
-          "axis": "Ship",
+          "category": "Other",
+          "axis": null,
           "scope": "variant",
-          "description": "Whether the started container served its health endpoint (ok/fail). Informational."
-        },
-        "variant.docker.healthcheck.duration": {
-          "value": null,
-          "status": "unavailable",
-          "reason": "Docker disabled via --no-docker.",
-          "label": "Healthcheck latency",
-          "unit": "ms",
-          "direction": "lower",
-          "category": "Docker",
-          "axis": "Ship",
-          "scope": "variant",
-          "description": "Latency of the first successful health request once the container is up. Informational."
+          "description": null
         },
         "variant.ci.feedback.duration": {
-          "value": null,
-          "status": "unavailable",
-          "reason": "No GitHub Actions data (no token, or no workflow runs) — real CI feedback requires a completed run.",
+          "value": 85500,
+          "status": "ok",
+          "workflow": "flow-ci.yml",
+          "qualityJobs": [
+            "affected",
+            "main"
+          ],
+          "samples": 2,
+          "population": "push-to-main, latest attempt, conclusions success|failure|timed_out",
+          "timing": "max(quality_job.completed_at) − run.run_started_at (excludes GitHub queue)",
           "label": "CI feedback to signal (main)",
           "unit": "ms",
           "direction": "lower",
@@ -1748,9 +1702,8 @@
           "description": "Mean delay from a push-to-main run starting to this variant's primary quality signal (its *-ci.yml quality job), with its real cache strategy: max(quality_job.completed_at) − run.run_started_at, over push-to-main runs (conclusions success|failure|timed_out; cancelled/skipped excluded). Observational only (not scored). Interpret with nxProjects / sourceFiles / locTotal — the scopes differ (Friction 2 projects vs Flow 15 vs Overfit 31). `unavailable` until a real push-to-main run exists."
         },
         "variant.ci.feedback.samples": {
-          "value": null,
-          "status": "unavailable",
-          "reason": "No GitHub Actions data (no token, or no workflow runs) — real CI feedback requires a completed run.",
+          "value": 2,
+          "status": "ok",
           "label": "CI feedback samples",
           "unit": "count",
           "direction": "neutral",
@@ -1758,6 +1711,102 @@
           "axis": null,
           "scope": "variant",
           "description": "Number of push-to-main runs the feedback duration was averaged over. Informational."
+        },
+        "variant.docker.build.duration": {
+          "value": 47413,
+          "status": "ok",
+          "at": "2026-07-05T18:10:53.289Z",
+          "label": "Docker build time",
+          "unit": "ms",
+          "direction": "lower",
+          "category": "Docker",
+          "axis": "Ship",
+          "scope": "variant",
+          "description": "Wall-clock `docker build --no-cache` for this variant's image. Ship v1.1 keeps it as packaging/pipeline cost, with a reduced weight so it does not double-count Build's feedback-cost axis."
+        },
+        "variant.docker.image.size": {
+          "value": 414902.4,
+          "status": "ok",
+          "at": "2026-07-05T18:10:53.289Z",
+          "label": "Docker image size",
+          "unit": "kb",
+          "direction": "lower",
+          "category": "Docker",
+          "axis": "Ship",
+          "scope": "variant",
+          "description": "Final image size via `docker image inspect`. Ship v1.1 treats it as artifact transfer/storage/pull context, not a primary confidence signal."
+        },
+        "variant.docker.layers.count": {
+          "value": 10,
+          "status": "ok",
+          "at": "2026-07-05T18:10:53.289Z",
+          "label": "Docker layers",
+          "unit": "count",
+          "direction": "lower",
+          "category": "Docker",
+          "axis": "Ship",
+          "scope": "variant",
+          "description": "RootFS content layers in the image — a proxy for build-cache friendliness."
+        },
+        "variant.docker.layer.maxSize": {
+          "value": 200704,
+          "status": "ok",
+          "at": "2026-07-05T18:10:53.289Z",
+          "label": "Largest Docker layer",
+          "unit": "kb",
+          "direction": "lower",
+          "category": "Docker",
+          "axis": "Ship",
+          "scope": "variant",
+          "description": "Biggest single layer (from `docker history`). Informational."
+        },
+        "variant.docker.startup.duration": {
+          "value": 1012,
+          "status": "ok",
+          "at": "2026-07-05T18:10:53.289Z",
+          "label": "Container startup",
+          "unit": "ms",
+          "direction": "lower",
+          "category": "Docker",
+          "axis": "Ship",
+          "scope": "variant",
+          "description": "Time from `docker run` to the container answering its health endpoint. Best-effort."
+        },
+        "variant.docker.healthcheck.status": {
+          "value": "ok",
+          "status": "ok",
+          "at": "2026-07-05T18:10:53.289Z",
+          "label": "Container healthcheck",
+          "unit": "status",
+          "direction": "neutral",
+          "category": "Docker",
+          "axis": "Ship",
+          "scope": "variant",
+          "description": "Whether the started container served its health endpoint (ok/fail). Informational."
+        },
+        "variant.docker.healthcheck.duration": {
+          "value": 468,
+          "status": "ok",
+          "at": "2026-07-05T18:10:53.289Z",
+          "label": "Healthcheck latency",
+          "unit": "ms",
+          "direction": "lower",
+          "category": "Docker",
+          "axis": "Ship",
+          "scope": "variant",
+          "description": "Latency of the first successful health request once the container is up. Informational."
+        },
+        "$comment_delivery": {
+          "status": "unavailable",
+          "value": null,
+          "reason": "not collected",
+          "label": null,
+          "unit": null,
+          "direction": "neutral",
+          "category": "Other",
+          "axis": null,
+          "scope": "variant",
+          "description": null
         },
         "ship.services.count": {
           "value": 1,
@@ -1784,6 +1833,7 @@
             {
               "dockerfile": "apps/flow-app/Dockerfile",
               "healthcheck": true,
+              "healthcheckTargetsHealth": true,
               "healthEndpoint": true
             }
           ],
@@ -1793,7 +1843,7 @@
           "category": "Delivery surface",
           "axis": "Ship",
           "scope": "variant",
-          "description": "Share of the variant's images that declare a Docker HEALTHCHECK — deploys the platform can verify (and roll back) instead of hoping."
+          "description": "Share of the variant's images whose Docker HEALTHCHECK targets a dedicated health endpoint. This is a deploy-confidence guard, not mere presence of a HEALTHCHECK instruction."
         },
         "run.inspection.surfaces": {
           "value": 1,
@@ -1843,6 +1893,18 @@
           "scope": "variant",
           "description": "Does the runtime emit structured, leveled, contextual logs (tracing/tracing_subscriber in Rust, a leveled createLogger in TS) — or only bare console output? Signal QUALITY: one unreadable stream must not beat two well-instrumented services just because it is a single place to look."
         },
+        "$comment_change_surface": {
+          "status": "unavailable",
+          "value": null,
+          "reason": "not collected",
+          "label": null,
+          "unit": null,
+          "direction": "neutral",
+          "category": "Other",
+          "axis": null,
+          "scope": "variant",
+          "description": null
+        },
         "change.contract.restatements": {
           "value": 1,
           "status": "ok",
@@ -1858,6 +1920,18 @@
           "axis": "Change",
           "scope": "variant",
           "description": "Hand-written files that re-declare the shared Signal contract (measured on the riskScore field). 0 = the variant imports the single source of truth; each extra copy is one more place a schema change must propagate to — and one more place it can silently diverge."
+        },
+        "$comment_change_footprint": {
+          "status": "unavailable",
+          "value": null,
+          "reason": "not collected",
+          "label": null,
+          "unit": null,
+          "direction": "neutral",
+          "category": "Other",
+          "axis": null,
+          "scope": "variant",
+          "description": null
         },
         "change.footprint.sourceFiles": {
           "value": 13,
@@ -1969,8 +2043,9 @@
           "description": "Generated mirrors (OpenAPI spec, generated clients) that carry the capability. Context — regenerating is cheap; the hand-written counts are what score."
         },
         "lighthousePerformance": {
-          "value": 100,
-          "status": "ok",
+          "value": null,
+          "status": "unavailable",
+          "reason": "No .lighthouseci reports present — run the Lighthouse audit.",
           "label": "Lighthouse Performance",
           "unit": "score",
           "direction": "higher",
@@ -1980,8 +2055,9 @@
           "description": "Lighthouse performance score (0–100)."
         },
         "lighthouseAccessibility": {
-          "value": 96,
-          "status": "ok",
+          "value": null,
+          "status": "unavailable",
+          "reason": "No .lighthouseci reports present — run the Lighthouse audit.",
           "label": "Lighthouse Accessibility",
           "unit": "score",
           "direction": "higher",
@@ -1991,8 +2067,9 @@
           "description": "Lighthouse accessibility score (0–100)."
         },
         "lighthouseBestPractices": {
-          "value": 96,
-          "status": "ok",
+          "value": null,
+          "status": "unavailable",
+          "reason": "No .lighthouseci reports present — run the Lighthouse audit.",
           "label": "Lighthouse Best Practices",
           "unit": "score",
           "direction": "higher",
@@ -2002,8 +2079,9 @@
           "description": "Lighthouse best-practices score (0–100)."
         },
         "lcpMs": {
-          "value": 972,
-          "status": "ok",
+          "value": null,
+          "status": "unavailable",
+          "reason": "No .lighthouseci reports present — run the Lighthouse audit.",
           "label": "LCP",
           "unit": "ms",
           "direction": "lower",
@@ -2013,8 +2091,9 @@
           "description": "Largest Contentful Paint."
         },
         "cls": {
-          "value": 0,
-          "status": "ok",
+          "value": null,
+          "status": "unavailable",
+          "reason": "No .lighthouseci reports present — run the Lighthouse audit.",
           "label": "CLS",
           "unit": "index",
           "direction": "lower",
@@ -2024,8 +2103,9 @@
           "description": "Cumulative Layout Shift."
         },
         "tbtMs": {
-          "value": 0,
-          "status": "ok",
+          "value": null,
+          "status": "unavailable",
+          "reason": "No .lighthouseci reports present — run the Lighthouse audit.",
           "label": "TBT",
           "unit": "ms",
           "direction": "lower",
@@ -2035,8 +2115,9 @@
           "description": "Total Blocking Time."
         },
         "speedIndexMs": {
-          "value": 972,
-          "status": "ok",
+          "value": null,
+          "status": "unavailable",
+          "reason": "No .lighthouseci reports present — run the Lighthouse audit.",
           "label": "Speed Index",
           "unit": "ms",
           "direction": "lower",
@@ -2046,8 +2127,9 @@
           "description": "Lighthouse Speed Index."
         },
         "fcpMs": {
-          "value": 972,
-          "status": "ok",
+          "value": null,
+          "status": "unavailable",
+          "reason": "No .lighthouseci reports present — run the Lighthouse audit.",
           "label": "FCP",
           "unit": "ms",
           "direction": "lower",
@@ -2057,8 +2139,9 @@
           "description": "First Contentful Paint."
         },
         "requests": {
-          "value": 6,
-          "status": "ok",
+          "value": null,
+          "status": "unavailable",
+          "reason": "No .lighthouseci reports present — run the Lighthouse audit.",
           "label": "Initial requests",
           "unit": "count",
           "direction": "lower",
@@ -2068,8 +2151,9 @@
           "description": "Number of network requests to load the main route."
         },
         "transferredKb": {
-          "value": 21.8,
-          "status": "ok",
+          "value": null,
+          "status": "unavailable",
+          "reason": "No .lighthouseci reports present — run the Lighthouse audit.",
           "label": "Transferred weight",
           "unit": "kb",
           "direction": "lower",
@@ -2079,8 +2163,9 @@
           "description": "Total bytes transferred over the wire for the main route."
         },
         "co2PerViewMg": {
-          "value": 10.6,
-          "status": "ok",
+          "value": null,
+          "status": "unavailable",
+          "reason": "No .lighthouseci reports present — run the Lighthouse audit.",
           "label": "CO₂ / page view",
           "unit": "mg",
           "direction": "lower",
@@ -2088,6 +2173,150 @@
           "axis": "Run",
           "scope": "variant",
           "description": "Estimated CO₂ per page view (SWD model from transferred bytes)."
+        },
+        "$comment_github": {
+          "status": "unavailable",
+          "value": null,
+          "reason": "not collected",
+          "label": null,
+          "unit": null,
+          "direction": "neutral",
+          "category": "Other",
+          "axis": null,
+          "scope": "variant",
+          "description": null
+        },
+        "ship.ci.wallTime.avg": {
+          "status": "unavailable",
+          "value": null,
+          "reason": "not collected",
+          "label": "CI wall time (avg)",
+          "unit": "ms",
+          "direction": "lower",
+          "category": "Delivery",
+          "axis": "Ship",
+          "scope": "repo",
+          "description": "Mean wall-clock time of the last N completed workflow runs (updated_at − run_started_at). Repo-level."
+        },
+        "ship.ci.wallTime.p95": {
+          "status": "unavailable",
+          "value": null,
+          "reason": "not collected",
+          "label": "CI wall time (p95)",
+          "unit": "ms",
+          "direction": "lower",
+          "category": "Delivery",
+          "axis": "Ship",
+          "scope": "repo",
+          "description": "95th-percentile wall-clock run time — the tail a developer occasionally waits through. Repo-level (display only)."
+        },
+        "ship.ci.successRate.lastN": {
+          "status": "unavailable",
+          "value": null,
+          "reason": "not collected",
+          "label": "CI success rate",
+          "unit": "%",
+          "direction": "higher",
+          "category": "Delivery",
+          "axis": "Ship",
+          "scope": "repo",
+          "description": "Successful ÷ completed runs over the last N. Repo-level."
+        },
+        "ship.ci.flakyProxy.rate": {
+          "status": "unavailable",
+          "value": null,
+          "reason": "not collected",
+          "label": "CI instability proxy",
+          "unit": "ratio",
+          "direction": "lower",
+          "category": "Delivery",
+          "axis": "Ship",
+          "scope": "repo",
+          "description": "Share of jobs that both passed AND failed across the sampled runs. A job-level instability proxy — NOT a test-level flaky rate. Repo-level."
+        },
+        "ship.ci.artifacts.totalSize": {
+          "status": "unavailable",
+          "value": null,
+          "reason": "not collected",
+          "label": "CI artifacts (total)",
+          "unit": "kb",
+          "direction": "lower",
+          "category": "Delivery",
+          "axis": "Ship",
+          "scope": "repo",
+          "description": "Total size of non-expired workflow artifacts. Repo-level."
+        },
+        "ship.deploy.avgDuration": {
+          "status": "unavailable",
+          "value": null,
+          "reason": "not collected",
+          "label": "Deploy duration (avg)",
+          "unit": "ms",
+          "direction": "lower",
+          "category": "Delivery",
+          "axis": "Ship",
+          "scope": "repo",
+          "description": "Average deployment duration (GitHub Deployments API, else deploy-named Actions jobs). Repo-level; unavailable if neither exists."
+        },
+        "change.pr.avgChangedFiles": {
+          "status": "unavailable",
+          "value": null,
+          "reason": "not collected",
+          "label": "PR changed files (avg)",
+          "unit": "count",
+          "direction": "lower",
+          "category": "Pull requests",
+          "axis": "Change",
+          "scope": "repo",
+          "description": "Average files touched per merged PR — a proxy for change surface. Repo-level, mixes all chantiers; not a controlled per-variant scenario."
+        },
+        "change.pr.avgAdditions": {
+          "status": "unavailable",
+          "value": null,
+          "reason": "not collected",
+          "label": "PR additions (avg)",
+          "unit": "loc",
+          "direction": "lower",
+          "category": "Pull requests",
+          "axis": "Change",
+          "scope": "repo",
+          "description": "Average lines added per merged PR. Repo-level (display only)."
+        },
+        "change.pr.avgDeletions": {
+          "status": "unavailable",
+          "value": null,
+          "reason": "not collected",
+          "label": "PR deletions (avg)",
+          "unit": "loc",
+          "direction": "lower",
+          "category": "Pull requests",
+          "axis": "Change",
+          "scope": "repo",
+          "description": "Average lines deleted per merged PR. Repo-level (display only)."
+        },
+        "change.pr.avgTimeToMerge": {
+          "status": "unavailable",
+          "value": null,
+          "reason": "not collected",
+          "label": "PR time to merge (avg)",
+          "unit": "ms",
+          "direction": "lower",
+          "category": "Pull requests",
+          "axis": "Change",
+          "scope": "repo",
+          "description": "Average created→merged duration for merged PRs — a proxy for review/merge latency. Repo-level."
+        },
+        "change.pr.avgReviewCount": {
+          "status": "unavailable",
+          "value": null,
+          "reason": "not collected",
+          "label": "PR reviews (avg)",
+          "unit": "count",
+          "direction": "higher",
+          "category": "Pull requests",
+          "axis": "Change",
+          "scope": "repo",
+          "description": "Average number of reviews per merged PR. Repo-level (display only)."
         }
       },
       "graph": {
@@ -2461,7 +2690,7 @@
         "build": {
           "label": "Build",
           "kind": "axis",
-          "value": 78.9,
+          "value": 76.6,
           "coverage": "2/2",
           "coverageFrac": 1,
           "complete": true,
@@ -2470,19 +2699,19 @@
         "ship": {
           "label": "Ship",
           "kind": "axis",
-          "value": 100,
-          "coverage": "2/4",
-          "coverageFrac": 0.5,
-          "complete": false,
+          "value": 86.2,
+          "coverage": "5/5",
+          "coverageFrac": 1,
+          "complete": true,
           "gated": false
         },
         "run": {
           "label": "Run",
           "kind": "axis",
-          "value": 100,
-          "coverage": "3/4",
-          "coverageFrac": 0.75,
-          "complete": false,
+          "value": 87.6,
+          "coverage": "4/4",
+          "coverageFrac": 1,
+          "complete": true,
           "gated": false
         },
         "change": {
@@ -2497,28 +2726,28 @@
         "uxQuality": {
           "label": "UX Quality",
           "kind": "derived",
-          "value": 100,
-          "coverage": "6/6",
-          "coverageFrac": 1,
-          "complete": true,
+          "value": null,
+          "coverage": "0/6",
+          "coverageFrac": 0,
+          "complete": false,
           "gated": false
         },
         "accessibility": {
           "label": "Accessibility",
           "kind": "derived",
-          "value": 100,
-          "coverage": "1/1",
-          "coverageFrac": 1,
-          "complete": true,
+          "value": null,
+          "coverage": "0/1",
+          "coverageFrac": 0,
+          "complete": false,
           "gated": false
         },
         "sustainability": {
           "label": "Sustainability",
           "kind": "derived",
-          "value": 87.4,
-          "coverage": "4/4",
-          "coverageFrac": 1,
-          "complete": true,
+          "value": 37.1,
+          "coverage": "1/4",
+          "coverageFrac": 0.2,
+          "complete": false,
           "gated": false
         },
         "architectureComplexity": {
@@ -2533,7 +2762,7 @@
         "totalDeliveryScore": {
           "label": "Total Delivery Score",
           "kind": "headline",
-          "value": 82.5,
+          "value": 78.1,
           "method": "weighted-mean-over-measured-axes",
           "axesUsed": [
             "Build",
@@ -2544,8 +2773,8 @@
         }
       },
       "statuses": {
-        "ok": 75,
-        "unavailable": 9,
+        "ok": 73,
+        "unavailable": 11,
         "error": 0
       }
     },
@@ -2557,17 +2786,28 @@
         "thesis": "Locally fast, globally expensive — fewer parts, tangled and harder to trust.",
         "stack": "Vite · React · Express-style API · TypeScript",
         "accent": "#ff7a5c",
-        "commit": "b1840964d08aad639c12b6d60678ada1947de814",
-        "commitShort": "b184096",
-        "branch": "main",
-        "timestamp": "2026-07-05T18:02:46.470Z",
-        "ciPipelineId": null,
-        "ciRunNumber": null,
-        "environment": "local",
+        "commit": "4383eff261e76e72a6a5094aa3d96714d0018230",
+        "commitShort": "4383eff",
+        "branch": "v1.0.6",
+        "timestamp": "2026-07-05T18:17:14.948Z",
+        "ciPipelineId": "28750093448",
+        "ciRunNumber": "6",
+        "environment": "ci",
         "appUrl": "http://localhost:3100",
         "apiUrl": "http://localhost:3101"
       },
       "metrics": {
+        "nxProjects": {
+          "value": 2,
+          "status": "ok",
+          "label": "Workspace projects",
+          "unit": "count",
+          "direction": "balance",
+          "category": "Architecture",
+          "axis": "Change",
+          "scope": "variant",
+          "description": "Buildable projects (npm packages + Rust crates). Scored on balance: a monolith is under-modularized, dozens of projects is over-fragmented; the healthy band is in between."
+        },
         "sourceFiles": {
           "value": 31,
           "status": "ok",
@@ -2578,17 +2818,6 @@
           "axis": "Change",
           "scope": "variant",
           "description": "Source files (ts/tsx/js/rs/css), excluding tests, config, docs and generated code. Scored on balance."
-        },
-        "configFiles": {
-          "value": 13,
-          "status": "ok",
-          "label": "Config files",
-          "unit": "count",
-          "direction": "lower",
-          "category": "Architecture",
-          "axis": "Change",
-          "scope": "variant",
-          "description": "Number of configuration files (json/yaml/toml/rc/*.config.*)."
         },
         "locTotal": {
           "value": 3959,
@@ -2644,6 +2873,17 @@
           "axis": "Change",
           "scope": "variant",
           "description": "Lines of Markdown documentation."
+        },
+        "configFiles": {
+          "value": 13,
+          "status": "ok",
+          "label": "Config files",
+          "unit": "count",
+          "direction": "lower",
+          "category": "Architecture",
+          "axis": "Change",
+          "scope": "variant",
+          "description": "Number of configuration files (json/yaml/toml/rc/*.config.*)."
         },
         "todoCount": {
           "value": 0,
@@ -2755,16 +2995,16 @@
           "scope": "variant",
           "description": "Distinct third-party runtime + dev dependencies declared across the variant's manifests."
         },
-        "nxProjects": {
-          "value": 2,
+        "circularDeps": {
+          "value": 0,
           "status": "ok",
-          "label": "Workspace projects",
+          "label": "Circular dependencies",
           "unit": "count",
-          "direction": "balance",
+          "direction": "lower",
           "category": "Architecture",
           "axis": "Change",
           "scope": "variant",
-          "description": "Buildable projects (npm packages + Rust crates). Scored on balance: a monolith is under-modularized, dozens of projects is over-fragmented; the healthy band is in between."
+          "description": "Import cycles between the variant's own projects (detected from workspace manifests)."
         },
         "graphNodes": {
           "value": 2,
@@ -2842,17 +3082,6 @@
           "axis": "Change",
           "scope": "variant",
           "description": "Highest number of dependencies a single project pulls in."
-        },
-        "circularDeps": {
-          "value": 0,
-          "status": "ok",
-          "label": "Circular dependencies",
-          "unit": "count",
-          "direction": "lower",
-          "category": "Architecture",
-          "axis": "Change",
-          "scope": "variant",
-          "description": "Import cycles between the variant's own projects (detected from workspace manifests)."
         },
         "bundleJsKb": {
           "value": 265.9,
@@ -2975,11 +3204,23 @@
           "scope": "variant",
           "description": "Total size of the deployable build output."
         },
+        "$comment_variant_ci": {
+          "status": "unavailable",
+          "value": null,
+          "reason": "not collected",
+          "label": null,
+          "unit": null,
+          "direction": "neutral",
+          "category": "Other",
+          "axis": null,
+          "scope": "variant",
+          "description": null
+        },
         "variant.ci.build.duration": {
-          "value": 2578,
+          "value": 4966,
           "status": "ok",
           "command": "pnpm --filter @signalops/friction-web --filter @signalops/friction-api run build",
-          "at": "2026-07-05T17:59:37.814Z",
+          "at": "2026-07-05T18:10:53.289Z",
           "label": "Variant build time (cold)",
           "unit": "ms",
           "direction": "lower",
@@ -2989,10 +3230,10 @@
           "description": "Cache-DISABLED cold build of this variant's app(s) (Flow: nx --skip-nx-cache; Friction/Overfit: pnpm/cargo/next). Intrinsic build cost, independent of CI cache strategy. NOT the real cached CI feedback time."
         },
         "variant.ci.typecheck.duration": {
-          "value": 1682,
+          "value": 3495,
           "status": "ok",
           "command": "pnpm --filter @signalops/friction-web --filter @signalops/friction-api run typecheck",
-          "at": "2026-07-05T17:59:37.814Z",
+          "at": "2026-07-05T18:10:53.289Z",
           "label": "Variant typecheck time (cold)",
           "unit": "ms",
           "direction": "lower",
@@ -3002,10 +3243,10 @@
           "description": "Cache-disabled cold typecheck of this variant. Intrinsic cost, cache-immune."
         },
         "variant.ci.lint.duration": {
-          "value": 1702,
+          "value": 2353,
           "status": "ok",
           "command": "pnpm --filter @signalops/friction-web --filter @signalops/friction-api run lint",
-          "at": "2026-07-05T17:59:37.814Z",
+          "at": "2026-07-05T18:10:53.289Z",
           "label": "Variant lint time (cold)",
           "unit": "ms",
           "direction": "lower",
@@ -3015,10 +3256,10 @@
           "description": "Cache-disabled cold lint / boundary check of this variant. Intrinsic cost, cache-immune."
         },
         "variant.ci.test.duration": {
-          "value": 1884,
+          "value": 2912,
           "status": "ok",
           "command": "pnpm --filter @signalops/friction-web --filter @signalops/friction-api run test",
-          "at": "2026-07-05T17:59:37.814Z",
+          "at": "2026-07-05T18:10:53.289Z",
           "label": "Variant test time (cold)",
           "unit": "ms",
           "direction": "lower",
@@ -3028,14 +3269,14 @@
           "description": "Cache-disabled cold unit-test run of this variant (vitest). Intrinsic cost, cache-immune."
         },
         "variant.ci.validation.cold": {
-          "value": 7846,
+          "value": 13726,
           "status": "ok",
-          "at": "2026-07-05T17:59:37.814Z",
+          "at": "2026-07-05T18:10:53.289Z",
           "steps": {
-            "build": 2578,
-            "typecheck": 1682,
-            "lint": 1702,
-            "test": 1884
+            "build": 4966,
+            "typecheck": 3495,
+            "lint": 2353,
+            "test": 2912
           },
           "label": "Full validation (cold)",
           "unit": "ms",
@@ -3046,14 +3287,14 @@
           "description": "Total cache-disabled cost of the variant's whole validation protocol: build + typecheck + lint + test, summed. The intrinsic worst-case price of one trustworthy signal."
         },
         "variant.ci.validation.warm": {
-          "value": 7235,
+          "value": 13665,
           "status": "ok",
-          "at": "2026-07-05T17:59:37.814Z",
+          "at": "2026-07-05T18:10:53.289Z",
           "steps": {
-            "build": 2587,
-            "typecheck": 1582,
-            "lint": 1431,
-            "test": 1635
+            "build": 4964,
+            "typecheck": 3526,
+            "lint": 2335,
+            "test": 2840
           },
           "label": "Full re-validation (warm)",
           "unit": "ms",
@@ -3066,7 +3307,7 @@
         "variant.ci.tests.executed": {
           "value": 134,
           "status": "ok",
-          "at": "2026-07-05T17:59:37.814Z",
+          "at": "2026-07-05T18:10:53.289Z",
           "label": "Tests executed",
           "unit": "count",
           "direction": "neutral",
@@ -3078,7 +3319,7 @@
         "variant.ci.tests.passed": {
           "value": 134,
           "status": "ok",
-          "at": "2026-07-05T17:59:37.814Z",
+          "at": "2026-07-05T18:10:53.289Z",
           "label": "Tests passed",
           "unit": "count",
           "direction": "neutral",
@@ -3090,7 +3331,7 @@
         "variant.ci.tests.failed": {
           "value": 0,
           "status": "ok",
-          "at": "2026-07-05T17:59:37.814Z",
+          "at": "2026-07-05T18:10:53.289Z",
           "label": "Tests failed",
           "unit": "count",
           "direction": "lower",
@@ -3102,7 +3343,7 @@
         "variant.ci.tests.skipped": {
           "value": 0,
           "status": "ok",
-          "at": "2026-07-05T17:59:37.814Z",
+          "at": "2026-07-05T18:10:53.289Z",
           "label": "Tests skipped",
           "unit": "count",
           "direction": "lower",
@@ -3114,7 +3355,7 @@
         "variant.ci.warnings.count": {
           "value": 0,
           "status": "ok",
-          "at": "2026-07-05T17:59:37.814Z",
+          "at": "2026-07-05T18:10:53.289Z",
           "method": "heuristic parse of tool output",
           "label": "CI warnings",
           "unit": "count",
@@ -3127,20 +3368,20 @@
         "variant.ci.errors.count": {
           "value": 0,
           "status": "ok",
-          "at": "2026-07-05T17:59:37.814Z",
+          "at": "2026-07-05T18:10:53.289Z",
           "method": "heuristic parse of tool output",
-          "label": "CI errors",
+          "label": "CI gate errors",
           "unit": "count",
           "direction": "lower",
-          "category": "Build CI",
-          "axis": "Build",
+          "category": "CI gate",
+          "axis": "Ship",
           "scope": "variant",
-          "description": "Errors parsed from this variant's build/lint/typecheck output (heuristic)."
+          "description": "Errors parsed from this variant's build/lint/typecheck output (heuristic). Scored in Ship v1.1 as gate cleanliness: the result of the release-control path, not the number of checks."
         },
         "variant.ci.ramPeak.build": {
-          "value": 227504,
+          "value": 253684,
           "status": "ok",
-          "at": "2026-07-05T17:59:37.814Z",
+          "at": "2026-07-05T18:10:53.289Z",
           "label": "Build peak RAM",
           "unit": "kb",
           "direction": "lower",
@@ -3150,9 +3391,9 @@
           "description": "Peak resident memory of the build step (from /usr/bin/time on the CI runner). Unavailable where the runner lacks GNU/BSD time."
         },
         "variant.ci.ramPeak.tests": {
-          "value": 134592,
+          "value": 172676,
           "status": "ok",
-          "at": "2026-07-05T17:59:37.814Z",
+          "at": "2026-07-05T18:10:53.289Z",
           "label": "Test peak RAM",
           "unit": "kb",
           "direction": "lower",
@@ -3164,7 +3405,7 @@
         "variant.ci.artifact.distSize": {
           "value": 282.7,
           "status": "ok",
-          "at": "2026-07-05T17:59:37.814Z",
+          "at": "2026-07-05T18:10:53.289Z",
           "label": "Variant dist size (CI)",
           "unit": "kb",
           "direction": "lower",
@@ -3173,94 +3414,28 @@
           "scope": "variant",
           "description": "Build-output size measured in the CI job right after build. Informational — `distTotalKb` (bundle collector) is the scored artifact size."
         },
-        "variant.docker.build.duration": {
-          "value": null,
+        "$comment_variant_feedback": {
           "status": "unavailable",
-          "reason": "Docker disabled via --no-docker.",
-          "label": "Docker build time",
-          "unit": "ms",
-          "direction": "lower",
-          "category": "Docker",
-          "axis": "Ship",
-          "scope": "variant",
-          "description": "Wall-clock `docker build --no-cache` for this variant's image. Best-effort: `unavailable` if Docker isn't present or has no Dockerfile."
-        },
-        "variant.docker.image.size": {
           "value": null,
-          "status": "unavailable",
-          "reason": "Docker disabled via --no-docker.",
-          "label": "Docker image size",
-          "unit": "kb",
-          "direction": "lower",
-          "category": "Docker",
-          "axis": "Ship",
-          "scope": "variant",
-          "description": "Final image size via `docker image inspect`. The user-facing (web) image where a variant ships several."
-        },
-        "variant.docker.layers.count": {
-          "value": null,
-          "status": "unavailable",
-          "reason": "Docker disabled via --no-docker.",
-          "label": "Docker layers",
-          "unit": "count",
-          "direction": "lower",
-          "category": "Docker",
-          "axis": "Ship",
-          "scope": "variant",
-          "description": "RootFS content layers in the image — a proxy for build-cache friendliness."
-        },
-        "variant.docker.layer.maxSize": {
-          "value": null,
-          "status": "unavailable",
-          "reason": "Docker disabled via --no-docker.",
-          "label": "Largest Docker layer",
-          "unit": "kb",
-          "direction": "lower",
-          "category": "Docker",
-          "axis": "Ship",
-          "scope": "variant",
-          "description": "Biggest single layer (from `docker history`). Informational."
-        },
-        "variant.docker.startup.duration": {
-          "value": null,
-          "status": "unavailable",
-          "reason": "Docker disabled via --no-docker.",
-          "label": "Container startup",
-          "unit": "ms",
-          "direction": "lower",
-          "category": "Docker",
-          "axis": "Ship",
-          "scope": "variant",
-          "description": "Time from `docker run` to the container answering its health endpoint. Best-effort."
-        },
-        "variant.docker.healthcheck.status": {
-          "value": null,
-          "status": "unavailable",
-          "reason": "Docker disabled via --no-docker.",
-          "label": "Container healthcheck",
-          "unit": "status",
+          "reason": "not collected",
+          "label": null,
+          "unit": null,
           "direction": "neutral",
-          "category": "Docker",
-          "axis": "Ship",
+          "category": "Other",
+          "axis": null,
           "scope": "variant",
-          "description": "Whether the started container served its health endpoint (ok/fail). Informational."
-        },
-        "variant.docker.healthcheck.duration": {
-          "value": null,
-          "status": "unavailable",
-          "reason": "Docker disabled via --no-docker.",
-          "label": "Healthcheck latency",
-          "unit": "ms",
-          "direction": "lower",
-          "category": "Docker",
-          "axis": "Ship",
-          "scope": "variant",
-          "description": "Latency of the first successful health request once the container is up. Informational."
+          "description": null
         },
         "variant.ci.feedback.duration": {
-          "value": null,
-          "status": "unavailable",
-          "reason": "No GitHub Actions data (no token, or no workflow runs) — real CI feedback requires a completed run.",
+          "value": 66500,
+          "status": "ok",
+          "workflow": "friction-ci.yml",
+          "qualityJobs": [
+            "friction"
+          ],
+          "samples": 2,
+          "population": "push-to-main, latest attempt, conclusions success|failure|timed_out",
+          "timing": "max(quality_job.completed_at) − run.run_started_at (excludes GitHub queue)",
           "label": "CI feedback to signal (main)",
           "unit": "ms",
           "direction": "lower",
@@ -3270,9 +3445,8 @@
           "description": "Mean delay from a push-to-main run starting to this variant's primary quality signal (its *-ci.yml quality job), with its real cache strategy: max(quality_job.completed_at) − run.run_started_at, over push-to-main runs (conclusions success|failure|timed_out; cancelled/skipped excluded). Observational only (not scored). Interpret with nxProjects / sourceFiles / locTotal — the scopes differ (Friction 2 projects vs Flow 15 vs Overfit 31). `unavailable` until a real push-to-main run exists."
         },
         "variant.ci.feedback.samples": {
-          "value": null,
-          "status": "unavailable",
-          "reason": "No GitHub Actions data (no token, or no workflow runs) — real CI feedback requires a completed run.",
+          "value": 2,
+          "status": "ok",
           "label": "CI feedback samples",
           "unit": "count",
           "direction": "neutral",
@@ -3280,6 +3454,102 @@
           "axis": null,
           "scope": "variant",
           "description": "Number of push-to-main runs the feedback duration was averaged over. Informational."
+        },
+        "variant.docker.build.duration": {
+          "value": 31884,
+          "status": "ok",
+          "at": "2026-07-05T18:10:53.289Z",
+          "label": "Docker build time",
+          "unit": "ms",
+          "direction": "lower",
+          "category": "Docker",
+          "axis": "Ship",
+          "scope": "variant",
+          "description": "Wall-clock `docker build --no-cache` for this variant's image. Ship v1.1 keeps it as packaging/pipeline cost, with a reduced weight so it does not double-count Build's feedback-cost axis."
+        },
+        "variant.docker.image.size": {
+          "value": 47380,
+          "status": "ok",
+          "at": "2026-07-05T18:10:53.289Z",
+          "label": "Docker image size",
+          "unit": "kb",
+          "direction": "lower",
+          "category": "Docker",
+          "axis": "Ship",
+          "scope": "variant",
+          "description": "Final image size via `docker image inspect`. Ship v1.1 treats it as artifact transfer/storage/pull context, not a primary confidence signal."
+        },
+        "variant.docker.layers.count": {
+          "value": 11,
+          "status": "ok",
+          "at": "2026-07-05T18:10:53.289Z",
+          "label": "Docker layers",
+          "unit": "count",
+          "direction": "lower",
+          "category": "Docker",
+          "axis": "Ship",
+          "scope": "variant",
+          "description": "RootFS content layers in the image — a proxy for build-cache friendliness."
+        },
+        "variant.docker.layer.maxSize": {
+          "value": 37171.2,
+          "status": "ok",
+          "at": "2026-07-05T18:10:53.289Z",
+          "label": "Largest Docker layer",
+          "unit": "kb",
+          "direction": "lower",
+          "category": "Docker",
+          "axis": "Ship",
+          "scope": "variant",
+          "description": "Biggest single layer (from `docker history`). Informational."
+        },
+        "variant.docker.startup.duration": {
+          "value": 510,
+          "status": "ok",
+          "at": "2026-07-05T18:10:53.289Z",
+          "label": "Container startup",
+          "unit": "ms",
+          "direction": "lower",
+          "category": "Docker",
+          "axis": "Ship",
+          "scope": "variant",
+          "description": "Time from `docker run` to the container answering its health endpoint. Best-effort."
+        },
+        "variant.docker.healthcheck.status": {
+          "value": "ok",
+          "status": "ok",
+          "at": "2026-07-05T18:10:53.289Z",
+          "label": "Container healthcheck",
+          "unit": "status",
+          "direction": "neutral",
+          "category": "Docker",
+          "axis": "Ship",
+          "scope": "variant",
+          "description": "Whether the started container served its health endpoint (ok/fail). Informational."
+        },
+        "variant.docker.healthcheck.duration": {
+          "value": 2,
+          "status": "ok",
+          "at": "2026-07-05T18:10:53.289Z",
+          "label": "Healthcheck latency",
+          "unit": "ms",
+          "direction": "lower",
+          "category": "Docker",
+          "axis": "Ship",
+          "scope": "variant",
+          "description": "Latency of the first successful health request once the container is up. Informational."
+        },
+        "$comment_delivery": {
+          "status": "unavailable",
+          "value": null,
+          "reason": "not collected",
+          "label": null,
+          "unit": null,
+          "direction": "neutral",
+          "category": "Other",
+          "axis": null,
+          "scope": "variant",
+          "description": null
         },
         "ship.services.count": {
           "value": 2,
@@ -3311,11 +3581,13 @@
             {
               "dockerfile": "infra/docker/friction-web.Dockerfile",
               "healthcheck": true,
+              "healthcheckTargetsHealth": true,
               "healthEndpoint": true
             },
             {
               "dockerfile": "infra/docker/friction-api.Dockerfile",
               "healthcheck": true,
+              "healthcheckTargetsHealth": true,
               "healthEndpoint": true
             }
           ],
@@ -3325,7 +3597,7 @@
           "category": "Delivery surface",
           "axis": "Ship",
           "scope": "variant",
-          "description": "Share of the variant's images that declare a Docker HEALTHCHECK — deploys the platform can verify (and roll back) instead of hoping."
+          "description": "Share of the variant's images whose Docker HEALTHCHECK targets a dedicated health endpoint. This is a deploy-confidence guard, not mere presence of a HEALTHCHECK instruction."
         },
         "run.inspection.surfaces": {
           "value": 2,
@@ -3385,6 +3657,18 @@
           "scope": "variant",
           "description": "Does the runtime emit structured, leveled, contextual logs (tracing/tracing_subscriber in Rust, a leveled createLogger in TS) — or only bare console output? Signal QUALITY: one unreadable stream must not beat two well-instrumented services just because it is a single place to look."
         },
+        "$comment_change_surface": {
+          "status": "unavailable",
+          "value": null,
+          "reason": "not collected",
+          "label": null,
+          "unit": null,
+          "direction": "neutral",
+          "category": "Other",
+          "axis": null,
+          "scope": "variant",
+          "description": null
+        },
         "change.contract.restatements": {
           "value": 3,
           "status": "ok",
@@ -3402,6 +3686,18 @@
           "axis": "Change",
           "scope": "variant",
           "description": "Hand-written files that re-declare the shared Signal contract (measured on the riskScore field). 0 = the variant imports the single source of truth; each extra copy is one more place a schema change must propagate to — and one more place it can silently diverge."
+        },
+        "$comment_change_footprint": {
+          "status": "unavailable",
+          "value": null,
+          "reason": "not collected",
+          "label": null,
+          "unit": null,
+          "direction": "neutral",
+          "category": "Other",
+          "axis": null,
+          "scope": "variant",
+          "description": null
         },
         "change.footprint.sourceFiles": {
           "value": 10,
@@ -3505,7 +3801,7 @@
         "lighthousePerformance": {
           "value": null,
           "status": "unavailable",
-          "reason": "No Lighthouse report matched \"localhost:3100\".",
+          "reason": "No .lighthouseci reports present — run the Lighthouse audit.",
           "label": "Lighthouse Performance",
           "unit": "score",
           "direction": "higher",
@@ -3517,7 +3813,7 @@
         "lighthouseAccessibility": {
           "value": null,
           "status": "unavailable",
-          "reason": "No Lighthouse report matched \"localhost:3100\".",
+          "reason": "No .lighthouseci reports present — run the Lighthouse audit.",
           "label": "Lighthouse Accessibility",
           "unit": "score",
           "direction": "higher",
@@ -3529,7 +3825,7 @@
         "lighthouseBestPractices": {
           "value": null,
           "status": "unavailable",
-          "reason": "No Lighthouse report matched \"localhost:3100\".",
+          "reason": "No .lighthouseci reports present — run the Lighthouse audit.",
           "label": "Lighthouse Best Practices",
           "unit": "score",
           "direction": "higher",
@@ -3541,7 +3837,7 @@
         "lcpMs": {
           "value": null,
           "status": "unavailable",
-          "reason": "No Lighthouse report matched \"localhost:3100\".",
+          "reason": "No .lighthouseci reports present — run the Lighthouse audit.",
           "label": "LCP",
           "unit": "ms",
           "direction": "lower",
@@ -3553,7 +3849,7 @@
         "cls": {
           "value": null,
           "status": "unavailable",
-          "reason": "No Lighthouse report matched \"localhost:3100\".",
+          "reason": "No .lighthouseci reports present — run the Lighthouse audit.",
           "label": "CLS",
           "unit": "index",
           "direction": "lower",
@@ -3565,7 +3861,7 @@
         "tbtMs": {
           "value": null,
           "status": "unavailable",
-          "reason": "No Lighthouse report matched \"localhost:3100\".",
+          "reason": "No .lighthouseci reports present — run the Lighthouse audit.",
           "label": "TBT",
           "unit": "ms",
           "direction": "lower",
@@ -3577,7 +3873,7 @@
         "speedIndexMs": {
           "value": null,
           "status": "unavailable",
-          "reason": "No Lighthouse report matched \"localhost:3100\".",
+          "reason": "No .lighthouseci reports present — run the Lighthouse audit.",
           "label": "Speed Index",
           "unit": "ms",
           "direction": "lower",
@@ -3589,7 +3885,7 @@
         "fcpMs": {
           "value": null,
           "status": "unavailable",
-          "reason": "No Lighthouse report matched \"localhost:3100\".",
+          "reason": "No .lighthouseci reports present — run the Lighthouse audit.",
           "label": "FCP",
           "unit": "ms",
           "direction": "lower",
@@ -3601,7 +3897,7 @@
         "requests": {
           "value": null,
           "status": "unavailable",
-          "reason": "No Lighthouse report matched \"localhost:3100\".",
+          "reason": "No .lighthouseci reports present — run the Lighthouse audit.",
           "label": "Initial requests",
           "unit": "count",
           "direction": "lower",
@@ -3613,7 +3909,7 @@
         "transferredKb": {
           "value": null,
           "status": "unavailable",
-          "reason": "No Lighthouse report matched \"localhost:3100\".",
+          "reason": "No .lighthouseci reports present — run the Lighthouse audit.",
           "label": "Transferred weight",
           "unit": "kb",
           "direction": "lower",
@@ -3625,7 +3921,7 @@
         "co2PerViewMg": {
           "value": null,
           "status": "unavailable",
-          "reason": "No Lighthouse report matched \"localhost:3100\".",
+          "reason": "No .lighthouseci reports present — run the Lighthouse audit.",
           "label": "CO₂ / page view",
           "unit": "mg",
           "direction": "lower",
@@ -3633,6 +3929,150 @@
           "axis": "Run",
           "scope": "variant",
           "description": "Estimated CO₂ per page view (SWD model from transferred bytes)."
+        },
+        "$comment_github": {
+          "status": "unavailable",
+          "value": null,
+          "reason": "not collected",
+          "label": null,
+          "unit": null,
+          "direction": "neutral",
+          "category": "Other",
+          "axis": null,
+          "scope": "variant",
+          "description": null
+        },
+        "ship.ci.wallTime.avg": {
+          "status": "unavailable",
+          "value": null,
+          "reason": "not collected",
+          "label": "CI wall time (avg)",
+          "unit": "ms",
+          "direction": "lower",
+          "category": "Delivery",
+          "axis": "Ship",
+          "scope": "repo",
+          "description": "Mean wall-clock time of the last N completed workflow runs (updated_at − run_started_at). Repo-level."
+        },
+        "ship.ci.wallTime.p95": {
+          "status": "unavailable",
+          "value": null,
+          "reason": "not collected",
+          "label": "CI wall time (p95)",
+          "unit": "ms",
+          "direction": "lower",
+          "category": "Delivery",
+          "axis": "Ship",
+          "scope": "repo",
+          "description": "95th-percentile wall-clock run time — the tail a developer occasionally waits through. Repo-level (display only)."
+        },
+        "ship.ci.successRate.lastN": {
+          "status": "unavailable",
+          "value": null,
+          "reason": "not collected",
+          "label": "CI success rate",
+          "unit": "%",
+          "direction": "higher",
+          "category": "Delivery",
+          "axis": "Ship",
+          "scope": "repo",
+          "description": "Successful ÷ completed runs over the last N. Repo-level."
+        },
+        "ship.ci.flakyProxy.rate": {
+          "status": "unavailable",
+          "value": null,
+          "reason": "not collected",
+          "label": "CI instability proxy",
+          "unit": "ratio",
+          "direction": "lower",
+          "category": "Delivery",
+          "axis": "Ship",
+          "scope": "repo",
+          "description": "Share of jobs that both passed AND failed across the sampled runs. A job-level instability proxy — NOT a test-level flaky rate. Repo-level."
+        },
+        "ship.ci.artifacts.totalSize": {
+          "status": "unavailable",
+          "value": null,
+          "reason": "not collected",
+          "label": "CI artifacts (total)",
+          "unit": "kb",
+          "direction": "lower",
+          "category": "Delivery",
+          "axis": "Ship",
+          "scope": "repo",
+          "description": "Total size of non-expired workflow artifacts. Repo-level."
+        },
+        "ship.deploy.avgDuration": {
+          "status": "unavailable",
+          "value": null,
+          "reason": "not collected",
+          "label": "Deploy duration (avg)",
+          "unit": "ms",
+          "direction": "lower",
+          "category": "Delivery",
+          "axis": "Ship",
+          "scope": "repo",
+          "description": "Average deployment duration (GitHub Deployments API, else deploy-named Actions jobs). Repo-level; unavailable if neither exists."
+        },
+        "change.pr.avgChangedFiles": {
+          "status": "unavailable",
+          "value": null,
+          "reason": "not collected",
+          "label": "PR changed files (avg)",
+          "unit": "count",
+          "direction": "lower",
+          "category": "Pull requests",
+          "axis": "Change",
+          "scope": "repo",
+          "description": "Average files touched per merged PR — a proxy for change surface. Repo-level, mixes all chantiers; not a controlled per-variant scenario."
+        },
+        "change.pr.avgAdditions": {
+          "status": "unavailable",
+          "value": null,
+          "reason": "not collected",
+          "label": "PR additions (avg)",
+          "unit": "loc",
+          "direction": "lower",
+          "category": "Pull requests",
+          "axis": "Change",
+          "scope": "repo",
+          "description": "Average lines added per merged PR. Repo-level (display only)."
+        },
+        "change.pr.avgDeletions": {
+          "status": "unavailable",
+          "value": null,
+          "reason": "not collected",
+          "label": "PR deletions (avg)",
+          "unit": "loc",
+          "direction": "lower",
+          "category": "Pull requests",
+          "axis": "Change",
+          "scope": "repo",
+          "description": "Average lines deleted per merged PR. Repo-level (display only)."
+        },
+        "change.pr.avgTimeToMerge": {
+          "status": "unavailable",
+          "value": null,
+          "reason": "not collected",
+          "label": "PR time to merge (avg)",
+          "unit": "ms",
+          "direction": "lower",
+          "category": "Pull requests",
+          "axis": "Change",
+          "scope": "repo",
+          "description": "Average created→merged duration for merged PRs — a proxy for review/merge latency. Repo-level."
+        },
+        "change.pr.avgReviewCount": {
+          "status": "unavailable",
+          "value": null,
+          "reason": "not collected",
+          "label": "PR reviews (avg)",
+          "unit": "count",
+          "direction": "higher",
+          "category": "Pull requests",
+          "axis": "Change",
+          "scope": "repo",
+          "description": "Average number of reviews per merged PR. Repo-level (display only)."
         }
       },
       "graph": {
@@ -3681,7 +4121,7 @@
         "build": {
           "label": "Build",
           "kind": "axis",
-          "value": 86,
+          "value": 59.3,
           "coverage": "2/2",
           "coverageFrac": 1,
           "complete": true,
@@ -3690,19 +4130,19 @@
         "ship": {
           "label": "Ship",
           "kind": "axis",
-          "value": 80,
-          "coverage": "2/4",
-          "coverageFrac": 0.5,
-          "complete": false,
+          "value": 91.7,
+          "coverage": "5/5",
+          "coverageFrac": 1,
+          "complete": true,
           "gated": false
         },
         "run": {
           "label": "Run",
           "kind": "axis",
-          "value": 60,
-          "coverage": "3/4",
-          "coverageFrac": 0.75,
-          "complete": false,
+          "value": 70,
+          "coverage": "4/4",
+          "coverageFrac": 1,
+          "complete": true,
           "gated": false
         },
         "change": {
@@ -3753,7 +4193,7 @@
         "totalDeliveryScore": {
           "label": "Total Delivery Score",
           "kind": "headline",
-          "value": 79.2,
+          "value": 77.1,
           "method": "weighted-mean-over-measured-axes",
           "axesUsed": [
             "Build",
@@ -3764,8 +4204,8 @@
         }
       },
       "statuses": {
-        "ok": 64,
-        "unavailable": 20,
+        "ok": 73,
+        "unavailable": 11,
         "error": 0
       }
     },
@@ -3777,17 +4217,28 @@
         "thesis": "Technically impressive, dangerously expensive — over-engineered past its payoff.",
         "stack": "Next.js · Rust/Axum · CQRS · 17 crates + 14 packages",
         "accent": "#a98bff",
-        "commit": "b1840964d08aad639c12b6d60678ada1947de814",
-        "commitShort": "b184096",
-        "branch": "main",
-        "timestamp": "2026-07-05T18:02:46.470Z",
-        "ciPipelineId": null,
-        "ciRunNumber": null,
-        "environment": "local",
+        "commit": "4383eff261e76e72a6a5094aa3d96714d0018230",
+        "commitShort": "4383eff",
+        "branch": "v1.0.6",
+        "timestamp": "2026-07-05T18:17:14.948Z",
+        "ciPipelineId": "28750093448",
+        "ciRunNumber": "6",
+        "environment": "ci",
         "appUrl": "http://localhost:3300",
         "apiUrl": "http://localhost:3200"
       },
       "metrics": {
+        "nxProjects": {
+          "value": 31,
+          "status": "ok",
+          "label": "Workspace projects",
+          "unit": "count",
+          "direction": "balance",
+          "category": "Architecture",
+          "axis": "Change",
+          "scope": "variant",
+          "description": "Buildable projects (npm packages + Rust crates). Scored on balance: a monolith is under-modularized, dozens of projects is over-fragmented; the healthy band is in between."
+        },
         "sourceFiles": {
           "value": 78,
           "status": "ok",
@@ -3798,17 +4249,6 @@
           "axis": "Change",
           "scope": "variant",
           "description": "Source files (ts/tsx/js/rs/css), excluding tests, config, docs and generated code. Scored on balance."
-        },
-        "configFiles": {
-          "value": 76,
-          "status": "ok",
-          "label": "Config files",
-          "unit": "count",
-          "direction": "lower",
-          "category": "Architecture",
-          "axis": "Change",
-          "scope": "variant",
-          "description": "Number of configuration files (json/yaml/toml/rc/*.config.*)."
         },
         "locTotal": {
           "value": 7632,
@@ -3864,6 +4304,17 @@
           "axis": "Change",
           "scope": "variant",
           "description": "Lines of Markdown documentation."
+        },
+        "configFiles": {
+          "value": 76,
+          "status": "ok",
+          "label": "Config files",
+          "unit": "count",
+          "direction": "lower",
+          "category": "Architecture",
+          "axis": "Change",
+          "scope": "variant",
+          "description": "Number of configuration files (json/yaml/toml/rc/*.config.*)."
         },
         "todoCount": {
           "value": 0,
@@ -3975,16 +4426,16 @@
           "scope": "variant",
           "description": "Distinct third-party runtime + dev dependencies declared across the variant's manifests."
         },
-        "nxProjects": {
-          "value": 31,
+        "circularDeps": {
+          "value": 0,
           "status": "ok",
-          "label": "Workspace projects",
+          "label": "Circular dependencies",
           "unit": "count",
-          "direction": "balance",
+          "direction": "lower",
           "category": "Architecture",
           "axis": "Change",
           "scope": "variant",
-          "description": "Buildable projects (npm packages + Rust crates). Scored on balance: a monolith is under-modularized, dozens of projects is over-fragmented; the healthy band is in between."
+          "description": "Import cycles between the variant's own projects (detected from workspace manifests)."
         },
         "graphNodes": {
           "value": 31,
@@ -4062,17 +4513,6 @@
           "axis": "Change",
           "scope": "variant",
           "description": "Highest number of dependencies a single project pulls in."
-        },
-        "circularDeps": {
-          "value": 0,
-          "status": "ok",
-          "label": "Circular dependencies",
-          "unit": "count",
-          "direction": "lower",
-          "category": "Architecture",
-          "axis": "Change",
-          "scope": "variant",
-          "description": "Import cycles between the variant's own projects (detected from workspace manifests)."
         },
         "bundleJsKb": {
           "value": 687.3,
@@ -4195,11 +4635,23 @@
           "scope": "variant",
           "description": "Total size of the deployable build output."
         },
+        "$comment_variant_ci": {
+          "status": "unavailable",
+          "value": null,
+          "reason": "not collected",
+          "label": null,
+          "unit": null,
+          "direction": "neutral",
+          "category": "Other",
+          "axis": null,
+          "scope": "variant",
+          "description": null
+        },
         "variant.ci.build.duration": {
-          "value": 8740,
+          "value": 10576,
           "status": "ok",
           "command": "pnpm overfit:build && pnpm overfit:api:build",
-          "at": "2026-07-05T17:59:37.814Z",
+          "at": "2026-07-05T18:10:53.289Z",
           "label": "Variant build time (cold)",
           "unit": "ms",
           "direction": "lower",
@@ -4209,10 +4661,10 @@
           "description": "Cache-DISABLED cold build of this variant's app(s) (Flow: nx --skip-nx-cache; Friction/Overfit: pnpm/cargo/next). Intrinsic build cost, independent of CI cache strategy. NOT the real cached CI feedback time."
         },
         "variant.ci.typecheck.duration": {
-          "value": 6301,
+          "value": 16705,
           "status": "ok",
           "command": "pnpm overfit:typecheck",
-          "at": "2026-07-05T17:59:37.814Z",
+          "at": "2026-07-05T18:10:53.289Z",
           "label": "Variant typecheck time (cold)",
           "unit": "ms",
           "direction": "lower",
@@ -4222,10 +4674,10 @@
           "description": "Cache-disabled cold typecheck of this variant. Intrinsic cost, cache-immune."
         },
         "variant.ci.lint.duration": {
-          "value": 2021,
+          "value": 10451,
           "status": "ok",
           "command": "pnpm overfit:boundaries && pnpm overfit:api:clippy",
-          "at": "2026-07-05T17:59:37.814Z",
+          "at": "2026-07-05T18:10:53.289Z",
           "label": "Variant lint time (cold)",
           "unit": "ms",
           "direction": "lower",
@@ -4235,10 +4687,10 @@
           "description": "Cache-disabled cold lint / boundary check of this variant. Intrinsic cost, cache-immune."
         },
         "variant.ci.test.duration": {
-          "value": 6174,
+          "value": 7070,
           "status": "ok",
           "command": "pnpm overfit:test && pnpm overfit:api:test",
-          "at": "2026-07-05T17:59:37.814Z",
+          "at": "2026-07-05T18:10:53.289Z",
           "label": "Variant test time (cold)",
           "unit": "ms",
           "direction": "lower",
@@ -4248,14 +4700,14 @@
           "description": "Cache-disabled cold unit-test run of this variant (vitest). Intrinsic cost, cache-immune."
         },
         "variant.ci.validation.cold": {
-          "value": 23236,
+          "value": 44802,
           "status": "ok",
-          "at": "2026-07-05T17:59:37.814Z",
+          "at": "2026-07-05T18:10:53.289Z",
           "steps": {
-            "build": 8740,
-            "typecheck": 6301,
-            "lint": 2021,
-            "test": 6174
+            "build": 10576,
+            "typecheck": 16705,
+            "lint": 10451,
+            "test": 7070
           },
           "label": "Full validation (cold)",
           "unit": "ms",
@@ -4266,14 +4718,14 @@
           "description": "Total cache-disabled cost of the variant's whole validation protocol: build + typecheck + lint + test, summed. The intrinsic worst-case price of one trustworthy signal."
         },
         "variant.ci.validation.warm": {
-          "value": 22651,
+          "value": 35485,
           "status": "ok",
-          "at": "2026-07-05T17:59:37.814Z",
+          "at": "2026-07-05T18:10:53.289Z",
           "steps": {
-            "build": 8264,
-            "typecheck": 6604,
-            "lint": 1859,
-            "test": 5924
+            "build": 10868,
+            "typecheck": 15444,
+            "lint": 2086,
+            "test": 7087
           },
           "label": "Full re-validation (warm)",
           "unit": "ms",
@@ -4286,7 +4738,7 @@
         "variant.ci.tests.executed": {
           "value": 60,
           "status": "ok",
-          "at": "2026-07-05T17:59:37.814Z",
+          "at": "2026-07-05T18:10:53.289Z",
           "label": "Tests executed",
           "unit": "count",
           "direction": "neutral",
@@ -4298,7 +4750,7 @@
         "variant.ci.tests.passed": {
           "value": 60,
           "status": "ok",
-          "at": "2026-07-05T17:59:37.814Z",
+          "at": "2026-07-05T18:10:53.289Z",
           "label": "Tests passed",
           "unit": "count",
           "direction": "neutral",
@@ -4310,7 +4762,7 @@
         "variant.ci.tests.failed": {
           "value": 0,
           "status": "ok",
-          "at": "2026-07-05T17:59:37.814Z",
+          "at": "2026-07-05T18:10:53.289Z",
           "label": "Tests failed",
           "unit": "count",
           "direction": "lower",
@@ -4322,7 +4774,7 @@
         "variant.ci.tests.skipped": {
           "value": 0,
           "status": "ok",
-          "at": "2026-07-05T17:59:37.814Z",
+          "at": "2026-07-05T18:10:53.289Z",
           "label": "Tests skipped",
           "unit": "count",
           "direction": "lower",
@@ -4332,9 +4784,9 @@
           "description": "Number of skipped unit tests."
         },
         "variant.ci.warnings.count": {
-          "value": 3,
+          "value": 0,
           "status": "ok",
-          "at": "2026-07-05T17:59:37.814Z",
+          "at": "2026-07-05T18:10:53.289Z",
           "method": "heuristic parse of tool output",
           "label": "CI warnings",
           "unit": "count",
@@ -4347,20 +4799,20 @@
         "variant.ci.errors.count": {
           "value": 0,
           "status": "ok",
-          "at": "2026-07-05T17:59:37.814Z",
+          "at": "2026-07-05T18:10:53.289Z",
           "method": "heuristic parse of tool output",
-          "label": "CI errors",
+          "label": "CI gate errors",
           "unit": "count",
           "direction": "lower",
-          "category": "Build CI",
-          "axis": "Build",
+          "category": "CI gate",
+          "axis": "Ship",
           "scope": "variant",
-          "description": "Errors parsed from this variant's build/lint/typecheck output (heuristic)."
+          "description": "Errors parsed from this variant's build/lint/typecheck output (heuristic). Scored in Ship v1.1 as gate cleanliness: the result of the release-control path, not the number of checks."
         },
         "variant.ci.ramPeak.build": {
-          "value": 489648,
+          "value": 612484,
           "status": "ok",
-          "at": "2026-07-05T17:59:37.814Z",
+          "at": "2026-07-05T18:10:53.289Z",
           "label": "Build peak RAM",
           "unit": "kb",
           "direction": "lower",
@@ -4370,9 +4822,9 @@
           "description": "Peak resident memory of the build step (from /usr/bin/time on the CI runner). Unavailable where the runner lacks GNU/BSD time."
         },
         "variant.ci.ramPeak.tests": {
-          "value": 174560,
+          "value": 211952,
           "status": "ok",
-          "at": "2026-07-05T17:59:37.814Z",
+          "at": "2026-07-05T18:10:53.289Z",
           "label": "Test peak RAM",
           "unit": "kb",
           "direction": "lower",
@@ -4384,7 +4836,7 @@
         "variant.ci.artifact.distSize": {
           "value": 704.4,
           "status": "ok",
-          "at": "2026-07-05T17:59:37.814Z",
+          "at": "2026-07-05T18:10:53.289Z",
           "label": "Variant dist size (CI)",
           "unit": "kb",
           "direction": "lower",
@@ -4393,94 +4845,22 @@
           "scope": "variant",
           "description": "Build-output size measured in the CI job right after build. Informational — `distTotalKb` (bundle collector) is the scored artifact size."
         },
-        "variant.docker.build.duration": {
-          "value": null,
+        "$comment_variant_feedback": {
           "status": "unavailable",
-          "reason": "Docker disabled via --no-docker.",
-          "label": "Docker build time",
-          "unit": "ms",
-          "direction": "lower",
-          "category": "Docker",
-          "axis": "Ship",
-          "scope": "variant",
-          "description": "Wall-clock `docker build --no-cache` for this variant's image. Best-effort: `unavailable` if Docker isn't present or has no Dockerfile."
-        },
-        "variant.docker.image.size": {
           "value": null,
-          "status": "unavailable",
-          "reason": "Docker disabled via --no-docker.",
-          "label": "Docker image size",
-          "unit": "kb",
-          "direction": "lower",
-          "category": "Docker",
-          "axis": "Ship",
-          "scope": "variant",
-          "description": "Final image size via `docker image inspect`. The user-facing (web) image where a variant ships several."
-        },
-        "variant.docker.layers.count": {
-          "value": null,
-          "status": "unavailable",
-          "reason": "Docker disabled via --no-docker.",
-          "label": "Docker layers",
-          "unit": "count",
-          "direction": "lower",
-          "category": "Docker",
-          "axis": "Ship",
-          "scope": "variant",
-          "description": "RootFS content layers in the image — a proxy for build-cache friendliness."
-        },
-        "variant.docker.layer.maxSize": {
-          "value": null,
-          "status": "unavailable",
-          "reason": "Docker disabled via --no-docker.",
-          "label": "Largest Docker layer",
-          "unit": "kb",
-          "direction": "lower",
-          "category": "Docker",
-          "axis": "Ship",
-          "scope": "variant",
-          "description": "Biggest single layer (from `docker history`). Informational."
-        },
-        "variant.docker.startup.duration": {
-          "value": null,
-          "status": "unavailable",
-          "reason": "Docker disabled via --no-docker.",
-          "label": "Container startup",
-          "unit": "ms",
-          "direction": "lower",
-          "category": "Docker",
-          "axis": "Ship",
-          "scope": "variant",
-          "description": "Time from `docker run` to the container answering its health endpoint. Best-effort."
-        },
-        "variant.docker.healthcheck.status": {
-          "value": null,
-          "status": "unavailable",
-          "reason": "Docker disabled via --no-docker.",
-          "label": "Container healthcheck",
-          "unit": "status",
+          "reason": "not collected",
+          "label": null,
+          "unit": null,
           "direction": "neutral",
-          "category": "Docker",
-          "axis": "Ship",
+          "category": "Other",
+          "axis": null,
           "scope": "variant",
-          "description": "Whether the started container served its health endpoint (ok/fail). Informational."
-        },
-        "variant.docker.healthcheck.duration": {
-          "value": null,
-          "status": "unavailable",
-          "reason": "Docker disabled via --no-docker.",
-          "label": "Healthcheck latency",
-          "unit": "ms",
-          "direction": "lower",
-          "category": "Docker",
-          "axis": "Ship",
-          "scope": "variant",
-          "description": "Latency of the first successful health request once the container is up. Informational."
+          "description": null
         },
         "variant.ci.feedback.duration": {
           "value": null,
           "status": "unavailable",
-          "reason": "No GitHub Actions data (no token, or no workflow runs) — real CI feedback requires a completed run.",
+          "reason": "No eligible push-to-main overfit-ci.yml quality job (gate, conclusion success|failure|timed_out) sampled yet.",
           "label": "CI feedback to signal (main)",
           "unit": "ms",
           "direction": "lower",
@@ -4492,7 +4872,7 @@
         "variant.ci.feedback.samples": {
           "value": null,
           "status": "unavailable",
-          "reason": "No GitHub Actions data (no token, or no workflow runs) — real CI feedback requires a completed run.",
+          "reason": "No eligible push-to-main overfit-ci.yml quality job (gate, conclusion success|failure|timed_out) sampled yet.",
           "label": "CI feedback samples",
           "unit": "count",
           "direction": "neutral",
@@ -4500,6 +4880,102 @@
           "axis": null,
           "scope": "variant",
           "description": "Number of push-to-main runs the feedback duration was averaged over. Informational."
+        },
+        "variant.docker.build.duration": {
+          "value": 32853,
+          "status": "ok",
+          "at": "2026-07-05T18:10:53.289Z",
+          "label": "Docker build time",
+          "unit": "ms",
+          "direction": "lower",
+          "category": "Docker",
+          "axis": "Ship",
+          "scope": "variant",
+          "description": "Wall-clock `docker build --no-cache` for this variant's image. Ship v1.1 keeps it as packaging/pipeline cost, with a reduced weight so it does not double-count Build's feedback-cost axis."
+        },
+        "variant.docker.image.size": {
+          "value": 283406.1,
+          "status": "ok",
+          "at": "2026-07-05T18:10:53.289Z",
+          "label": "Docker image size",
+          "unit": "kb",
+          "direction": "lower",
+          "category": "Docker",
+          "axis": "Ship",
+          "scope": "variant",
+          "description": "Final image size via `docker image inspect`. Ship v1.1 treats it as artifact transfer/storage/pull context, not a primary confidence signal."
+        },
+        "variant.docker.layers.count": {
+          "value": 9,
+          "status": "ok",
+          "at": "2026-07-05T18:10:53.289Z",
+          "label": "Docker layers",
+          "unit": "count",
+          "direction": "lower",
+          "category": "Docker",
+          "axis": "Ship",
+          "scope": "variant",
+          "description": "RootFS content layers in the image — a proxy for build-cache friendliness."
+        },
+        "variant.docker.layer.maxSize": {
+          "value": 148480,
+          "status": "ok",
+          "at": "2026-07-05T18:10:53.289Z",
+          "label": "Largest Docker layer",
+          "unit": "kb",
+          "direction": "lower",
+          "category": "Docker",
+          "axis": "Ship",
+          "scope": "variant",
+          "description": "Biggest single layer (from `docker history`). Informational."
+        },
+        "variant.docker.startup.duration": {
+          "value": 545,
+          "status": "ok",
+          "at": "2026-07-05T18:10:53.289Z",
+          "label": "Container startup",
+          "unit": "ms",
+          "direction": "lower",
+          "category": "Docker",
+          "axis": "Ship",
+          "scope": "variant",
+          "description": "Time from `docker run` to the container answering its health endpoint. Best-effort."
+        },
+        "variant.docker.healthcheck.status": {
+          "value": "ok",
+          "status": "ok",
+          "at": "2026-07-05T18:10:53.289Z",
+          "label": "Container healthcheck",
+          "unit": "status",
+          "direction": "neutral",
+          "category": "Docker",
+          "axis": "Ship",
+          "scope": "variant",
+          "description": "Whether the started container served its health endpoint (ok/fail). Informational."
+        },
+        "variant.docker.healthcheck.duration": {
+          "value": 34,
+          "status": "ok",
+          "at": "2026-07-05T18:10:53.289Z",
+          "label": "Healthcheck latency",
+          "unit": "ms",
+          "direction": "lower",
+          "category": "Docker",
+          "axis": "Ship",
+          "scope": "variant",
+          "description": "Latency of the first successful health request once the container is up. Informational."
+        },
+        "$comment_delivery": {
+          "status": "unavailable",
+          "value": null,
+          "reason": "not collected",
+          "label": null,
+          "unit": null,
+          "direction": "neutral",
+          "category": "Other",
+          "axis": null,
+          "scope": "variant",
+          "description": null
         },
         "ship.services.count": {
           "value": 2,
@@ -4525,17 +5001,19 @@
           "description": "Images the variant must build, push and deploy for one release (its Dockerfiles). Every extra service is an extra build, push, deploy and coordination step."
         },
         "ship.healthcheck.coverage": {
-          "value": 100,
+          "value": 50,
           "status": "ok",
           "services": [
             {
               "dockerfile": "apps/overfit-web/Dockerfile",
               "healthcheck": true,
+              "healthcheckTargetsHealth": false,
               "healthEndpoint": false
             },
             {
               "dockerfile": "apps/overfit-api/Dockerfile",
               "healthcheck": true,
+              "healthcheckTargetsHealth": true,
               "healthEndpoint": true
             }
           ],
@@ -4545,7 +5023,7 @@
           "category": "Delivery surface",
           "axis": "Ship",
           "scope": "variant",
-          "description": "Share of the variant's images that declare a Docker HEALTHCHECK — deploys the platform can verify (and roll back) instead of hoping."
+          "description": "Share of the variant's images whose Docker HEALTHCHECK targets a dedicated health endpoint. This is a deploy-confidence guard, not mere presence of a HEALTHCHECK instruction."
         },
         "run.inspection.surfaces": {
           "value": 2,
@@ -4605,6 +5083,18 @@
           "scope": "variant",
           "description": "Does the runtime emit structured, leveled, contextual logs (tracing/tracing_subscriber in Rust, a leveled createLogger in TS) — or only bare console output? Signal QUALITY: one unreadable stream must not beat two well-instrumented services just because it is a single place to look."
         },
+        "$comment_change_surface": {
+          "status": "unavailable",
+          "value": null,
+          "reason": "not collected",
+          "label": null,
+          "unit": null,
+          "direction": "neutral",
+          "category": "Other",
+          "axis": null,
+          "scope": "variant",
+          "description": null
+        },
         "change.contract.restatements": {
           "value": 3,
           "status": "ok",
@@ -4622,6 +5112,18 @@
           "axis": "Change",
           "scope": "variant",
           "description": "Hand-written files that re-declare the shared Signal contract (measured on the riskScore field). 0 = the variant imports the single source of truth; each extra copy is one more place a schema change must propagate to — and one more place it can silently diverge."
+        },
+        "$comment_change_footprint": {
+          "status": "unavailable",
+          "value": null,
+          "reason": "not collected",
+          "label": null,
+          "unit": null,
+          "direction": "neutral",
+          "category": "Other",
+          "axis": null,
+          "scope": "variant",
+          "description": null
         },
         "change.footprint.sourceFiles": {
           "value": 28,
@@ -4789,7 +5291,7 @@
         "lighthousePerformance": {
           "value": null,
           "status": "unavailable",
-          "reason": "No Lighthouse report matched \"localhost:3300\".",
+          "reason": "No .lighthouseci reports present — run the Lighthouse audit.",
           "label": "Lighthouse Performance",
           "unit": "score",
           "direction": "higher",
@@ -4801,7 +5303,7 @@
         "lighthouseAccessibility": {
           "value": null,
           "status": "unavailable",
-          "reason": "No Lighthouse report matched \"localhost:3300\".",
+          "reason": "No .lighthouseci reports present — run the Lighthouse audit.",
           "label": "Lighthouse Accessibility",
           "unit": "score",
           "direction": "higher",
@@ -4813,7 +5315,7 @@
         "lighthouseBestPractices": {
           "value": null,
           "status": "unavailable",
-          "reason": "No Lighthouse report matched \"localhost:3300\".",
+          "reason": "No .lighthouseci reports present — run the Lighthouse audit.",
           "label": "Lighthouse Best Practices",
           "unit": "score",
           "direction": "higher",
@@ -4825,7 +5327,7 @@
         "lcpMs": {
           "value": null,
           "status": "unavailable",
-          "reason": "No Lighthouse report matched \"localhost:3300\".",
+          "reason": "No .lighthouseci reports present — run the Lighthouse audit.",
           "label": "LCP",
           "unit": "ms",
           "direction": "lower",
@@ -4837,7 +5339,7 @@
         "cls": {
           "value": null,
           "status": "unavailable",
-          "reason": "No Lighthouse report matched \"localhost:3300\".",
+          "reason": "No .lighthouseci reports present — run the Lighthouse audit.",
           "label": "CLS",
           "unit": "index",
           "direction": "lower",
@@ -4849,7 +5351,7 @@
         "tbtMs": {
           "value": null,
           "status": "unavailable",
-          "reason": "No Lighthouse report matched \"localhost:3300\".",
+          "reason": "No .lighthouseci reports present — run the Lighthouse audit.",
           "label": "TBT",
           "unit": "ms",
           "direction": "lower",
@@ -4861,7 +5363,7 @@
         "speedIndexMs": {
           "value": null,
           "status": "unavailable",
-          "reason": "No Lighthouse report matched \"localhost:3300\".",
+          "reason": "No .lighthouseci reports present — run the Lighthouse audit.",
           "label": "Speed Index",
           "unit": "ms",
           "direction": "lower",
@@ -4873,7 +5375,7 @@
         "fcpMs": {
           "value": null,
           "status": "unavailable",
-          "reason": "No Lighthouse report matched \"localhost:3300\".",
+          "reason": "No .lighthouseci reports present — run the Lighthouse audit.",
           "label": "FCP",
           "unit": "ms",
           "direction": "lower",
@@ -4885,7 +5387,7 @@
         "requests": {
           "value": null,
           "status": "unavailable",
-          "reason": "No Lighthouse report matched \"localhost:3300\".",
+          "reason": "No .lighthouseci reports present — run the Lighthouse audit.",
           "label": "Initial requests",
           "unit": "count",
           "direction": "lower",
@@ -4897,7 +5399,7 @@
         "transferredKb": {
           "value": null,
           "status": "unavailable",
-          "reason": "No Lighthouse report matched \"localhost:3300\".",
+          "reason": "No .lighthouseci reports present — run the Lighthouse audit.",
           "label": "Transferred weight",
           "unit": "kb",
           "direction": "lower",
@@ -4909,7 +5411,7 @@
         "co2PerViewMg": {
           "value": null,
           "status": "unavailable",
-          "reason": "No Lighthouse report matched \"localhost:3300\".",
+          "reason": "No .lighthouseci reports present — run the Lighthouse audit.",
           "label": "CO₂ / page view",
           "unit": "mg",
           "direction": "lower",
@@ -4917,6 +5419,150 @@
           "axis": "Run",
           "scope": "variant",
           "description": "Estimated CO₂ per page view (SWD model from transferred bytes)."
+        },
+        "$comment_github": {
+          "status": "unavailable",
+          "value": null,
+          "reason": "not collected",
+          "label": null,
+          "unit": null,
+          "direction": "neutral",
+          "category": "Other",
+          "axis": null,
+          "scope": "variant",
+          "description": null
+        },
+        "ship.ci.wallTime.avg": {
+          "status": "unavailable",
+          "value": null,
+          "reason": "not collected",
+          "label": "CI wall time (avg)",
+          "unit": "ms",
+          "direction": "lower",
+          "category": "Delivery",
+          "axis": "Ship",
+          "scope": "repo",
+          "description": "Mean wall-clock time of the last N completed workflow runs (updated_at − run_started_at). Repo-level."
+        },
+        "ship.ci.wallTime.p95": {
+          "status": "unavailable",
+          "value": null,
+          "reason": "not collected",
+          "label": "CI wall time (p95)",
+          "unit": "ms",
+          "direction": "lower",
+          "category": "Delivery",
+          "axis": "Ship",
+          "scope": "repo",
+          "description": "95th-percentile wall-clock run time — the tail a developer occasionally waits through. Repo-level (display only)."
+        },
+        "ship.ci.successRate.lastN": {
+          "status": "unavailable",
+          "value": null,
+          "reason": "not collected",
+          "label": "CI success rate",
+          "unit": "%",
+          "direction": "higher",
+          "category": "Delivery",
+          "axis": "Ship",
+          "scope": "repo",
+          "description": "Successful ÷ completed runs over the last N. Repo-level."
+        },
+        "ship.ci.flakyProxy.rate": {
+          "status": "unavailable",
+          "value": null,
+          "reason": "not collected",
+          "label": "CI instability proxy",
+          "unit": "ratio",
+          "direction": "lower",
+          "category": "Delivery",
+          "axis": "Ship",
+          "scope": "repo",
+          "description": "Share of jobs that both passed AND failed across the sampled runs. A job-level instability proxy — NOT a test-level flaky rate. Repo-level."
+        },
+        "ship.ci.artifacts.totalSize": {
+          "status": "unavailable",
+          "value": null,
+          "reason": "not collected",
+          "label": "CI artifacts (total)",
+          "unit": "kb",
+          "direction": "lower",
+          "category": "Delivery",
+          "axis": "Ship",
+          "scope": "repo",
+          "description": "Total size of non-expired workflow artifacts. Repo-level."
+        },
+        "ship.deploy.avgDuration": {
+          "status": "unavailable",
+          "value": null,
+          "reason": "not collected",
+          "label": "Deploy duration (avg)",
+          "unit": "ms",
+          "direction": "lower",
+          "category": "Delivery",
+          "axis": "Ship",
+          "scope": "repo",
+          "description": "Average deployment duration (GitHub Deployments API, else deploy-named Actions jobs). Repo-level; unavailable if neither exists."
+        },
+        "change.pr.avgChangedFiles": {
+          "status": "unavailable",
+          "value": null,
+          "reason": "not collected",
+          "label": "PR changed files (avg)",
+          "unit": "count",
+          "direction": "lower",
+          "category": "Pull requests",
+          "axis": "Change",
+          "scope": "repo",
+          "description": "Average files touched per merged PR — a proxy for change surface. Repo-level, mixes all chantiers; not a controlled per-variant scenario."
+        },
+        "change.pr.avgAdditions": {
+          "status": "unavailable",
+          "value": null,
+          "reason": "not collected",
+          "label": "PR additions (avg)",
+          "unit": "loc",
+          "direction": "lower",
+          "category": "Pull requests",
+          "axis": "Change",
+          "scope": "repo",
+          "description": "Average lines added per merged PR. Repo-level (display only)."
+        },
+        "change.pr.avgDeletions": {
+          "status": "unavailable",
+          "value": null,
+          "reason": "not collected",
+          "label": "PR deletions (avg)",
+          "unit": "loc",
+          "direction": "lower",
+          "category": "Pull requests",
+          "axis": "Change",
+          "scope": "repo",
+          "description": "Average lines deleted per merged PR. Repo-level (display only)."
+        },
+        "change.pr.avgTimeToMerge": {
+          "status": "unavailable",
+          "value": null,
+          "reason": "not collected",
+          "label": "PR time to merge (avg)",
+          "unit": "ms",
+          "direction": "lower",
+          "category": "Pull requests",
+          "axis": "Change",
+          "scope": "repo",
+          "description": "Average created→merged duration for merged PRs — a proxy for review/merge latency. Repo-level."
+        },
+        "change.pr.avgReviewCount": {
+          "status": "unavailable",
+          "value": null,
+          "reason": "not collected",
+          "label": "PR reviews (avg)",
+          "unit": "count",
+          "direction": "higher",
+          "category": "Pull requests",
+          "axis": "Change",
+          "scope": "repo",
+          "description": "Average number of reviews per merged PR. Repo-level (display only)."
         }
       },
       "graph": {
@@ -5521,7 +6167,7 @@
         "build": {
           "label": "Build",
           "kind": "axis",
-          "value": 28.1,
+          "value": 20.5,
           "coverage": "2/2",
           "coverageFrac": 1,
           "complete": true,
@@ -5530,19 +6176,19 @@
         "ship": {
           "label": "Ship",
           "kind": "axis",
-          "value": 80,
-          "coverage": "2/4",
-          "coverageFrac": 0.5,
-          "complete": false,
+          "value": 65.4,
+          "coverage": "5/5",
+          "coverageFrac": 1,
+          "complete": true,
           "gated": false
         },
         "run": {
           "label": "Run",
           "kind": "axis",
-          "value": 70,
-          "coverage": "3/4",
-          "coverageFrac": 0.75,
-          "complete": false,
+          "value": 75.9,
+          "coverage": "4/4",
+          "coverageFrac": 1,
+          "complete": true,
           "gated": false
         },
         "change": {
@@ -5593,7 +6239,7 @@
         "totalDeliveryScore": {
           "label": "Total Delivery Score",
           "kind": "headline",
-          "value": 50.1,
+          "value": 47.2,
           "method": "weighted-mean-over-measured-axes",
           "axesUsed": [
             "Build",
@@ -5604,8 +6250,8 @@
         }
       },
       "statuses": {
-        "ok": 64,
-        "unavailable": 20,
+        "ok": 71,
+        "unavailable": 13,
         "error": 0
       }
     }
@@ -5627,7 +6273,7 @@
       "overfit": 100
     },
     "configFiles": {
-      "flow": 18.7,
+      "flow": 18.9,
       "friction": 100,
       "overfit": 18.2
     },
@@ -5672,7 +6318,7 @@
       "overfit": 60
     },
     "businessRatio": {
-      "flow": 82,
+      "flow": 82.1,
       "friction": 100,
       "overfit": 58.7
     },
@@ -5777,34 +6423,34 @@
       "overfit": null
     },
     "variant.ci.build.duration": {
-      "flow": 38.4,
+      "flow": 16.3,
       "friction": 100,
-      "overfit": 29.5
+      "overfit": 47
     },
     "variant.ci.typecheck.duration": {
-      "flow": 25.1,
+      "flow": 34.4,
       "friction": 100,
-      "overfit": 26.7
+      "overfit": 20.9
     },
     "variant.ci.lint.duration": {
-      "flow": 48.3,
+      "flow": 53.1,
       "friction": 100,
-      "overfit": 84.2
+      "overfit": 22.5
     },
     "variant.ci.test.duration": {
-      "flow": 19.7,
+      "flow": 16.5,
       "friction": 100,
-      "overfit": 30.5
+      "overfit": 41.2
     },
     "variant.ci.validation.cold": {
-      "flow": 29.6,
+      "flow": 21.9,
       "friction": 100,
-      "overfit": 33.8
+      "overfit": 30.6
     },
     "variant.ci.validation.warm": {
       "flow": 100,
-      "friction": 80,
-      "overfit": 25.6
+      "friction": 41.8,
+      "overfit": 16.1
     },
     "variant.ci.tests.failed": {
       "flow": 100,
@@ -5817,9 +6463,9 @@
       "overfit": 100
     },
     "variant.ci.warnings.count": {
-      "flow": 100,
+      "flow": 33.3,
       "friction": 100,
-      "overfit": 25
+      "overfit": 100
     },
     "variant.ci.errors.count": {
       "flow": 100,
@@ -5827,14 +6473,14 @@
       "overfit": 100
     },
     "variant.ci.ramPeak.build": {
-      "flow": 47.9,
+      "flow": 41.5,
       "friction": 100,
-      "overfit": 46.5
+      "overfit": 41.4
     },
     "variant.ci.ramPeak.tests": {
-      "flow": 77,
+      "flow": 85.3,
       "friction": 100,
-      "overfit": 77.1
+      "overfit": 81.5
     },
     "variant.ci.artifact.distSize": {
       "flow": 38.2,
@@ -5847,39 +6493,39 @@
       "overfit": null
     },
     "variant.ci.feedback.duration": {
-      "flow": null,
-      "friction": null,
+      "flow": 77.8,
+      "friction": 100,
       "overfit": null
     },
     "variant.docker.build.duration": {
-      "flow": null,
-      "friction": null,
-      "overfit": null
+      "flow": 67.2,
+      "friction": 100,
+      "overfit": 97.1
     },
     "variant.docker.image.size": {
-      "flow": null,
-      "friction": null,
-      "overfit": null
+      "flow": 11.4,
+      "friction": 100,
+      "overfit": 16.7
     },
     "variant.docker.layers.count": {
-      "flow": null,
-      "friction": null,
-      "overfit": null
+      "flow": 90.9,
+      "friction": 83.3,
+      "overfit": 100
     },
     "variant.docker.layer.maxSize": {
-      "flow": null,
-      "friction": null,
-      "overfit": null
+      "flow": 18.5,
+      "friction": 100,
+      "overfit": 25
     },
     "variant.docker.startup.duration": {
-      "flow": null,
-      "friction": null,
-      "overfit": null
+      "flow": 50.4,
+      "friction": 100,
+      "overfit": 93.6
     },
     "variant.docker.healthcheck.duration": {
-      "flow": null,
-      "friction": null,
-      "overfit": null
+      "flow": 0.4,
+      "friction": 100,
+      "overfit": 5.9
     },
     "$comment_delivery": {
       "flow": null,
@@ -5894,7 +6540,7 @@
     "ship.healthcheck.coverage": {
       "flow": 100,
       "friction": 100,
-      "overfit": 100
+      "overfit": 50
     },
     "run.inspection.surfaces": {
       "flow": 100,
@@ -5942,57 +6588,57 @@
       "overfit": 16.7
     },
     "lighthousePerformance": {
-      "flow": 100,
+      "flow": null,
       "friction": null,
       "overfit": null
     },
     "lighthouseAccessibility": {
-      "flow": 100,
+      "flow": null,
       "friction": null,
       "overfit": null
     },
     "lighthouseBestPractices": {
-      "flow": 100,
+      "flow": null,
       "friction": null,
       "overfit": null
     },
     "lcpMs": {
-      "flow": 100,
+      "flow": null,
       "friction": null,
       "overfit": null
     },
     "cls": {
-      "flow": 100,
+      "flow": null,
       "friction": null,
       "overfit": null
     },
     "tbtMs": {
-      "flow": 100,
+      "flow": null,
       "friction": null,
       "overfit": null
     },
     "speedIndexMs": {
-      "flow": 100,
+      "flow": null,
       "friction": null,
       "overfit": null
     },
     "fcpMs": {
-      "flow": 100,
+      "flow": null,
       "friction": null,
       "overfit": null
     },
     "requests": {
-      "flow": 100,
+      "flow": null,
       "friction": null,
       "overfit": null
     },
     "transferredKb": {
-      "flow": 100,
+      "flow": null,
       "friction": null,
       "overfit": null
     },
     "co2PerViewMg": {
-      "flow": 100,
+      "flow": null,
       "friction": null,
       "overfit": null
     },
@@ -6002,34 +6648,34 @@
       "overfit": null
     },
     "ship.ci.wallTime.avg": {
-      "flow": null,
-      "friction": null,
-      "overfit": null
+      "flow": 100,
+      "friction": 100,
+      "overfit": 100
     },
     "ship.ci.wallTime.p95": {
-      "flow": null,
-      "friction": null,
-      "overfit": null
+      "flow": 100,
+      "friction": 100,
+      "overfit": 100
     },
     "ship.ci.successRate.lastN": {
-      "flow": null,
-      "friction": null,
-      "overfit": null
+      "flow": 100,
+      "friction": 100,
+      "overfit": 100
     },
     "ship.ci.flakyProxy.rate": {
-      "flow": null,
-      "friction": null,
-      "overfit": null
+      "flow": 100,
+      "friction": 100,
+      "overfit": 100
     },
     "ship.ci.artifacts.totalSize": {
-      "flow": null,
-      "friction": null,
-      "overfit": null
+      "flow": 100,
+      "friction": 100,
+      "overfit": 100
     },
     "ship.deploy.avgDuration": {
-      "flow": null,
-      "friction": null,
-      "overfit": null
+      "flow": 100,
+      "friction": 100,
+      "overfit": 100
     },
     "change.pr.avgChangedFiles": {
       "flow": null,
@@ -6090,23 +6736,19 @@
     "variant.ci.ramPeak.build": "friction",
     "variant.ci.ramPeak.tests": "friction",
     "variant.ci.artifact.distSize": "friction",
+    "variant.ci.feedback.duration": "friction",
+    "variant.docker.build.duration": "friction",
+    "variant.docker.image.size": "friction",
+    "variant.docker.layers.count": "overfit",
+    "variant.docker.layer.maxSize": "friction",
+    "variant.docker.startup.duration": "friction",
+    "variant.docker.healthcheck.duration": "friction",
     "ship.services.count": "flow",
     "run.inspection.surfaces": "flow",
     "change.contract.restatements": "flow",
     "change.footprint.sourceFiles": "friction",
     "change.footprint.docs": "friction",
-    "change.footprint.projects": "friction",
-    "lighthousePerformance": "flow",
-    "lighthouseAccessibility": "flow",
-    "lighthouseBestPractices": "flow",
-    "lcpMs": "flow",
-    "cls": "flow",
-    "tbtMs": "flow",
-    "speedIndexMs": "flow",
-    "fcpMs": "flow",
-    "requests": "flow",
-    "transferredKb": "flow",
-    "co2PerViewMg": "flow"
+    "change.footprint.projects": "friction"
   },
   "notMeasured": {
     "runtime": {
@@ -6213,21 +6855,21 @@
   },
   "sources": {
     "github": {
-      "status": "unavailable",
+      "status": "ok",
       "repository": "BigZoo92/dx-memory",
-      "tokenSource": null,
+      "tokenSource": "METRICS_GITHUB_TOKEN",
       "runLimit": 20,
       "prLimit": 20,
       "workflows": [],
-      "collectedAt": "2026-07-05T18:02:46.470Z",
-      "reason": "No GitHub token found (set METRICS_GITHUB_TOKEN / GITHUB_TOKEN / GH_TOKEN)."
+      "requestCount": 19,
+      "rateLimitRemaining": 4928,
+      "collectedAt": "2026-07-05T18:17:14.948Z"
     }
   },
   "githubMetrics": {
     "ship.ci.wallTime.avg": {
-      "value": null,
-      "status": "unavailable",
-      "reason": "No GitHub token found (set METRICS_GITHUB_TOKEN / GITHUB_TOKEN / GH_TOKEN).",
+      "value": 280368,
+      "status": "ok",
       "label": "CI wall time (avg)",
       "unit": "ms",
       "direction": "lower",
@@ -6237,9 +6879,8 @@
       "description": "Mean wall-clock time of the last N completed workflow runs (updated_at − run_started_at). Repo-level."
     },
     "ship.ci.wallTime.p95": {
-      "value": null,
-      "status": "unavailable",
-      "reason": "No GitHub token found (set METRICS_GITHUB_TOKEN / GITHUB_TOKEN / GH_TOKEN).",
+      "value": 977000,
+      "status": "ok",
       "label": "CI wall time (p95)",
       "unit": "ms",
       "direction": "lower",
@@ -6249,9 +6890,8 @@
       "description": "95th-percentile wall-clock run time — the tail a developer occasionally waits through. Repo-level (display only)."
     },
     "ship.ci.successRate.lastN": {
-      "value": null,
-      "status": "unavailable",
-      "reason": "No GitHub token found (set METRICS_GITHUB_TOKEN / GITHUB_TOKEN / GH_TOKEN).",
+      "value": 78.9,
+      "status": "ok",
       "label": "CI success rate",
       "unit": "%",
       "direction": "higher",
@@ -6261,9 +6901,8 @@
       "description": "Successful ÷ completed runs over the last N. Repo-level."
     },
     "ship.ci.flakyProxy.rate": {
-      "value": null,
-      "status": "unavailable",
-      "reason": "No GitHub token found (set METRICS_GITHUB_TOKEN / GITHUB_TOKEN / GH_TOKEN).",
+      "value": 0.273,
+      "status": "ok",
       "label": "CI instability proxy",
       "unit": "ratio",
       "direction": "lower",
@@ -6273,9 +6912,8 @@
       "description": "Share of jobs that both passed AND failed across the sampled runs. A job-level instability proxy — NOT a test-level flaky rate. Repo-level."
     },
     "ship.ci.artifacts.totalSize": {
-      "value": null,
-      "status": "unavailable",
-      "reason": "No GitHub token found (set METRICS_GITHUB_TOKEN / GITHUB_TOKEN / GH_TOKEN).",
+      "value": 2070.8,
+      "status": "ok",
       "label": "CI artifacts (total)",
       "unit": "kb",
       "direction": "lower",
@@ -6285,9 +6923,8 @@
       "description": "Total size of non-expired workflow artifacts. Repo-level."
     },
     "ship.deploy.avgDuration": {
-      "value": null,
-      "status": "unavailable",
-      "reason": "No GitHub token found (set METRICS_GITHUB_TOKEN / GITHUB_TOKEN / GH_TOKEN).",
+      "value": 576000,
+      "status": "ok",
       "label": "Deploy duration (avg)",
       "unit": "ms",
       "direction": "lower",
@@ -6299,7 +6936,7 @@
     "change.pr.avgChangedFiles": {
       "value": null,
       "status": "unavailable",
-      "reason": "No GitHub token found (set METRICS_GITHUB_TOKEN / GITHUB_TOKEN / GH_TOKEN).",
+      "reason": "No merged PRs sampled.",
       "label": "PR changed files (avg)",
       "unit": "count",
       "direction": "lower",
@@ -6311,7 +6948,7 @@
     "change.pr.avgAdditions": {
       "value": null,
       "status": "unavailable",
-      "reason": "No GitHub token found (set METRICS_GITHUB_TOKEN / GITHUB_TOKEN / GH_TOKEN).",
+      "reason": "No merged PRs sampled.",
       "label": "PR additions (avg)",
       "unit": "loc",
       "direction": "lower",
@@ -6323,7 +6960,7 @@
     "change.pr.avgDeletions": {
       "value": null,
       "status": "unavailable",
-      "reason": "No GitHub token found (set METRICS_GITHUB_TOKEN / GITHUB_TOKEN / GH_TOKEN).",
+      "reason": "No merged PRs sampled.",
       "label": "PR deletions (avg)",
       "unit": "loc",
       "direction": "lower",
@@ -6335,7 +6972,7 @@
     "change.pr.avgTimeToMerge": {
       "value": null,
       "status": "unavailable",
-      "reason": "No GitHub token found (set METRICS_GITHUB_TOKEN / GITHUB_TOKEN / GH_TOKEN).",
+      "reason": "No merged PRs sampled.",
       "label": "PR time to merge (avg)",
       "unit": "ms",
       "direction": "lower",
@@ -6347,7 +6984,7 @@
     "change.pr.avgReviewCount": {
       "value": null,
       "status": "unavailable",
-      "reason": "No GitHub token found (set METRICS_GITHUB_TOKEN / GITHUB_TOKEN / GH_TOKEN).",
+      "reason": "No merged PRs sampled.",
       "label": "PR reviews (avg)",
       "unit": "count",
       "direction": "higher",
@@ -6358,107 +6995,1354 @@
     }
   },
   "github": {
-    "runs": [],
-    "runsSummary": null,
+    "runs": [
+      {
+        "id": 28750093448,
+        "name": "release",
+        "workflow": "release.yml",
+        "kind": "deploy",
+        "event": "push",
+        "status": "in_progress",
+        "conclusion": null,
+        "runNumber": 6,
+        "runAttempt": 1,
+        "branch": "v1.0.6",
+        "createdAt": "2026-07-05T18:09:02Z",
+        "runStartedAt": "2026-07-05T18:09:02Z",
+        "updatedAt": "2026-07-05T18:09:06Z",
+        "wallTimeMs": 4000,
+        "queueTimeMs": 0,
+        "htmlUrl": "https://github.com/BigZoo92/dx-memory/actions/runs/28750093448"
+      },
+      {
+        "id": 28750087139,
+        "name": "metrics",
+        "workflow": "metrics.yml",
+        "kind": "metrics",
+        "event": "push",
+        "status": "completed",
+        "conclusion": "success",
+        "runNumber": 21,
+        "runAttempt": 1,
+        "branch": "main",
+        "createdAt": "2026-07-05T18:08:48Z",
+        "runStartedAt": "2026-07-05T18:08:48Z",
+        "updatedAt": "2026-07-05T18:14:12Z",
+        "wallTimeMs": 324000,
+        "queueTimeMs": 0,
+        "htmlUrl": "https://github.com/BigZoo92/dx-memory/actions/runs/28750087139"
+      },
+      {
+        "id": 28750087134,
+        "name": "flow-ci",
+        "workflow": "flow-ci.yml",
+        "kind": "ci",
+        "event": "push",
+        "status": "completed",
+        "conclusion": "success",
+        "runNumber": 16,
+        "runAttempt": 1,
+        "branch": "main",
+        "createdAt": "2026-07-05T18:08:48Z",
+        "runStartedAt": "2026-07-05T18:08:48Z",
+        "updatedAt": "2026-07-05T18:11:15Z",
+        "wallTimeMs": 147000,
+        "queueTimeMs": 0,
+        "htmlUrl": "https://github.com/BigZoo92/dx-memory/actions/runs/28750087134"
+      },
+      {
+        "id": 28750087106,
+        "name": "friction-ci",
+        "workflow": "friction-ci.yml",
+        "kind": "ci",
+        "event": "push",
+        "status": "completed",
+        "conclusion": "success",
+        "runNumber": 15,
+        "runAttempt": 1,
+        "branch": "main",
+        "createdAt": "2026-07-05T18:08:48Z",
+        "runStartedAt": "2026-07-05T18:08:48Z",
+        "updatedAt": "2026-07-05T18:10:39Z",
+        "wallTimeMs": 111000,
+        "queueTimeMs": 0,
+        "htmlUrl": "https://github.com/BigZoo92/dx-memory/actions/runs/28750087106"
+      },
+      {
+        "id": 28749324497,
+        "name": "release",
+        "workflow": "release.yml",
+        "kind": "deploy",
+        "event": "push",
+        "status": "completed",
+        "conclusion": "success",
+        "runNumber": 5,
+        "runAttempt": 1,
+        "branch": "v1.0.5",
+        "createdAt": "2026-07-05T17:41:20Z",
+        "runStartedAt": "2026-07-05T17:41:20Z",
+        "updatedAt": "2026-07-05T17:54:21Z",
+        "wallTimeMs": 781000,
+        "queueTimeMs": 0,
+        "htmlUrl": "https://github.com/BigZoo92/dx-memory/actions/runs/28749324497"
+      },
+      {
+        "id": 28749308343,
+        "name": "flow-ci",
+        "workflow": "flow-ci.yml",
+        "kind": "ci",
+        "event": "push",
+        "status": "completed",
+        "conclusion": "failure",
+        "runNumber": 15,
+        "runAttempt": 1,
+        "branch": "main",
+        "createdAt": "2026-07-05T17:40:44Z",
+        "runStartedAt": "2026-07-05T17:40:44Z",
+        "updatedAt": "2026-07-05T17:41:08Z",
+        "wallTimeMs": 24000,
+        "queueTimeMs": 0,
+        "htmlUrl": "https://github.com/BigZoo92/dx-memory/actions/runs/28749308343"
+      },
+      {
+        "id": 28749308272,
+        "name": "friction-ci",
+        "workflow": "friction-ci.yml",
+        "kind": "ci",
+        "event": "push",
+        "status": "completed",
+        "conclusion": "failure",
+        "runNumber": 14,
+        "runAttempt": 1,
+        "branch": "main",
+        "createdAt": "2026-07-05T17:40:44Z",
+        "runStartedAt": "2026-07-05T17:40:44Z",
+        "updatedAt": "2026-07-05T17:41:07Z",
+        "wallTimeMs": 23000,
+        "queueTimeMs": 0,
+        "htmlUrl": "https://github.com/BigZoo92/dx-memory/actions/runs/28749308272"
+      },
+      {
+        "id": 28749308264,
+        "name": "metrics",
+        "workflow": "metrics.yml",
+        "kind": "metrics",
+        "event": "push",
+        "status": "completed",
+        "conclusion": "success",
+        "runNumber": 20,
+        "runAttempt": 1,
+        "branch": "main",
+        "createdAt": "2026-07-05T17:40:44Z",
+        "runStartedAt": "2026-07-05T17:40:44Z",
+        "updatedAt": "2026-07-05T17:45:43Z",
+        "wallTimeMs": 299000,
+        "queueTimeMs": 0,
+        "htmlUrl": "https://github.com/BigZoo92/dx-memory/actions/runs/28749308264"
+      },
+      {
+        "id": 28713264017,
+        "name": "release",
+        "workflow": "release.yml",
+        "kind": "deploy",
+        "event": "push",
+        "status": "completed",
+        "conclusion": "success",
+        "runNumber": 4,
+        "runAttempt": 1,
+        "branch": "v1.0.4",
+        "createdAt": "2026-07-04T16:58:41Z",
+        "runStartedAt": "2026-07-04T16:58:41Z",
+        "updatedAt": "2026-07-04T17:05:52Z",
+        "wallTimeMs": 431000,
+        "queueTimeMs": 0,
+        "htmlUrl": "https://github.com/BigZoo92/dx-memory/actions/runs/28713264017"
+      },
+      {
+        "id": 28713257034,
+        "name": "metrics",
+        "workflow": "metrics.yml",
+        "kind": "metrics",
+        "event": "push",
+        "status": "completed",
+        "conclusion": "success",
+        "runNumber": 19,
+        "runAttempt": 1,
+        "branch": "main",
+        "createdAt": "2026-07-04T16:58:26Z",
+        "runStartedAt": "2026-07-04T16:58:26Z",
+        "updatedAt": "2026-07-04T17:01:35Z",
+        "wallTimeMs": 189000,
+        "queueTimeMs": 0,
+        "htmlUrl": "https://github.com/BigZoo92/dx-memory/actions/runs/28713257034"
+      },
+      {
+        "id": 28712384798,
+        "name": "release",
+        "workflow": "release.yml",
+        "kind": "deploy",
+        "event": "push",
+        "status": "completed",
+        "conclusion": "success",
+        "runNumber": 3,
+        "runAttempt": 1,
+        "branch": "v1.0.2",
+        "createdAt": "2026-07-04T16:25:27Z",
+        "runStartedAt": "2026-07-04T16:25:27Z",
+        "updatedAt": "2026-07-04T16:41:44Z",
+        "wallTimeMs": 977000,
+        "queueTimeMs": 0,
+        "htmlUrl": "https://github.com/BigZoo92/dx-memory/actions/runs/28712384798"
+      },
+      {
+        "id": 28712379068,
+        "name": "metrics",
+        "workflow": "metrics.yml",
+        "kind": "metrics",
+        "event": "push",
+        "status": "completed",
+        "conclusion": "success",
+        "runNumber": 18,
+        "runAttempt": 1,
+        "branch": "main",
+        "createdAt": "2026-07-04T16:25:16Z",
+        "runStartedAt": "2026-07-04T16:25:16Z",
+        "updatedAt": "2026-07-04T16:28:39Z",
+        "wallTimeMs": 203000,
+        "queueTimeMs": 0,
+        "htmlUrl": "https://github.com/BigZoo92/dx-memory/actions/runs/28712379068"
+      },
+      {
+        "id": 28712352367,
+        "name": "release",
+        "workflow": "release.yml",
+        "kind": "deploy",
+        "event": "push",
+        "status": "completed",
+        "conclusion": "failure",
+        "runNumber": 2,
+        "runAttempt": 1,
+        "branch": "v1.0.1",
+        "createdAt": "2026-07-04T16:24:15Z",
+        "runStartedAt": "2026-07-04T16:24:15Z",
+        "updatedAt": "2026-07-04T16:30:09Z",
+        "wallTimeMs": 354000,
+        "queueTimeMs": 0,
+        "htmlUrl": "https://github.com/BigZoo92/dx-memory/actions/runs/28712352367"
+      },
+      {
+        "id": 28712100078,
+        "name": "metrics",
+        "workflow": "metrics.yml",
+        "kind": "metrics",
+        "event": "push",
+        "status": "completed",
+        "conclusion": "success",
+        "runNumber": 17,
+        "runAttempt": 1,
+        "branch": "main",
+        "createdAt": "2026-07-04T16:14:35Z",
+        "runStartedAt": "2026-07-04T16:14:35Z",
+        "updatedAt": "2026-07-04T16:17:36Z",
+        "wallTimeMs": 181000,
+        "queueTimeMs": 0,
+        "htmlUrl": "https://github.com/BigZoo92/dx-memory/actions/runs/28712100078"
+      },
+      {
+        "id": 28711363270,
+        "name": "release",
+        "workflow": "release.yml",
+        "kind": "deploy",
+        "event": "push",
+        "status": "completed",
+        "conclusion": "failure",
+        "runNumber": 1,
+        "runAttempt": 1,
+        "branch": "v1.0.0",
+        "createdAt": "2026-07-04T15:47:10Z",
+        "runStartedAt": "2026-07-04T15:47:10Z",
+        "updatedAt": "2026-07-04T15:53:02Z",
+        "wallTimeMs": 352000,
+        "queueTimeMs": 0,
+        "htmlUrl": "https://github.com/BigZoo92/dx-memory/actions/runs/28711363270"
+      },
+      {
+        "id": 28711119050,
+        "name": "overfit-ci",
+        "workflow": "overfit-ci.yml",
+        "kind": "ci",
+        "event": "push",
+        "status": "completed",
+        "conclusion": "success",
+        "runNumber": 12,
+        "runAttempt": 1,
+        "branch": "main",
+        "createdAt": "2026-07-04T15:38:20Z",
+        "runStartedAt": "2026-07-04T15:38:20Z",
+        "updatedAt": "2026-07-04T15:45:00Z",
+        "wallTimeMs": 400000,
+        "queueTimeMs": 0,
+        "htmlUrl": "https://github.com/BigZoo92/dx-memory/actions/runs/28711119050"
+      },
+      {
+        "id": 28711119047,
+        "name": "friction-ci",
+        "workflow": "friction-ci.yml",
+        "kind": "ci",
+        "event": "push",
+        "status": "completed",
+        "conclusion": "success",
+        "runNumber": 13,
+        "runAttempt": 1,
+        "branch": "main",
+        "createdAt": "2026-07-04T15:38:20Z",
+        "runStartedAt": "2026-07-04T15:38:20Z",
+        "updatedAt": "2026-07-04T15:40:11Z",
+        "wallTimeMs": 111000,
+        "queueTimeMs": 0,
+        "htmlUrl": "https://github.com/BigZoo92/dx-memory/actions/runs/28711119047"
+      },
+      {
+        "id": 28711119030,
+        "name": "metrics",
+        "workflow": "metrics.yml",
+        "kind": "metrics",
+        "event": "push",
+        "status": "completed",
+        "conclusion": "success",
+        "runNumber": 16,
+        "runAttempt": 1,
+        "branch": "main",
+        "createdAt": "2026-07-04T15:38:20Z",
+        "runStartedAt": "2026-07-04T15:38:20Z",
+        "updatedAt": "2026-07-04T15:41:08Z",
+        "wallTimeMs": 168000,
+        "queueTimeMs": 0,
+        "htmlUrl": "https://github.com/BigZoo92/dx-memory/actions/runs/28711119030"
+      },
+      {
+        "id": 28711119026,
+        "name": "flow-ci",
+        "workflow": "flow-ci.yml",
+        "kind": "ci",
+        "event": "push",
+        "status": "completed",
+        "conclusion": "success",
+        "runNumber": 14,
+        "runAttempt": 1,
+        "branch": "main",
+        "createdAt": "2026-07-04T15:38:20Z",
+        "runStartedAt": "2026-07-04T15:38:20Z",
+        "updatedAt": "2026-07-04T15:40:46Z",
+        "wallTimeMs": 146000,
+        "queueTimeMs": 0,
+        "htmlUrl": "https://github.com/BigZoo92/dx-memory/actions/runs/28711119026"
+      },
+      {
+        "id": 28710065250,
+        "name": "friction-ci",
+        "workflow": "friction-ci.yml",
+        "kind": "ci",
+        "event": "push",
+        "status": "completed",
+        "conclusion": "success",
+        "runNumber": 12,
+        "runAttempt": 1,
+        "branch": "main",
+        "createdAt": "2026-07-04T14:59:31Z",
+        "runStartedAt": "2026-07-04T14:59:31Z",
+        "updatedAt": "2026-07-04T15:01:17Z",
+        "wallTimeMs": 106000,
+        "queueTimeMs": 0,
+        "htmlUrl": "https://github.com/BigZoo92/dx-memory/actions/runs/28710065250"
+      }
+    ],
+    "runsSummary": {
+      "count": 20,
+      "completedCount": 19,
+      "successCount": 15,
+      "failureCount": 4,
+      "cancelledCount": 0,
+      "skippedCount": 0,
+      "successRate": 78.9,
+      "wallTime": {
+        "latestMs": 4000,
+        "avgMs": 280368,
+        "medianMs": 189000,
+        "p95Ms": 977000
+      },
+      "queueTime": {
+        "avgMs": 0
+      },
+      "latestRun": {
+        "status": "in_progress",
+        "conclusion": null,
+        "htmlUrl": "https://github.com/BigZoo92/dx-memory/actions/runs/28750093448",
+        "runNumber": 6
+      },
+      "truncated": false
+    },
     "jobs": {
-      "queriedRuns": 0,
-      "count": 0,
-      "byName": [],
-      "slowestJob": null,
-      "heatmap": []
+      "queriedRuns": 15,
+      "count": 44,
+      "records": [
+        {
+          "runId": 28750093448,
+          "runNumber": 6,
+          "name": "release",
+          "conclusion": null,
+          "startedAt": "2026-07-05T18:09:05Z",
+          "completedAt": null,
+          "durationMs": null
+        },
+        {
+          "runId": 28750087139,
+          "runNumber": 21,
+          "name": "variant-metrics (flow)",
+          "conclusion": "success",
+          "startedAt": "2026-07-05T18:08:50Z",
+          "completedAt": "2026-07-05T18:11:46Z",
+          "durationMs": 176000
+        },
+        {
+          "runId": 28750087139,
+          "runNumber": 21,
+          "name": "variant-metrics (overfit)",
+          "conclusion": "success",
+          "startedAt": "2026-07-05T18:08:51Z",
+          "completedAt": "2026-07-05T18:12:46Z",
+          "durationMs": 235000
+        },
+        {
+          "runId": 28750087139,
+          "runNumber": 21,
+          "name": "shared-metrics",
+          "conclusion": "success",
+          "startedAt": "2026-07-05T18:08:51Z",
+          "completedAt": "2026-07-05T18:10:59Z",
+          "durationMs": 128000
+        },
+        {
+          "runId": 28750087139,
+          "runNumber": 21,
+          "name": "variant-metrics (friction)",
+          "conclusion": "success",
+          "startedAt": "2026-07-05T18:08:52Z",
+          "completedAt": "2026-07-05T18:10:37Z",
+          "durationMs": 105000
+        },
+        {
+          "runId": 28750087139,
+          "runNumber": 21,
+          "name": "dynamic-timings",
+          "conclusion": "skipped",
+          "startedAt": "2026-07-05T18:08:49Z",
+          "completedAt": "2026-07-05T18:08:49Z",
+          "durationMs": 0
+        },
+        {
+          "runId": 28750087139,
+          "runNumber": 21,
+          "name": "aggregate-metrics",
+          "conclusion": "success",
+          "startedAt": "2026-07-05T18:12:48Z",
+          "completedAt": "2026-07-05T18:14:11Z",
+          "durationMs": 83000
+        },
+        {
+          "runId": 28750087134,
+          "runNumber": 16,
+          "name": "main",
+          "conclusion": "success",
+          "startedAt": "2026-07-05T18:08:51Z",
+          "completedAt": "2026-07-05T18:11:15Z",
+          "durationMs": 144000
+        },
+        {
+          "runId": 28750087134,
+          "runNumber": 16,
+          "name": "affected",
+          "conclusion": "skipped",
+          "startedAt": "2026-07-05T18:08:55Z",
+          "completedAt": "2026-07-05T18:08:49Z",
+          "durationMs": null
+        },
+        {
+          "runId": 28750087134,
+          "runNumber": 16,
+          "name": "a11y",
+          "conclusion": "skipped",
+          "startedAt": "2026-07-05T18:08:56Z",
+          "completedAt": "2026-07-05T18:08:49Z",
+          "durationMs": null
+        },
+        {
+          "runId": 28750087106,
+          "runNumber": 15,
+          "name": "friction",
+          "conclusion": "success",
+          "startedAt": "2026-07-05T18:08:50Z",
+          "completedAt": "2026-07-05T18:10:39Z",
+          "durationMs": 109000
+        },
+        {
+          "runId": 28749324497,
+          "runNumber": 5,
+          "name": "release",
+          "conclusion": "success",
+          "startedAt": "2026-07-05T17:41:22Z",
+          "completedAt": "2026-07-05T17:54:20Z",
+          "durationMs": 778000
+        },
+        {
+          "runId": 28749308343,
+          "runNumber": 15,
+          "name": "main",
+          "conclusion": "failure",
+          "startedAt": "2026-07-05T17:40:46Z",
+          "completedAt": "2026-07-05T17:41:08Z",
+          "durationMs": 22000
+        },
+        {
+          "runId": 28749308343,
+          "runNumber": 15,
+          "name": "a11y",
+          "conclusion": "skipped",
+          "startedAt": "2026-07-05T17:40:45Z",
+          "completedAt": "2026-07-05T17:40:44Z",
+          "durationMs": null
+        },
+        {
+          "runId": 28749308343,
+          "runNumber": 15,
+          "name": "affected",
+          "conclusion": "skipped",
+          "startedAt": "2026-07-05T17:40:45Z",
+          "completedAt": "2026-07-05T17:40:44Z",
+          "durationMs": null
+        },
+        {
+          "runId": 28749308272,
+          "runNumber": 14,
+          "name": "friction",
+          "conclusion": "failure",
+          "startedAt": "2026-07-05T17:40:46Z",
+          "completedAt": "2026-07-05T17:41:06Z",
+          "durationMs": 20000
+        },
+        {
+          "runId": 28749308264,
+          "runNumber": 20,
+          "name": "variant-metrics (flow)",
+          "conclusion": "success",
+          "startedAt": "2026-07-05T17:40:46Z",
+          "completedAt": "2026-07-05T17:43:36Z",
+          "durationMs": 170000
+        },
+        {
+          "runId": 28749308264,
+          "runNumber": 20,
+          "name": "variant-metrics (friction)",
+          "conclusion": "success",
+          "startedAt": "2026-07-05T17:40:46Z",
+          "completedAt": "2026-07-05T17:42:40Z",
+          "durationMs": 114000
+        },
+        {
+          "runId": 28749308264,
+          "runNumber": 20,
+          "name": "shared-metrics",
+          "conclusion": "success",
+          "startedAt": "2026-07-05T17:40:46Z",
+          "completedAt": "2026-07-05T17:42:53Z",
+          "durationMs": 127000
+        },
+        {
+          "runId": 28749308264,
+          "runNumber": 20,
+          "name": "variant-metrics (overfit)",
+          "conclusion": "success",
+          "startedAt": "2026-07-05T17:40:46Z",
+          "completedAt": "2026-07-05T17:44:20Z",
+          "durationMs": 214000
+        },
+        {
+          "runId": 28749308264,
+          "runNumber": 20,
+          "name": "dynamic-timings",
+          "conclusion": "skipped",
+          "startedAt": "2026-07-05T17:40:45Z",
+          "completedAt": "2026-07-05T17:40:44Z",
+          "durationMs": null
+        },
+        {
+          "runId": 28749308264,
+          "runNumber": 20,
+          "name": "aggregate-metrics",
+          "conclusion": "success",
+          "startedAt": "2026-07-05T17:44:22Z",
+          "completedAt": "2026-07-05T17:45:43Z",
+          "durationMs": 81000
+        },
+        {
+          "runId": 28713264017,
+          "runNumber": 4,
+          "name": "release",
+          "conclusion": "success",
+          "startedAt": "2026-07-04T16:58:45Z",
+          "completedAt": "2026-07-04T17:05:52Z",
+          "durationMs": 427000
+        },
+        {
+          "runId": 28713257034,
+          "runNumber": 19,
+          "name": "variant-metrics (overfit)",
+          "conclusion": "success",
+          "startedAt": "2026-07-04T16:58:28Z",
+          "completedAt": "2026-07-04T17:00:02Z",
+          "durationMs": 94000
+        },
+        {
+          "runId": 28713257034,
+          "runNumber": 19,
+          "name": "variant-metrics (friction)",
+          "conclusion": "success",
+          "startedAt": "2026-07-04T16:58:30Z",
+          "completedAt": "2026-07-04T17:00:32Z",
+          "durationMs": 122000
+        },
+        {
+          "runId": 28713257034,
+          "runNumber": 19,
+          "name": "shared-metrics",
+          "conclusion": "success",
+          "startedAt": "2026-07-04T16:58:28Z",
+          "completedAt": "2026-07-04T17:00:39Z",
+          "durationMs": 131000
+        },
+        {
+          "runId": 28713257034,
+          "runNumber": 19,
+          "name": "variant-metrics (flow)",
+          "conclusion": "success",
+          "startedAt": "2026-07-04T16:58:28Z",
+          "completedAt": "2026-07-04T17:00:27Z",
+          "durationMs": 119000
+        },
+        {
+          "runId": 28713257034,
+          "runNumber": 19,
+          "name": "dynamic-timings",
+          "conclusion": "skipped",
+          "startedAt": "2026-07-04T16:58:27Z",
+          "completedAt": "2026-07-04T16:58:26Z",
+          "durationMs": null
+        },
+        {
+          "runId": 28713257034,
+          "runNumber": 19,
+          "name": "aggregate-metrics",
+          "conclusion": "success",
+          "startedAt": "2026-07-04T17:00:33Z",
+          "completedAt": "2026-07-04T17:01:34Z",
+          "durationMs": 61000
+        },
+        {
+          "runId": 28712384798,
+          "runNumber": 3,
+          "name": "release",
+          "conclusion": "success",
+          "startedAt": "2026-07-04T16:25:29Z",
+          "completedAt": "2026-07-04T16:41:43Z",
+          "durationMs": 974000
+        },
+        {
+          "runId": 28712379068,
+          "runNumber": 18,
+          "name": "shared-metrics",
+          "conclusion": "success",
+          "startedAt": "2026-07-04T16:25:18Z",
+          "completedAt": "2026-07-04T16:27:27Z",
+          "durationMs": 129000
+        },
+        {
+          "runId": 28712379068,
+          "runNumber": 18,
+          "name": "variant-metrics (flow)",
+          "conclusion": "success",
+          "startedAt": "2026-07-04T16:25:18Z",
+          "completedAt": "2026-07-04T16:27:11Z",
+          "durationMs": 113000
+        },
+        {
+          "runId": 28712379068,
+          "runNumber": 18,
+          "name": "variant-metrics (overfit)",
+          "conclusion": "success",
+          "startedAt": "2026-07-04T16:25:18Z",
+          "completedAt": "2026-07-04T16:27:03Z",
+          "durationMs": 105000
+        },
+        {
+          "runId": 28712379068,
+          "runNumber": 18,
+          "name": "variant-metrics (friction)",
+          "conclusion": "success",
+          "startedAt": "2026-07-04T16:25:18Z",
+          "completedAt": "2026-07-04T16:27:06Z",
+          "durationMs": 108000
+        },
+        {
+          "runId": 28712379068,
+          "runNumber": 18,
+          "name": "dynamic-timings",
+          "conclusion": "skipped",
+          "startedAt": "2026-07-04T16:25:22Z",
+          "completedAt": "2026-07-04T16:25:16Z",
+          "durationMs": null
+        },
+        {
+          "runId": 28712379068,
+          "runNumber": 18,
+          "name": "aggregate-metrics",
+          "conclusion": "success",
+          "startedAt": "2026-07-04T16:27:13Z",
+          "completedAt": "2026-07-04T16:28:18Z",
+          "durationMs": 65000
+        },
+        {
+          "runId": 28712352367,
+          "runNumber": 2,
+          "name": "release",
+          "conclusion": "failure",
+          "startedAt": "2026-07-04T16:24:17Z",
+          "completedAt": "2026-07-04T16:30:09Z",
+          "durationMs": 352000
+        },
+        {
+          "runId": 28712100078,
+          "runNumber": 17,
+          "name": "shared-metrics",
+          "conclusion": "success",
+          "startedAt": "2026-07-04T16:14:37Z",
+          "completedAt": "2026-07-04T16:16:47Z",
+          "durationMs": 130000
+        },
+        {
+          "runId": 28712100078,
+          "runNumber": 17,
+          "name": "variant-metrics (friction)",
+          "conclusion": "success",
+          "startedAt": "2026-07-04T16:14:37Z",
+          "completedAt": "2026-07-04T16:16:19Z",
+          "durationMs": 102000
+        },
+        {
+          "runId": 28712100078,
+          "runNumber": 17,
+          "name": "variant-metrics (flow)",
+          "conclusion": "success",
+          "startedAt": "2026-07-04T16:14:36Z",
+          "completedAt": "2026-07-04T16:16:29Z",
+          "durationMs": 113000
+        },
+        {
+          "runId": 28712100078,
+          "runNumber": 17,
+          "name": "variant-metrics (overfit)",
+          "conclusion": "success",
+          "startedAt": "2026-07-04T16:14:37Z",
+          "completedAt": "2026-07-04T16:16:11Z",
+          "durationMs": 94000
+        },
+        {
+          "runId": 28712100078,
+          "runNumber": 17,
+          "name": "dynamic-timings",
+          "conclusion": "skipped",
+          "startedAt": "2026-07-04T16:14:42Z",
+          "completedAt": "2026-07-04T16:14:35Z",
+          "durationMs": null
+        },
+        {
+          "runId": 28712100078,
+          "runNumber": 17,
+          "name": "aggregate-metrics",
+          "conclusion": "success",
+          "startedAt": "2026-07-04T16:16:31Z",
+          "completedAt": "2026-07-04T16:17:35Z",
+          "durationMs": 64000
+        },
+        {
+          "runId": 28711363270,
+          "runNumber": 1,
+          "name": "release",
+          "conclusion": "failure",
+          "startedAt": "2026-07-04T15:47:12Z",
+          "completedAt": "2026-07-04T15:53:01Z",
+          "durationMs": 349000
+        }
+      ],
+      "byName": [
+        {
+          "name": "release",
+          "runsCount": 6,
+          "avgDurationMs": 576000,
+          "medianDurationMs": 427000,
+          "p95DurationMs": 974000,
+          "maxDurationMs": 974000,
+          "successRate": 60,
+          "failureCount": 2,
+          "failureRate": 40,
+          "latestConclusion": null
+        },
+        {
+          "name": "variant-metrics (overfit)",
+          "runsCount": 5,
+          "avgDurationMs": 148400,
+          "medianDurationMs": 105000,
+          "p95DurationMs": 235000,
+          "maxDurationMs": 235000,
+          "successRate": 100,
+          "failureCount": 0,
+          "failureRate": 0,
+          "latestConclusion": "success"
+        },
+        {
+          "name": "variant-metrics (flow)",
+          "runsCount": 5,
+          "avgDurationMs": 138200,
+          "medianDurationMs": 119000,
+          "p95DurationMs": 176000,
+          "maxDurationMs": 176000,
+          "successRate": 100,
+          "failureCount": 0,
+          "failureRate": 0,
+          "latestConclusion": "success"
+        },
+        {
+          "name": "shared-metrics",
+          "runsCount": 5,
+          "avgDurationMs": 129000,
+          "medianDurationMs": 129000,
+          "p95DurationMs": 131000,
+          "maxDurationMs": 131000,
+          "successRate": 100,
+          "failureCount": 0,
+          "failureRate": 0,
+          "latestConclusion": "success"
+        },
+        {
+          "name": "variant-metrics (friction)",
+          "runsCount": 5,
+          "avgDurationMs": 110200,
+          "medianDurationMs": 108000,
+          "p95DurationMs": 122000,
+          "maxDurationMs": 122000,
+          "successRate": 100,
+          "failureCount": 0,
+          "failureRate": 0,
+          "latestConclusion": "success"
+        },
+        {
+          "name": "main",
+          "runsCount": 2,
+          "avgDurationMs": 83000,
+          "medianDurationMs": 83000,
+          "p95DurationMs": 144000,
+          "maxDurationMs": 144000,
+          "successRate": 50,
+          "failureCount": 1,
+          "failureRate": 50,
+          "latestConclusion": "success"
+        },
+        {
+          "name": "aggregate-metrics",
+          "runsCount": 5,
+          "avgDurationMs": 70800,
+          "medianDurationMs": 65000,
+          "p95DurationMs": 83000,
+          "maxDurationMs": 83000,
+          "successRate": 100,
+          "failureCount": 0,
+          "failureRate": 0,
+          "latestConclusion": "success"
+        },
+        {
+          "name": "friction",
+          "runsCount": 2,
+          "avgDurationMs": 64500,
+          "medianDurationMs": 64500,
+          "p95DurationMs": 109000,
+          "maxDurationMs": 109000,
+          "successRate": 50,
+          "failureCount": 1,
+          "failureRate": 50,
+          "latestConclusion": "success"
+        },
+        {
+          "name": "dynamic-timings",
+          "runsCount": 5,
+          "avgDurationMs": 0,
+          "medianDurationMs": 0,
+          "p95DurationMs": 0,
+          "maxDurationMs": null,
+          "successRate": null,
+          "failureCount": 0,
+          "failureRate": null,
+          "latestConclusion": "skipped"
+        },
+        {
+          "name": "affected",
+          "runsCount": 2,
+          "avgDurationMs": null,
+          "medianDurationMs": null,
+          "p95DurationMs": null,
+          "maxDurationMs": null,
+          "successRate": null,
+          "failureCount": 0,
+          "failureRate": null,
+          "latestConclusion": "skipped"
+        },
+        {
+          "name": "a11y",
+          "runsCount": 2,
+          "avgDurationMs": null,
+          "medianDurationMs": null,
+          "p95DurationMs": null,
+          "maxDurationMs": null,
+          "successRate": null,
+          "failureCount": 0,
+          "failureRate": null,
+          "latestConclusion": "skipped"
+        }
+      ],
+      "slowestJob": {
+        "name": "release",
+        "durationMs": 576000
+      },
+      "avgDurationMs": 175943,
+      "maxDurationMs": 974000,
+      "heatmap": [
+        {
+          "runNumber": 21,
+          "jobs": [
+            {
+              "name": "variant-metrics (flow)",
+              "conclusion": "success",
+              "durationMs": 176000
+            },
+            {
+              "name": "variant-metrics (overfit)",
+              "conclusion": "success",
+              "durationMs": 235000
+            },
+            {
+              "name": "shared-metrics",
+              "conclusion": "success",
+              "durationMs": 128000
+            },
+            {
+              "name": "variant-metrics (friction)",
+              "conclusion": "success",
+              "durationMs": 105000
+            },
+            {
+              "name": "dynamic-timings",
+              "conclusion": "skipped",
+              "durationMs": 0
+            },
+            {
+              "name": "aggregate-metrics",
+              "conclusion": "success",
+              "durationMs": 83000
+            }
+          ]
+        },
+        {
+          "runNumber": 20,
+          "jobs": [
+            {
+              "name": "variant-metrics (flow)",
+              "conclusion": "success",
+              "durationMs": 170000
+            },
+            {
+              "name": "variant-metrics (friction)",
+              "conclusion": "success",
+              "durationMs": 114000
+            },
+            {
+              "name": "shared-metrics",
+              "conclusion": "success",
+              "durationMs": 127000
+            },
+            {
+              "name": "variant-metrics (overfit)",
+              "conclusion": "success",
+              "durationMs": 214000
+            },
+            {
+              "name": "dynamic-timings",
+              "conclusion": "skipped",
+              "durationMs": null
+            },
+            {
+              "name": "aggregate-metrics",
+              "conclusion": "success",
+              "durationMs": 81000
+            }
+          ]
+        },
+        {
+          "runNumber": 19,
+          "jobs": [
+            {
+              "name": "variant-metrics (overfit)",
+              "conclusion": "success",
+              "durationMs": 94000
+            },
+            {
+              "name": "variant-metrics (friction)",
+              "conclusion": "success",
+              "durationMs": 122000
+            },
+            {
+              "name": "shared-metrics",
+              "conclusion": "success",
+              "durationMs": 131000
+            },
+            {
+              "name": "variant-metrics (flow)",
+              "conclusion": "success",
+              "durationMs": 119000
+            },
+            {
+              "name": "dynamic-timings",
+              "conclusion": "skipped",
+              "durationMs": null
+            },
+            {
+              "name": "aggregate-metrics",
+              "conclusion": "success",
+              "durationMs": 61000
+            }
+          ]
+        },
+        {
+          "runNumber": 18,
+          "jobs": [
+            {
+              "name": "shared-metrics",
+              "conclusion": "success",
+              "durationMs": 129000
+            },
+            {
+              "name": "variant-metrics (flow)",
+              "conclusion": "success",
+              "durationMs": 113000
+            },
+            {
+              "name": "variant-metrics (overfit)",
+              "conclusion": "success",
+              "durationMs": 105000
+            },
+            {
+              "name": "variant-metrics (friction)",
+              "conclusion": "success",
+              "durationMs": 108000
+            },
+            {
+              "name": "dynamic-timings",
+              "conclusion": "skipped",
+              "durationMs": null
+            },
+            {
+              "name": "aggregate-metrics",
+              "conclusion": "success",
+              "durationMs": 65000
+            }
+          ]
+        },
+        {
+          "runNumber": 17,
+          "jobs": [
+            {
+              "name": "shared-metrics",
+              "conclusion": "success",
+              "durationMs": 130000
+            },
+            {
+              "name": "variant-metrics (friction)",
+              "conclusion": "success",
+              "durationMs": 102000
+            },
+            {
+              "name": "variant-metrics (flow)",
+              "conclusion": "success",
+              "durationMs": 113000
+            },
+            {
+              "name": "variant-metrics (overfit)",
+              "conclusion": "success",
+              "durationMs": 94000
+            },
+            {
+              "name": "dynamic-timings",
+              "conclusion": "skipped",
+              "durationMs": null
+            },
+            {
+              "name": "aggregate-metrics",
+              "conclusion": "success",
+              "durationMs": 64000
+            }
+          ]
+        },
+        {
+          "runNumber": 16,
+          "jobs": [
+            {
+              "name": "main",
+              "conclusion": "success",
+              "durationMs": 144000
+            },
+            {
+              "name": "affected",
+              "conclusion": "skipped",
+              "durationMs": null
+            },
+            {
+              "name": "a11y",
+              "conclusion": "skipped",
+              "durationMs": null
+            }
+          ]
+        },
+        {
+          "runNumber": 15,
+          "jobs": [
+            {
+              "name": "friction",
+              "conclusion": "success",
+              "durationMs": 109000
+            },
+            {
+              "name": "main",
+              "conclusion": "failure",
+              "durationMs": 22000
+            },
+            {
+              "name": "a11y",
+              "conclusion": "skipped",
+              "durationMs": null
+            },
+            {
+              "name": "affected",
+              "conclusion": "skipped",
+              "durationMs": null
+            }
+          ]
+        },
+        {
+          "runNumber": 14,
+          "jobs": [
+            {
+              "name": "friction",
+              "conclusion": "failure",
+              "durationMs": 20000
+            }
+          ]
+        },
+        {
+          "runNumber": 6,
+          "jobs": [
+            {
+              "name": "release",
+              "conclusion": null,
+              "durationMs": null
+            }
+          ]
+        },
+        {
+          "runNumber": 5,
+          "jobs": [
+            {
+              "name": "release",
+              "conclusion": "success",
+              "durationMs": 778000
+            }
+          ]
+        },
+        {
+          "runNumber": 4,
+          "jobs": [
+            {
+              "name": "release",
+              "conclusion": "success",
+              "durationMs": 427000
+            }
+          ]
+        },
+        {
+          "runNumber": 3,
+          "jobs": [
+            {
+              "name": "release",
+              "conclusion": "success",
+              "durationMs": 974000
+            }
+          ]
+        },
+        {
+          "runNumber": 2,
+          "jobs": [
+            {
+              "name": "release",
+              "conclusion": "failure",
+              "durationMs": 352000
+            }
+          ]
+        },
+        {
+          "runNumber": 1,
+          "jobs": [
+            {
+              "name": "release",
+              "conclusion": "failure",
+              "durationMs": 349000
+            }
+          ]
+        }
+      ]
     },
     "flakyProxy": {
-      "unstableJobsCount": 0,
-      "unstableJobs": [],
-      "rate": null
+      "unstableJobsCount": 3,
+      "unstableJobs": [
+        {
+          "name": "release",
+          "failureRate": 40,
+          "runsCount": 6
+        },
+        {
+          "name": "main",
+          "failureRate": 50,
+          "runsCount": 2
+        },
+        {
+          "name": "friction",
+          "failureRate": 50,
+          "runsCount": 2
+        }
+      ],
+      "rate": 0.273,
+      "method": "job-level instability proxy: a job that both passed and failed across the sampled runs. NOT a test-level flaky rate."
     },
     "artifacts": {
-      "count": 0,
-      "totalSizeBytes": 0,
-      "avgSizeBytes": 0,
-      "metricsArtifactsCount": 0,
-      "dashboardArtifactsCount": 0,
-      "latest": []
+      "count": 81,
+      "totalSizeBytes": 2120491,
+      "avgSizeBytes": 26179,
+      "metricsArtifactsCount": 71,
+      "dashboardArtifactsCount": 10,
+      "latest": [
+        {
+          "name": "metrics-dashboard",
+          "sizeBytes": 107070,
+          "createdAt": "2026-07-05T18:14:09Z"
+        },
+        {
+          "name": "metrics-results",
+          "sizeBytes": 103375,
+          "createdAt": "2026-07-05T18:14:08Z"
+        },
+        {
+          "name": "metrics-variant-overfit",
+          "sizeBytes": 792,
+          "createdAt": "2026-07-05T18:12:43Z"
+        },
+        {
+          "name": "metrics-variant-flow",
+          "sizeBytes": 799,
+          "createdAt": "2026-07-05T18:11:44Z"
+        },
+        {
+          "name": "metrics-seed",
+          "sizeBytes": 3712,
+          "createdAt": "2026-07-05T18:10:56Z"
+        },
+        {
+          "name": "metrics-variant-friction",
+          "sizeBytes": 775,
+          "createdAt": "2026-07-05T18:10:34Z"
+        },
+        {
+          "name": "metrics-dashboard",
+          "sizeBytes": 101793,
+          "createdAt": "2026-07-05T17:45:40Z"
+        },
+        {
+          "name": "metrics-results",
+          "sizeBytes": 97591,
+          "createdAt": "2026-07-05T17:45:39Z"
+        },
+        {
+          "name": "metrics-variant-overfit",
+          "sizeBytes": 779,
+          "createdAt": "2026-07-05T17:44:18Z"
+        },
+        {
+          "name": "metrics-variant-flow",
+          "sizeBytes": 786,
+          "createdAt": "2026-07-05T17:43:35Z"
+        }
+      ]
     },
     "pullRequests": {
       "count": 0,
       "mergedCount": 0,
       "detailed": 0,
       "list": [],
-      "buckets": null
+      "buckets": {
+        "flow": 0,
+        "friction": 0,
+        "overfit": 0,
+        "metricsDashboard": 0,
+        "config": 0,
+        "other": 0
+      },
+      "avgChangedFiles": null,
+      "medianChangedFiles": null,
+      "avgAdditions": null,
+      "avgDeletions": null,
+      "avgReviewCount": null,
+      "avgReviewComments": null,
+      "avgTimeToMergeMs": null,
+      "medianTimeToMergeMs": null
     },
     "deploy": {
-      "source": "unavailable",
+      "source": "actions_jobs",
       "latestStatus": null,
       "latestDurationMs": null,
-      "avgDurationMs": null,
-      "successRateLastN": null,
+      "avgDurationMs": 576000,
+      "successRateLastN": 60,
       "deployments": []
     }
   },
   "history": [
     {
-      "at": "2026-07-02T15:26:34.409Z",
-      "commit": "4e748c5",
+      "at": "2026-07-05T18:17:14.948Z",
+      "commit": "4383eff",
       "totalDeliveryScore": {
-        "flow": 63.9,
-        "friction": 54,
-        "overfit": 51.8
+        "flow": 75.2,
+        "friction": 76.9,
+        "overfit": 47.1
       },
       "shipScore": {
-        "flow": 0,
-        "friction": 100,
-        "overfit": 7.5
+        "flow": 66.9,
+        "friction": 90,
+        "overfit": 64.4
       },
-      "ciWallTimeMs": null,
-      "flowBundleGzipKb": 216.1
-    },
-    {
-      "at": "2026-07-02T15:45:07.563Z",
-      "commit": "4e748c5",
-      "totalDeliveryScore": {
-        "flow": 63.9,
-        "friction": 54,
-        "overfit": 51.8
-      },
-      "shipScore": {
-        "flow": 0,
-        "friction": 100,
-        "overfit": 7.5
-      },
-      "ciWallTimeMs": null,
-      "flowBundleGzipKb": 216.1
-    },
-    {
-      "at": "2026-07-02T16:23:04.005Z",
-      "commit": "59e363d",
-      "totalDeliveryScore": {
-        "flow": 63.9,
-        "friction": 54,
-        "overfit": 51.8
-      },
-      "shipScore": {
-        "flow": 0,
-        "friction": 100,
-        "overfit": 7.5
-      },
-      "ciWallTimeMs": null,
-      "flowBundleGzipKb": 216.1
-    },
-    {
-      "at": "2026-07-05T18:02:46.470Z",
-      "commit": "b184096",
-      "totalDeliveryScore": {
-        "flow": 82.5,
-        "friction": 79.2,
-        "overfit": 50.1
-      },
-      "shipScore": {
-        "flow": 100,
-        "friction": 80,
-        "overfit": 80
-      },
-      "ciWallTimeMs": null,
+      "ciWallTimeMs": 280368,
       "flowBundleGzipKb": 216.4
     }
   ]

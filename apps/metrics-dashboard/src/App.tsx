@@ -185,15 +185,16 @@ export default function App() {
               </div>
               <MetricBarGroup
                 metricKeys={[
-                  'ship.services.count',
                   'ship.healthcheck.coverage',
-                  'variant.docker.image.size',
-                  'variant.docker.build.duration'
+                  'ship.services.count',
+                  'variant.docker.build.duration',
+                  'variant.ci.errors.count',
+                  'variant.docker.image.size'
                 ]}
               />
               <p className="chart-note">
-                Surface counted from the variant&rsquo;s real Dockerfiles (the ones release.yml ships); image metrics come from
-                the CI matrix&rsquo;s <code className="mono">docker build --no-cache</code>.
+                Ship v1.1 balances deploy confidence (dedicated healthchecked deploys and clean gate output) with coordination
+                and packaging cost. Docker image size stays measured, but as context rather than the dominant signal.
               </p>
             </Reveal>
             <Reveal className="card">

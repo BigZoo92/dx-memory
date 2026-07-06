@@ -33,7 +33,7 @@ for (const v of summary.variants) {
   const measuredAxes = AXES.filter((a) => v.scores[a]?.value != null)
   const headlineWSum = measuredAxes.reduce((s, a) => s + axisWeightOf(a), 0)
 
-  console.log(`\n━━━ ${v.meta.label.toUpperCase()} — Total Delivery Score = ${v.scores.totalDeliveryScore.value} (provisional if coverage < full) ━━━`)
+  console.log(`\n━━━ ${v.meta.label.toUpperCase()} — Total Delivery Score = ${v.scores.totalDeliveryScore.value} ━━━`)
   for (const axis of AXES) {
     const group = summary.scoreGroups[axis]
     const axisScore = v.scores[axis]

@@ -133,8 +133,9 @@ The four axes, in one sentence each (members in `scoreGroups`):
 
 - **Build** — the price of one trustworthy signal: full cold validation (build+typecheck+
   lint+test, caches off) and the same gates re-run **warm** with the variant's real caches.
-- **Ship** — the price of turning a validated change into running software: services to
-  build/push/deploy, deploy-guard (HEALTHCHECK) coverage, image size and no-cache image build.
+- **Ship** — the capability to turn a validated change into releasable running software
+  with confidence: dedicated healthchecked deploys, services to coordinate, clean gate
+  output, Docker build cost, and image size as minor packaging context.
 - **Run** — the price of understanding production: runtimes to inspect, dedicated health
   endpoint coverage, container time-to-healthy. (Lighthouse is deliberately *not* here — it
   measures product quality, not diagnosability.)
@@ -145,15 +146,17 @@ The four axes, in one sentence each (members in `scoreGroups`):
   — contract restatements + hygiene signals that explain WHY it propagated that way.
   `tools/metrics/sensitivity.mjs` proves the verdict does not hinge on the Change weight.
 
-### Model freeze — `modelVersion: "1.0"`
+### Model freeze — `modelVersion: "1.1"`
 
-The scoring model is **frozen for the experiment** (final coherence audit, 2026-07-05).
+The scoring model is **frozen for the experiment** (Ship v1.1 audit, 2026-07-06).
 Definition lives in one file: [`config/scoring.config.json`](config/scoring.config.json).
+The pre-result Ship audit and formula freeze are recorded in
+[`docs/ship-v1.1.md`](docs/ship-v1.1.md).
 
 - **Why these axes**: Build/Ship/Run/Change are the four moments a change pays for —
   signal, delivery, operation, next modification. Change dominates (0.50) because most of
   a product's life is modification; Build 0.20 (paid tens of times a day), Ship/Run 0.15.
-- **What is scored**: only `scope:'variant'` metrics; 2–4 members per axis for Build/Ship/
+- **What is scored**: only `scope:'variant'` metrics; 2–5 members per axis for Build/Ship/
   Run, footprint+structure for Change. Every score is ratio-to-best, variant-agnostic.
 - **What is context only**: test-support surface (classification is language-idiom
   sensitive), total/generated footprint, CI feedback (observational), RAM peaks,
@@ -283,6 +286,10 @@ pnpm metrics:dynamic
 Peak-RAM numbers need GNU/BSD `/usr/bin/time`; where it's absent they read `unavailable`.
 Docker is strictly best-effort: no daemon or no Dockerfile ⇒ the Docker metrics are `pending`,
 never a faked size.
+
+`variant.docker.image.size` is the sum of the variant's deployable release images. The primary
+image still drives the startup probe, but multi-service variants no longer report only their web
+facade while leaving the API image out of the release artifact size.
 
 **Read the artifacts** — in CI, download `metrics-variant-flow` / `-friction` / `-overfit`
 (each contains one `<variant>.json`), or after `aggregate-metrics`, the merged

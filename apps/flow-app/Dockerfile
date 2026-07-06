@@ -19,6 +19,21 @@ RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 RUN pnpm --filter @signalops/flow-app build
 # `deploy` produces a self-contained dir with only flow-app's PRODUCTION deps.
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm --filter @signalops/flow-app deploy --prod /prod/flow-app
+# TanStack Start's production dependency graph keeps its Vite/Rolldown plugin toolchain.
+# The built server imports the runtime packages only; these build/test packages were
+# verified unnecessary for serving /api/health and product routes.
+RUN rm -rf \
+  /prod/flow-app/node_modules/.pnpm/@rolldown+* \
+  /prod/flow-app/node_modules/.pnpm/rolldown@* \
+  /prod/flow-app/node_modules/.pnpm/@rollup+* \
+  /prod/flow-app/node_modules/.pnpm/esbuild@* \
+  /prod/flow-app/node_modules/.pnpm/@esbuild+* \
+  /prod/flow-app/node_modules/.pnpm/lightningcss* \
+  /prod/flow-app/node_modules/.pnpm/prettier@* \
+  /prod/flow-app/node_modules/.pnpm/@tanstack+router-generator@* \
+  /prod/flow-app/node_modules/.pnpm/@tanstack+router-plugin@* \
+  /prod/flow-app/node_modules/.pnpm/@tanstack+start-plugin-core@* \
+  /prod/flow-app/node_modules/.pnpm/@signalops+test-scenarios@*
 
 # ---- runtime: small, non-root image with only dist + prod node_modules ----
 FROM node:22-slim AS runtime

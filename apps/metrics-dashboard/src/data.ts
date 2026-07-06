@@ -17,6 +17,40 @@ export function variant(id: VariantId): VariantSummary {
 export const AXES = ['Build', 'Ship', 'Run', 'Change'] as const
 export type Axis = (typeof AXES)[number]
 
+const scoredAxisGroups = Object.entries(summary.scoreGroups ?? {}).filter(
+  ([name, group]) => !name.startsWith('$') && group?.kind === 'axis' && group.members
+)
+
+type PublishedVerdictIssue = {
+  variant: VariantId
+  axis: string
+  key: string
+  reason: string
+}
+
+export const publishedVerdictIssues: PublishedVerdictIssue[] = variants.flatMap((variantSummary) => {
+  const id = variantSummary.meta.variant
+  const issues: PublishedVerdictIssue[] = []
+  for (const [axis, group] of scoredAxisGroups) {
+    for (const key of Object.keys(group.members)) {
+      const metric = variantSummary.metrics[key]
+      if (metric?.status !== 'ok') {
+        issues.push({ variant: id, axis, key, reason: metric?.reason ?? 'not collected' })
+      }
+    }
+  }
+  for (const [axis] of scoredAxisGroups) {
+    const score = variantSummary.scores[axis]
+    if (score?.gated || score?.value == null || score?.complete === false) {
+      issues.push({ variant: id, axis, key: axis, reason: 'axis score incomplete or gated' })
+    }
+  }
+  return issues
+})
+
+export const publishedVerdictFinal =
+  summary.provenance?.source === 'ci' && publishedVerdictIssues.length === 0
+
 /* ------------------------------------------------- GitHub delivery pipeline ---- */
 export const githubSource = summary.sources?.github
 export const github = summary.github
