@@ -1,5 +1,5 @@
 import { useRef } from 'react'
-import { Link } from '@tanstack/react-router'
+import { Link, useNavigate } from '@tanstack/react-router'
 import {
   flexRender,
   getCoreRowModel,
@@ -183,6 +183,7 @@ export function SignalsTable({
   assigneeOverrides = NO_ASSIGNEE_OVERRIDES
 }: SignalsTableProps) {
   const parentRef = useRef<HTMLDivElement>(null)
+  const navigate = useNavigate()
   const columns = buildColumns(statusOverrides, assigneeOverrides)
 
   const table = useReactTable({
@@ -264,6 +265,12 @@ export function SignalsTable({
                 aria-rowindex={virtualRow.index + 2}
                 aria-selected={row.getIsSelected()}
                 className={`${styles.row} ${row.getIsSelected() ? styles.rowSelected : ''}`}
+                // Whole row opens the detail view. Clicks that land on an interactive cell
+                // (checkbox, the linked-incident link, the View button) keep their own behavior.
+                onClick={(event) => {
+                  if ((event.target as HTMLElement).closest('a, button, input')) return
+                  navigate({ to: '/signals/$id', params: { id: row.original.id } })
+                }}
                 style={{
                   position: 'absolute',
                   top: 0,
