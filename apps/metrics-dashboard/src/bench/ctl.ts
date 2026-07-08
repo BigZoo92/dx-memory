@@ -7,8 +7,9 @@
 //   axis_raw_factor(variant) = moyenne géométrique des cost_ratio de l'axe
 //   axis_relative_cost(v)    = axis_raw_factor(v) / min des axis_raw_factor
 //
-// Le meilleur équilibre observé sur un axe vaut donc 1,00×. Les facteurs se comparent
-// entre variantes SUR UN MÊME AXE ; deux axes n'ont pas la même unité sous-jacente.
+// 1,00× désigne le plus faible coût relatif observé sur l'axe dans cette expérience —
+// une référence de lecture, pas une note. Les facteurs se comparent entre variantes
+// SUR UN MÊME AXE ; deux axes n'ont pas la même unité sous-jacente.
 // Les valeurs non arrondies sont conservées ici ; l'arrondi (2 décimales) est un
 // choix d'affichage.
 
@@ -32,7 +33,7 @@ export interface AxisResult {
   metrics: AxisMetric[]
   costRatios: Record<string, PerVariant<number>>
   rawFactor: PerVariant<number>
-  /** Facteur relatif de l'axe, meilleur équilibre = 1. Non arrondi. */
+  /** Facteur relatif de l'axe, plus faible coût relatif observé = 1. Non arrondi. */
   relativeCost: PerVariant<number>
 }
 

@@ -115,7 +115,8 @@ Les chronos de l'acte 3 ne sont pas rechargés : ils **se transforment** —
 le temps s'empile (S01+S02), puis la caméra change de métrique.
 
 1. **Temps cumulé** (honnête d'abord) : Friction reste devant.
-   `25:49 · 34:52 · 38:33` — « Friction est toujours plus rapide. »
+   `25:49 · 34:52 · 38:33` — « Friction reste la plus rapide sur ces deux
+   petits changements proches — elle accélère aussi en S02. »
 2. **La matière du changement** : le churn devient texture — chaque LOC un trait.
    ```
    CHURN CUMULÉ S01+S02 :  FLOW 291   FRICTION 346   OVERFIT 470
@@ -205,7 +206,8 @@ comparé entre variantes (méthodes non homogènes — renvoi vers Limites).
 ## Acte 7 — L'adresse de la facture (~90 s)
 
 Le profil de coût total de livraison. Pas un score. Quatre axes indépendants,
-quatre rails horizontaux ; sur chaque rail, le meilleur équilibre observé = `1,00×`.
+quatre rails horizontaux ; sur chaque rail, `1,00×` = le plus faible coût relatif
+observé sur l'axe (une référence de lecture, pas une perfection).
 
 ```
 BUILD    FRICTION 1,00×   FLOW 1,06×   OVERFIT 2,77×
@@ -225,23 +227,25 @@ en boucle chaude Flow l'emporte (6,1 s vs 14,5 s) — le facteur combine les deu
 Hors facteur Ship : démarrage conteneur (Flow SSR 14,6 s vs 67 ms) — exposé,
 non compté (topologies non comparables).
 
-Lecture (marquée) : la facture de Friction est à l'adresse **Change** ;
-celle d'Overfit surtout à **Build** et **Change** ; Flow paie quelques pourcents
-partout pour réduire le coût d'évolution.
+Lecture (marquée) : la facture de Friction est à l'adresse **Change** (1,50×
+contre 1,00× pour Flow) ; celle d'Overfit surtout à **Build** et **Change** ;
+Flow paie quelques pourcents partout et c'est sur Change qu'il creuse l'écart.
 
 Note de sensibilité visible : sans le churn qualité S04, l'axe Change change de
 tête (Friction 1,00× · Flow 1,06×) — détaillé dans Méthode/Limites.
 
 ## Acte 8 — Trois préconisations, puis les limites (~60 s)
 
-1. **Mesurer avant d'optimiser** : tenir un profil Build/Ship/Run/Change comme
-   boussole d'équipe ; juger chaque optimisation locale sur le système entier.
-2. **Investir dans les frontières qui réduisent le coût du changement** —
-   y compris pour l'IA : l'agent amplifie le système qu'on lui donne
-   (contexte local, contrats explicites, golden paths légers).
-3. **Faire de l'accessibilité et de la sobriété des attentes par défaut du
-   système** : intégrées aux gates et aux primitives, elles coûtent 18 LOC ;
-   en chantier correctif, 80 à 107.
+1. **CARTOGRAPHIER** — avant d'optimiser, localiser la facture : identifier où
+   le coût se situe réellement, vérifier qu'il est fréquent et structurant,
+   mesurer avant/après, regarder où l'optimisation risque de déplacer le coût.
+2. **PAVER** — des golden paths légers, pas des autoroutes obligatoires :
+   réduire la friction des parcours fréquents, chemins simples et documentés,
+   bonnes primitives, porte de sortie hors du standard.
+3. **GOUVERNER** — IA, accessibilité et sobriété comme des décisions normales,
+   pas des correctifs de fin de projet : contexte fiable pour les agents IA,
+   accessibilité dans les primitives, sobriété dans les choix de chargement,
+   de cache et d'architecture, arbitrées dans le flux normal de livraison.
 
 Conclusion :
 

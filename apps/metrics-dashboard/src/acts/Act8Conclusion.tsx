@@ -1,23 +1,39 @@
 import { Act, Affirm, Kicker, Lecture, Reveal } from '../ui/voice'
 
-const PRECOS = [
+const PRECOS: { n: string; title: string; body: React.ReactNode }[] = [
   {
     n: '01',
-    title: 'Mesurer avant d’optimiser',
-    body:
-      'Tenir un profil Build / Ship / Run / Change comme boussole d’équipe — pas comme un score. Une optimisation locale se juge sur le système entier : une CI plus rapide qui teste moins, une image minuscule qu’on ne sait plus diagnostiquer ou une industrialisation qui rend chaque changement transversal déplacent la facture au lieu de la réduire.'
+    title: 'Cartographier',
+    body: (
+      <>
+        <strong>Avant d'optimiser, localiser la facture.</strong> Identifier où le coût se situe
+        réellement · vérifier qu'il est fréquent et structurant · mesurer avant / après · regarder
+        où l'optimisation risque de déplacer le coût.
+      </>
+    )
   },
   {
     n: '02',
-    title: 'Investir dans les frontières qui réduisent le coût du changement',
-    body:
-      'Des responsabilités explicites, des contrats uniques, des golden paths légers — calibrés sur le produit, pas sur l’ambition technique. C’est aussi un investissement IA : l’agent amplifie le système qu’on lui donne ; un contexte local et lisible transforme la même IA en meilleur coéquipier.'
+    title: 'Paver',
+    body: (
+      <>
+        <strong>Des golden paths légers — pas des autoroutes obligatoires.</strong> Réduire la
+        friction des parcours fréquents · préparer des chemins simples et documentés · fournir les
+        bonnes primitives · garder une porte de sortie quand un cas sort du standard.
+      </>
+    )
   },
   {
     n: '03',
-    title: 'Faire de l’accessibilité et de la sobriété des attentes par défaut',
-    body:
-      'Intégrées aux primitives et aux gates du système, ces qualités ont coûté 18 lignes ; en chantier correctif, 80 à 107. Les budgets d’accessibilité et de requêtes appartiennent au chemin de livraison — pour les personnes qui utilisent le produit comme pour son empreinte environnementale.'
+    title: 'Gouverner',
+    body: (
+      <>
+        <strong>IA, accessibilité et sobriété : des décisions normales, pas des correctifs de fin
+        de projet.</strong> Donner un contexte fiable aux agents IA · intégrer l'accessibilité aux
+        primitives et composants · intégrer la sobriété aux choix de chargement, de cache et
+        d'architecture · arbitrer ces sujets dans le flux normal de livraison.
+      </>
+    )
   }
 ]
 

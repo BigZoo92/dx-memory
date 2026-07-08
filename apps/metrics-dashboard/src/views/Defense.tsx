@@ -141,7 +141,8 @@ export function Methode() {
 axis_raw_factor(variante) = moyenne_géométrique(cost_ratio des métriques de l'axe)
 axis_relative_cost(v)     = axis_raw_factor(v) / min(axis_raw_factor des trois variantes)`}</pre>
         <p>
-          Le meilleur équilibre observé sur un axe vaut 1,00×. Les facteurs sont comparables entre
+          Sur un axe, 1,00× désigne le plus faible coût relatif observé dans cette expérience — une
+          référence de lecture, pas une note ni une perfection. Les facteurs sont comparables entre
           variantes <strong>sur un même axe</strong> ; les axes n'ont pas la même unité sous-jacente,
           on ne les additionne pas, on ne les moyenne pas, on ne les convertit pas en monnaie.
           L'affichage arrondit à deux décimales ; le modèle garde les valeurs exactes.
@@ -207,9 +208,10 @@ axis_relative_cost(v)     = axis_raw_factor(v) / min(axis_raw_factor des trois v
           Sans <code>quality_target_churn</code> (S04) : Friction{' '}
           {fmtFactor(CHANGE_SENSITIVITY.relativeCost.friction)}, Flow{' '}
           {fmtFactor(CHANGE_SENSITIVITY.relativeCost.flow)}, Overfit{' '}
-          {fmtFactor(CHANGE_SENSITIVITY.relativeCost.overfit)} — la tête de l'axe change. La lecture
-          honnête : l'avantage Change de Flow est porté par le coût d'absorption des qualités
-          transversales, pas par les deux petits changements métier seuls. Assumé en Limites n° 9.
+          {fmtFactor(CHANGE_SENSITIVITY.relativeCost.overfit)} — la tête de l'axe bascule. La lecture
+          honnête : Flow prend nettement l'avantage sur Change lorsque le coût d'obtention des
+          qualités transversales (accessibilité + sobriété) fait partie du coût normal de livraison —
+          pas nécessairement sur n'importe quel périmètre. Assumé en Limites n° 9.
         </p>
       </div>
     </Section>

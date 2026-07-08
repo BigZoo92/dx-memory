@@ -42,7 +42,7 @@ function AxisRail({ axis }: { axis: AxisResult }) {
                     level: 'derived',
                     source: axis.metrics.map((m) => m.source).join(' ; '),
                     formula:
-                      'moyenne géométrique des cost_ratio de l’axe, normalisée par le meilleur équilibre (= 1,00×)',
+                      'moyenne géométrique des cost_ratio de l’axe, normalisée par le plus faible coût relatif observé sur l’axe (= 1,00×)',
                     note: `Valeur non arrondie : ${axis.relativeCost[v].toFixed(6)}. Comparable entre variantes sur ce même axe uniquement — pas d'un axe à l'autre, pas en euros.`
                   }}
                 >
@@ -98,9 +98,9 @@ function AxisRail({ axis }: { axis: AxisResult }) {
 }
 
 const READING: Record<VariantId, string> = {
-  friction: 'La facture de Friction est à l’adresse Change : 1,50× le meilleur équilibre observé pour faire évoluer le système.',
+  friction: 'La facture de Friction est à l’adresse Change : un coût relatif observé de 1,50×, contre 1,00× pour Flow.',
   overfit: 'Celle d’Overfit est répartie — mais s’alourdit à Build (2,77×) et Change (1,88×) : le prix de la sophistication sur un petit produit.',
-  flow: 'Flow paie quelques pourcents partout (1,02× à 1,09×) pour ramener le coût d’évolution à 1,00×.'
+  flow: 'Flow paie quelques pourcents partout (1,02× à 1,09×) — et c’est sur Change qu’il creuse l’écart, avec le plus faible coût relatif observé de l’axe.'
 }
 
 export function Act7Profil() {
@@ -114,9 +114,10 @@ export function Act7Profil() {
       </Affirm>
       <Reveal>
         <p className="prose">
-          Quatre axes indépendants. Sur chaque axe, le meilleur équilibre observé vaut{' '}
-          <strong>1,00×</strong> ; les facteurs se lisent <em>sur un même axe</em>, jamais d'un axe à
-          l'autre, jamais additionnés, jamais moyennés — et jamais convertis en euros.
+          Quatre axes indépendants. Sur chaque axe, <strong>1,00×</strong> marque le plus faible
+          coût relatif observé — une référence, pas une perfection. Les facteurs se lisent{' '}
+          <em>sur un même axe</em>, jamais d'un axe à l'autre, jamais additionnés, jamais moyennés —
+          et jamais convertis en euros.
         </p>
       </Reveal>
       <div className="rails">
