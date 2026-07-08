@@ -16,7 +16,6 @@
     "build": {
       "executor": "nx:run-commands",
       "outputs": ["{projectRoot}/dist"],
-      "dependsOn": ["collect"],
       "options": { "command": "tsc -p tsconfig.json && vite build", "cwd": "apps/metrics-dashboard" }
     },
     "typecheck": {

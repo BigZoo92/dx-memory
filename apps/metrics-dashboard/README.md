@@ -1,58 +1,41 @@
-# @signalops/metrics-dashboard
+# `/metrics` — « L'adresse de la facture »
 
-An editorial, D3-powered dashboard that compares the **Flow / Friction / Overfit** variants on
-the four axes of delivery cost. It renders the JSON produced by
-[`tools/metrics`](../../tools/metrics) — it never computes metrics itself, so it stays fast and
-the data is auditable.
+Essai visuel interactif du mémoire **« Optimiser la DX pour une UX qui rapporte »**
+(Enzo Givernaud, M2 IWID). La page sert de support de soutenance scrollable :
+huit actes narratifs, puis les vues de défense (Méthode / Limites / Données / Sources)
+pour les questions du jury. Le storyboard complet est dans [STORYBOARD.md](./STORYBOARD.md).
+
+## Données
+
+La page n'importe qu'une seule source : `src/bench/truth-pack.json`, le pack de
+vérité consolidé des 12 runs de benchmark (S01-S04 × Flow/Friction/Overfit).
+
+- Il est **généré mécaniquement** par `node tools/metrics/bench-truth-pack.mjs`
+  depuis l'archive brute (`~/dx-memory-benchmark-archive-2026-07-08`) et les
+  mesures CI gelées (`tools/metrics/results/ci/*.json`).
+- Le générateur vérifie des checkpoints d'intégrité et documente chaque
+  consolidation (valeur brute conservée, valeur consolidée, raison).
+- `pnpm metrics:truth-pack:check` échoue si le JSON committé dérive du raw.
+- Le build est hermétique : aucun collecteur ne tourne au build.
+
+Le profil de coût total de livraison (facteurs `×` par axe Build/Ship/Run/Change)
+est recalculé à l'exécution dans `src/bench/ctl.ts` — formules lisibles, valeurs
+non arrondies conservées, arrondi = affichage seulement. Il n'existe volontairement
+**aucun score global** : les axes ne sont ni additionnés ni moyennés.
+
+## Niveaux de vérité
+
+Chaque valeur porte un niveau (`direct` / `derived` / `reviewable` /
+`interpretation`) et une provenance. Dans la page, cliquer une valeur ouvre sa
+fiche (source, formule, limite associée). Les interprétations sont marquées
+typographiquement (serif italique + étiquette « lecture »).
+
+## Commandes
 
 ```bash
-pnpm metrics:dashboard          # dev  → http://localhost:5173
-pnpm metrics:dashboard:build    # collect fresh metrics + build static site to dist/
+pnpm metrics:dashboard        # dev server (http://localhost:5173/metrics/)
+pnpm metrics:dashboard:build  # tsc + vite build
+pnpm --filter @signalops/metrics-dashboard typecheck
+pnpm --filter @signalops/metrics-dashboard lint
+pnpm metrics:truth-pack       # régénère src/bench/truth-pack.json depuis l'archive
 ```
-
-## How it reads data
-
-`vite.config.ts` aliases `@metrics` → `tools/metrics/results/summary/latest.json`, imported at
-build time (baked into the bundle — no runtime fetch, deploy anywhere static). Re-run the
-collector and rebuild to refresh.
-
-## Stack & performance
-
-- **Vite + React 19 + TypeScript**, **D3** (`d3-force`, `d3-scale`, `d3-hierarchy` only — no
-  full-`d3` import) → ~94 KB gzip.
-- Force simulation is run to rest **once** (no animation loop); charts are SVG and resize via
-  `ResizeObserver`; sections reveal on scroll via `IntersectionObserver`.
-- Colors are a **validated** categorical palette (dataviz validator: lightness band, chroma,
-  contrast, and CVD separation ΔE 29.2 — all pass on the dark surface). See `src/lib/theme.ts`.
-
-## The page is a demonstration, not a monitoring dashboard
-
-Five moments, in reading order (see `src/App.tsx`):
-
-1. **Verdict** — the podium: Total Delivery Score + the four axis scores per variant.
-2. **Why** — *"Small looks cheap. Safe-to-change is cheap."*: a two-board contrast between
-   single-metric trophies (cold validation, bundle size, code hygiene — where Friction and
-   Overfit genuinely win) and delivery-cost readings (warm re-validation, contract copies to
-   sync, services per release — where Flow wins). Winners are computed from the data,
-   never named in code.
-3. **The next change** — observation first, explanation second: the measured footprint of the
-   SAME product change implemented in all three variants (the risk-trend experiment,
-   change-experiment collector), then the contract copies that explain why it spread
-   (change-surface collector). Real file counts and paths; no expected number exists in code.
-4. **Shape** — the three dependency graphs side by side: the propagation cost is architectural,
-   not accidental.
-5. **Evidence** — the axis dot-plot, one card per axis with its scored members (real value +
-   ratio-to-best bar), the "local quality" card (real, deliberately not the verdict), and the
-   full sortable/filterable metric table.
-
-Every visual distinguishes a real value from `pending` (hatched bars / dashed markers) so an
-unmeasured metric is never mistaken for a bad score.
-
-Only `scope:'variant'` metrics are scored — repo-level GitHub-pipeline data (shared monorepo
-CI, identical for the three variants) remains in the collected JSON and the metric table as
-context but no longer occupies the page. The components that used to render it
-(`GitHubActions`, `PullRequests`, `HistoryLines`, `RunTimeline`, `JobBars`, `JobHeatmap`,
-`PositioningPlot`, `Treemap`) are no longer imported by `App.tsx`.
-
-**No token ever reaches the browser.** GitHub is queried only in the Node collector; this app is
-a static build with the resulting JSON baked in. There are **no `VITE_*` token variables**.

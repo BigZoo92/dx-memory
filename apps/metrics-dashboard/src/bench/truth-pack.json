@@ -1,0 +1,870 @@
+{
+  "$schema": "signalops/bench-truth-pack@1",
+  "generatedBy": "tools/metrics/bench-truth-pack.mjs",
+  "archive": "dx-memory-benchmark-archive-2026-07-08",
+  "evidenceLevels": [
+    "direct",
+    "derived",
+    "reviewable",
+    "interpretation"
+  ],
+  "protocol": {
+    "model": "claude-opus-4-8[1m]",
+    "reasoningMode": "Extra High",
+    "modelCapture": "external; 11/12 result.json record the model name, S01 Friction records null with capture=external - consolidated from the external capture of the same session.",
+    "runs": 12,
+    "scenarios": 4,
+    "codebases": 3,
+    "guarantees": [
+      "une conversation neuve par variante",
+      "le meme prompt exact entre les trois variantes",
+      "meme machine, meme niveau d information initial, memes permissions",
+      "zero prompt de correction pendant le run benchmarke (verifie: agent_correction_prompt_count=0 sur les 12 runs)"
+    ],
+    "executionOrders": {
+      "s01": [
+        "friction",
+        "flow",
+        "overfit"
+      ],
+      "s02": [
+        "flow",
+        "overfit",
+        "friction"
+      ],
+      "s03": [
+        "overfit",
+        "friction",
+        "flow"
+      ],
+      "s04": [
+        "friction",
+        "flow",
+        "overfit"
+      ]
+    },
+    "shas": {
+      "s01": {
+        "flow": {
+          "from": "9270e8380",
+          "to": "0da369c73"
+        },
+        "friction": {
+          "from": "9270e8380",
+          "to": "3768b5241"
+        },
+        "overfit": {
+          "from": "9270e8380",
+          "to": "1dd4a44f2"
+        }
+      },
+      "s02": {
+        "flow": {
+          "from": "0da369c73",
+          "to": "74859dcca"
+        },
+        "friction": {
+          "from": "3768b5241",
+          "to": "50655040a"
+        },
+        "overfit": {
+          "from": "1dd4a44f2",
+          "to": "3f9958220"
+        }
+      },
+      "s03": {
+        "flow": {
+          "from": "09448d9f0",
+          "to": "9c9a83689"
+        },
+        "friction": {
+          "from": "0574e28a6",
+          "to": "9c09b94ca"
+        },
+        "overfit": {
+          "from": "52fb4807e",
+          "to": "780a28534"
+        }
+      },
+      "s04": {
+        "flow": {
+          "from": "9270e8380",
+          "to": "d3cc877f3"
+        },
+        "friction": {
+          "from": "9270e8380",
+          "to": "2093c14ef"
+        },
+        "overfit": {
+          "from": "9270e8380",
+          "to": "12b05304d"
+        }
+      }
+    }
+  },
+  "s01": {
+    "flow": {
+      "source": "archive:s01/flow/result.json",
+      "status": "FULL_GREEN",
+      "timeToGreenMs": 1143686,
+      "timeToFirstChangeMs": 490535,
+      "changedFiles": 17,
+      "locAdded": 166,
+      "locDeleted": 12,
+      "churn": 178,
+      "filesInspected": [
+        "package.json",
+        "packages/contracts/src/contracts.test.ts",
+        "packages/contracts/src/filters.ts",
+        "packages/contracts/src/index.ts",
+        "packages/contracts/src/signal.ts",
+        "packages/flow/CLAUDE.md",
+        "packages/flow/api-client/src/client.ts",
+        "packages/flow/api-client/src/queries.ts",
+        "packages/flow/domain/src/index.ts",
+        "packages/flow/domain/src/signals/confidence.ts",
+        "packages/flow/domain/src/signals/filter.ts",
+        "packages/flow/domain/src/signals/index.ts",
+        "packages/flow/domain/src/signals/risk.ts",
+        "packages/flow/domain/src/signals/severity.ts",
+        "packages/flow/domain/src/signals/signals.test.ts",
+        "packages/flow/domain/src/signals/status.ts",
+        "packages/flow/feature-signals/src/SignalsScreen.tsx",
+        "packages/flow/feature-signals/src/SignalsTable.module.css",
+        "packages/flow/feature-signals/src/SignalsTable.test.tsx",
+        "packages/flow/feature-signals/src/SignalsTable.tsx",
+        "packages/flow/feature-signals/src/query.ts",
+        "packages/flow/server-data-access/src/fixtures/dataset.ts",
+        "packages/flow/server-data-access/src/fixtures/index.ts",
+        "packages/flow/server-data-access/src/query/parse.test.ts",
+        "packages/flow/server-data-access/src/query/parse.ts",
+        "packages/flow/server-data-access/src/repositories/signals-repository.test.ts",
+        "packages/flow/server-data-access/src/repositories/signals-repository.ts",
+        "packages/flow/ui/src/badges/Badge.tsx",
+        "packages/flow/ui/src/badges/RiskTrendBadge.tsx",
+        "packages/flow/ui/src/badges/SeverityBadge.tsx",
+        "packages/flow/ui/src/badges/StatusBadge.tsx",
+        "packages/flow/ui/src/badges/badges.test.tsx",
+        "packages/flow/ui/src/badges/index.ts"
+      ],
+      "firstRelevantFile": "packages/contracts/src/signal.ts",
+      "nxAffectedProjects": 19
+    },
+    "friction": {
+      "source": "archive:s01/friction/result.json",
+      "status": "FULL_GREEN",
+      "timeToGreenMs": 856321,
+      "timeToFirstChangeMs": 338425,
+      "changedFiles": 17,
+      "locAdded": 202,
+      "locDeleted": 9,
+      "churn": 211,
+      "filesInspected": [
+        "apps/friction-api/contract/api-contract.json",
+        "apps/friction-api/package.json",
+        "apps/friction-api/project.json",
+        "apps/friction-api/scripts/compare-contract-copies.mjs",
+        "apps/friction-api/src/compare.controller.ts",
+        "apps/friction-api/src/controllers.spec.ts",
+        "apps/friction-api/src/dataset.spec.ts",
+        "apps/friction-api/src/dataset.ts",
+        "apps/friction-api/src/helpers.spec.ts",
+        "apps/friction-api/src/helpers.ts",
+        "apps/friction-api/src/signals.controller.ts",
+        "apps/friction-api/src/signals.service.ts",
+        "apps/friction-api/src/types.ts",
+        "apps/friction-web/contract/api-contract.json",
+        "apps/friction-web/package.json",
+        "apps/friction-web/project.json",
+        "apps/friction-web/src/api.ts",
+        "apps/friction-web/src/app.test.tsx",
+        "apps/friction-web/src/components.test.tsx",
+        "apps/friction-web/src/components.tsx",
+        "apps/friction-web/src/constants.ts",
+        "apps/friction-web/src/helpers.test.ts",
+        "apps/friction-web/src/helpers.ts",
+        "apps/friction-web/src/pages/Compare.tsx",
+        "apps/friction-web/src/pages/SignalDetail.tsx",
+        "apps/friction-web/src/pages/Signals.tsx",
+        "apps/friction-web/src/types.ts"
+      ],
+      "firstRelevantFile": "apps/friction-api/src/types.ts",
+      "nxAffectedProjects": 2
+    },
+    "overfit": {
+      "source": "archive:s01/overfit/result.json",
+      "status": "FULL_GREEN",
+      "timeToGreenMs": 1262227,
+      "timeToFirstChangeMs": 360265,
+      "changedFiles": 26,
+      "locAdded": 310,
+      "locDeleted": 19,
+      "churn": 329,
+      "filesInspected": [
+        "apps/overfit-api/tests/api.rs",
+        "crates/overfit-adapters-fixtures/src/generate.rs",
+        "crates/overfit-adapters-fixtures/src/lib.rs",
+        "crates/overfit-contracts/src/entities.rs",
+        "crates/overfit-contracts/src/query.rs",
+        "crates/overfit-domain/src/entities.rs",
+        "crates/overfit-domain/src/enums.rs",
+        "crates/overfit-read-models/src/signals.rs",
+        "crates/overfit-read-models/src/wire.rs",
+        "crates/overfit-schema-registry/src/lib.rs",
+        "crates/overfit-test-support/src/lib.rs",
+        "generated/overfit/contracts.lock.json",
+        "generated/overfit/openapi.json",
+        "package.json",
+        "packages/overfit/ai-governance/src/index.test.ts",
+        "packages/overfit/ai-governance/src/index.ts",
+        "packages/overfit/api-client/src/index.ts",
+        "packages/overfit/contracts-generated/src/contracts.test.ts",
+        "packages/overfit/contracts-generated/src/index.ts",
+        "packages/overfit/contracts-generated/src/runtime.ts",
+        "packages/overfit/feature-compare/src/index.tsx",
+        "packages/overfit/feature-signal-detail/src/index.tsx",
+        "packages/overfit/feature-signals/src/index.tsx",
+        "packages/overfit/feature-signals/src/viewModel.test.ts",
+        "packages/overfit/feature-signals/src/viewModel.ts",
+        "packages/overfit/quality-gates/scripts/check-contracts.mjs",
+        "packages/overfit/quality-gates/scripts/check-policy.mjs",
+        "packages/overfit/quality-gates/scripts/check-schema.mjs",
+        "packages/overfit/quality-gates/scripts/generate-contracts.mjs",
+        "packages/overfit/ui/src/format.ts",
+        "packages/overfit/ui/src/index.tsx",
+        "packages/overfit/ui/src/ui.test.tsx"
+      ],
+      "firstRelevantFile": "crates/overfit-domain/src/enums.rs",
+      "nxAffectedProjects": 13
+    }
+  },
+  "s02": {
+    "flow": {
+      "source": "archive:s02/flow/result.json",
+      "status": "FULL_GREEN",
+      "timeToGreenMs": 948181.378,
+      "changedFiles": 11,
+      "locAdded": 83,
+      "locDeleted": 30,
+      "churn": 113,
+      "changeAmplification": 0.6471,
+      "evolutionTax": 0.8291,
+      "reopenedS01Files": 7,
+      "knowledgeDispersionRaw": 5,
+      "duplicatedRiskRulesRaw": 0
+    },
+    "friction": {
+      "source": "archive:s02/friction/result.json",
+      "status": "FULL_GREEN",
+      "timeToGreenMs": 692888.154,
+      "changedFiles": 10,
+      "locAdded": 121,
+      "locDeleted": 14,
+      "churn": 135,
+      "changeAmplification": 0.5882,
+      "evolutionTax": 0.8091,
+      "reopenedS01Files": 10,
+      "knowledgeDispersionRaw": 4,
+      "duplicatedRiskRulesRaw": 1
+    },
+    "overfit": {
+      "source": "archive:s02/overfit/result.json",
+      "status": "FULL_GREEN",
+      "timeToGreenMs": 1050666.056,
+      "changedFiles": 15,
+      "locAdded": 113,
+      "locDeleted": 28,
+      "churn": 141,
+      "changeAmplification": 0.5769,
+      "evolutionTax": 0.8324,
+      "reopenedS01Files": 14,
+      "knowledgeDispersionRaw": 8,
+      "duplicatedRiskRulesRaw": 3
+    }
+  },
+  "knowledgeMap": {
+    "level": "reviewable",
+    "method": "derived_post_hoc_reviewable",
+    "note": "Derived from the raw agent risk_rule_map of each S02 run. Provenance review kept all locations: the Overfit \"generated\" banners do not correspond to actual code generation (ADR-0003: openapi.json is hand-maintained; generate-contracts.mjs only emits contracts.lock.json), and the S02 Overfit run hand-edited openapi.json, index.ts and runtime.ts.",
+    "excludedGeneratedLocations": [],
+    "ruleIds": [
+      "allowed_values",
+      "score_to_level_derivation",
+      "descending_risk_order",
+      "high_risk_kpi_membership",
+      "filter_domain_support"
+    ],
+    "variants": {
+      "flow": {
+        "rawAgentMap": {
+          "allowed_values": [
+            "packages/contracts/src/signal.ts"
+          ],
+          "score_to_level_derivation": [
+            "packages/flow/domain/src/signals/risk.ts"
+          ],
+          "descending_risk_order": [
+            "packages/flow/domain/src/signals/sort.ts"
+          ],
+          "high_risk_kpi_membership": [
+            "packages/flow/domain/src/dashboard/kpis.ts"
+          ],
+          "filter_domain_support": [
+            "packages/flow/server-data-access/src/query/parse.ts"
+          ]
+        },
+        "consolidatedMap": {
+          "allowed_values": [
+            "packages/contracts/src/signal.ts"
+          ],
+          "score_to_level_derivation": [
+            "packages/flow/domain/src/signals/risk.ts"
+          ],
+          "descending_risk_order": [
+            "packages/flow/domain/src/signals/sort.ts"
+          ],
+          "high_risk_kpi_membership": [
+            "packages/flow/domain/src/dashboard/kpis.ts"
+          ],
+          "filter_domain_support": [
+            "packages/flow/server-data-access/src/query/parse.ts"
+          ]
+        },
+        "ruleLocationEdges": 5,
+        "uniqueFiles": 5,
+        "multiRuleFiles": 0,
+        "maxRulesPerFile": 1,
+        "duplicatedRiskRules": 0,
+        "knowledgeDispersionRaw": 5,
+        "duplicatedRiskRulesRaw": 0
+      },
+      "friction": {
+        "rawAgentMap": {
+          "allowed_values": [
+            "apps/friction-api/src/types.ts",
+            "apps/friction-web/src/types.ts",
+            "apps/friction-web/src/constants.ts"
+          ],
+          "score_to_level_derivation": [
+            "apps/friction-api/src/helpers.ts"
+          ],
+          "descending_risk_order": [
+            "apps/friction-api/src/helpers.ts"
+          ],
+          "high_risk_kpi_membership": [
+            "apps/friction-api/src/helpers.ts"
+          ],
+          "filter_domain_support": [
+            "apps/friction-web/src/constants.ts"
+          ]
+        },
+        "consolidatedMap": {
+          "allowed_values": [
+            "apps/friction-api/src/types.ts",
+            "apps/friction-web/src/types.ts",
+            "apps/friction-web/src/constants.ts"
+          ],
+          "score_to_level_derivation": [
+            "apps/friction-api/src/helpers.ts"
+          ],
+          "descending_risk_order": [
+            "apps/friction-api/src/helpers.ts"
+          ],
+          "high_risk_kpi_membership": [
+            "apps/friction-api/src/helpers.ts"
+          ],
+          "filter_domain_support": [
+            "apps/friction-web/src/constants.ts"
+          ]
+        },
+        "ruleLocationEdges": 7,
+        "uniqueFiles": 4,
+        "multiRuleFiles": 2,
+        "maxRulesPerFile": 3,
+        "duplicatedRiskRules": 1,
+        "knowledgeDispersionRaw": 4,
+        "duplicatedRiskRulesRaw": 1
+      },
+      "overfit": {
+        "rawAgentMap": {
+          "allowed_values": [
+            "crates/overfit-domain/src/enums.rs",
+            "crates/overfit-read-models/src/wire.rs",
+            "generated/overfit/openapi.json",
+            "packages/overfit/contracts-generated/src/index.ts",
+            "packages/overfit/contracts-generated/src/runtime.ts"
+          ],
+          "score_to_level_derivation": [
+            "crates/overfit-adapters-fixtures/src/generate.rs"
+          ],
+          "descending_risk_order": [
+            "crates/overfit-domain/src/enums.rs",
+            "crates/overfit-adapters-fixtures/src/generate.rs"
+          ],
+          "high_risk_kpi_membership": [
+            "crates/overfit-read-models/src/dashboard.rs"
+          ],
+          "filter_domain_support": [
+            "generated/overfit/openapi.json",
+            "packages/overfit/feature-signals/src/viewModel.ts"
+          ]
+        },
+        "consolidatedMap": {
+          "allowed_values": [
+            "crates/overfit-domain/src/enums.rs",
+            "crates/overfit-read-models/src/wire.rs",
+            "generated/overfit/openapi.json",
+            "packages/overfit/contracts-generated/src/index.ts",
+            "packages/overfit/contracts-generated/src/runtime.ts"
+          ],
+          "score_to_level_derivation": [
+            "crates/overfit-adapters-fixtures/src/generate.rs"
+          ],
+          "descending_risk_order": [
+            "crates/overfit-domain/src/enums.rs",
+            "crates/overfit-adapters-fixtures/src/generate.rs"
+          ],
+          "high_risk_kpi_membership": [
+            "crates/overfit-read-models/src/dashboard.rs"
+          ],
+          "filter_domain_support": [
+            "generated/overfit/openapi.json",
+            "packages/overfit/feature-signals/src/viewModel.ts"
+          ]
+        },
+        "ruleLocationEdges": 11,
+        "uniqueFiles": 8,
+        "multiRuleFiles": 3,
+        "maxRulesPerFile": 2,
+        "duplicatedRiskRules": 3,
+        "knowledgeDispersionRaw": 8,
+        "duplicatedRiskRulesRaw": 3
+      }
+    }
+  },
+  "s03": {
+    "flow": {
+      "source": "archive:s03/flow/result.json",
+      "status": "FULL_GREEN",
+      "timeToRootCauseMs": 226556.209,
+      "timeToFirstHypothesisMs": 53171.858,
+      "filesInspectedBeforeRootCause": 3,
+      "searchesBeforeRootCause": 2,
+      "hypothesesBeforeRootCause": 1,
+      "falseLeadsBeforeRootCause": 0,
+      "rootCauseGroundTruthMatch": true,
+      "groundTruthCheckedAfterRootCauseEvent": true,
+      "finalBuildPass": {
+        "rawReportedValue": null,
+        "consolidatedValue": null,
+        "reason": null
+      },
+      "secondary": {
+        "timeToBugFixedMs": 502929.504,
+        "timeToGreenMs": 694326.207,
+        "fixLocAdded": 8,
+        "fixLocDeleted": 1,
+        "fixChangedFiles": 2,
+        "fixStrategy": "boundary correction / contract enforcement at the data-materialization boundary: stop the server-only data-access layer from emitting contract-violating data, so the render can keep trusting the non-null Signal contract. No UI masking, no try/catch, no error boundary.",
+        "fixBoundary": "server-data-access data-materialization boundary - getDataset() in packages/flow/server-data-access/src/fixtures/dataset.ts (Flow's only, server-only data-access layer, the layer whose own comment states each variant derives its served data at its own data boundary)."
+      }
+    },
+    "friction": {
+      "source": "archive:s03/friction/result.json",
+      "status": "FULL_GREEN",
+      "timeToRootCauseMs": 208099.817,
+      "timeToFirstHypothesisMs": 196528.395,
+      "filesInspectedBeforeRootCause": 3,
+      "searchesBeforeRootCause": 2,
+      "hypothesesBeforeRootCause": 2,
+      "falseLeadsBeforeRootCause": 0,
+      "rootCauseGroundTruthMatch": true,
+      "groundTruthCheckedAfterRootCauseEvent": true,
+      "finalBuildPass": {
+        "rawReportedValue": true,
+        "consolidatedValue": true,
+        "reason": null
+      },
+      "secondary": {
+        "timeToBugFixedMs": 374150.167,
+        "timeToGreenMs": 464158.267,
+        "fixLocAdded": 1,
+        "fixLocDeleted": 1,
+        "fixChangedFiles": 1,
+        "fixStrategy": "defensive rendering — nullish-coalescing guard at the point of consumption",
+        "fixBoundary": "UI render boundary inside the SignalDetail component (apps/friction-web/src/pages/SignalDetail.tsx)"
+      }
+    },
+    "overfit": {
+      "source": "archive:s03/overfit/result.json",
+      "status": "FULL_GREEN",
+      "timeToRootCauseMs": 324569.144,
+      "timeToFirstHypothesisMs": 153258.489,
+      "filesInspectedBeforeRootCause": 4,
+      "searchesBeforeRootCause": 2,
+      "hypothesesBeforeRootCause": 1,
+      "falseLeadsBeforeRootCause": 0,
+      "rootCauseGroundTruthMatch": true,
+      "groundTruthCheckedAfterRootCauseEvent": true,
+      "finalBuildPass": {
+        "rawReportedValue": true,
+        "consolidatedValue": null,
+        "reason": "result.json reports final_build_pass=true but no build command exists in commands.jsonl nor in validation.commands; the value is not backed by any recorded execution."
+      },
+      "secondary": {
+        "timeToBugFixedMs": 551251.255,
+        "timeToGreenMs": 590223.486,
+        "fixLocAdded": 35,
+        "fixLocDeleted": 5,
+        "fixChangedFiles": 2,
+        "fixStrategy": "Boundary correction / contract enforcement at the data-receiving adapter: remove the contract-violating mutation in OverfitApiClient.getSignal so the adapter returns the response unchanged (contract-valid). Deliberately NOT a UI guard (which would mask invalid data) and NOT a new runtime validator (which would guard a backend state that cannot occur, since tags is Rust Vec<String>).",
+        "fixBoundary": "OverfitApiClient.getSignal - the typed API client, the frontend's single HTTP trust boundary and detail-response data-receiving adapter (packages/overfit/api-client/src/index.ts)."
+      }
+    }
+  },
+  "s04": {
+    "flow": {
+      "source": "archive:s04/flow/result.json",
+      "a11y": {
+        "status": "FULL_GREEN",
+        "timeToGreenMs": 1086529,
+        "changedFiles": 2,
+        "locAdded": 18,
+        "locDeleted": 0,
+        "churn": 18,
+        "measurementMode": "vitest@4.1.9 + happy-dom + @testing-library/react DOM render of the real SignalsScreen (data fed via mocked fetch, router bits stubbed); axe-core 4.12.1 axe.run() on the feature subtree; static CSS inspection for focus visibility",
+        "axeCriticalBaseline": 0,
+        "axeSeriousBaseline": 0,
+        "baseline": {
+          "filtersNamed": "8/8",
+          "keyboardSort": "4/4",
+          "ariaSort": true,
+          "liveAnnouncement": false,
+          "visibleFocus": true,
+          "positiveTabindex": 0
+        },
+        "after": {
+          "filtersNamed": "8/8",
+          "keyboardSort": "4/4",
+          "ariaSort": true,
+          "liveAnnouncement": true,
+          "visibleFocus": true,
+          "positiveTabindex": 0
+        }
+      },
+      "eco": {
+        "status": "GREEN_NO_CHANGE_REQUIRED",
+        "timeToGreenMs": 970501,
+        "changedFiles": 0,
+        "locAdded": 0,
+        "locDeleted": 0,
+        "churn": 0,
+        "measurementMode": "real headless Chrome (system Google Chrome/150) driven by puppeteer-core + CDP Network domain; encodedDataLength = wire bytes incl. headers; cold browser context per iteration",
+        "baseline": {
+          "requestCount": 17,
+          "apiRequestCount": 7,
+          "duplicateRequestCount": 0
+        },
+        "after": {
+          "requestCount": 17,
+          "apiRequestCount": 7,
+          "duplicateRequestCount": 0
+        },
+        "totalTransferReductionPercent": 0,
+        "apiTransferReductionPercent": 0
+      },
+      "combined": {
+        "qualityDeliveryCostMs": 2057030,
+        "combinedLocChurn": 18,
+        "combinedChangedFileTouches": 2,
+        "combinedUniqueChangedFilesCount": 2
+      }
+    },
+    "friction": {
+      "source": "archive:s04/friction/result.json",
+      "a11y": {
+        "status": "FULL_GREEN",
+        "timeToGreenMs": 926253.235,
+        "changedFiles": 2,
+        "locAdded": 73,
+        "locDeleted": 7,
+        "churn": 80,
+        "measurementMode": "real-browser: puppeteer-core 24.43.1 + chrome-headless-shell 148 + axe-core 4.12.1; friction-web served by `vite preview` :3100 with /api proxied to friction-api (NestJS) :3101; route rendered client-side, table waited on (table.table tbody tr)",
+        "axeCriticalBaseline": 0,
+        "axeSeriousBaseline": 0,
+        "baseline": {
+          "filtersNamed": "6/6",
+          "keyboardSort": "0/3",
+          "ariaSort": false,
+          "liveAnnouncement": false,
+          "visibleFocus": true,
+          "positiveTabindex": 0
+        },
+        "after": {
+          "filtersNamed": "6/6",
+          "keyboardSort": "3/3",
+          "ariaSort": true,
+          "liveAnnouncement": true,
+          "visibleFocus": true,
+          "positiveTabindex": 0
+        }
+      },
+      "eco": {
+        "status": "FULL_GREEN",
+        "timeToGreenMs": 555319.834,
+        "changedFiles": 2,
+        "locAdded": 23,
+        "locDeleted": 4,
+        "churn": 27,
+        "measurementMode": "real-browser: puppeteer-core 24.43.1 + chrome-headless-shell 148, CDP Network domain (encodedDataLength = wire bytes); friction-web `vite preview` :3100 -> friction-api :3101; fixed 9-step journey, fresh incognito context per rep (cold cache), 3 reps (median timings)",
+        "baseline": {
+          "requestCount": 15,
+          "apiRequestCount": 12,
+          "duplicateRequestCount": 5
+        },
+        "after": {
+          "requestCount": 10,
+          "apiRequestCount": 7,
+          "duplicateRequestCount": 0
+        },
+        "totalTransferReductionPercent": 0.5,
+        "apiTransferReductionPercent": 0.83
+      },
+      "combined": {
+        "qualityDeliveryCostMs": 1481573.069,
+        "combinedLocChurn": 107,
+        "combinedChangedFileTouches": 4,
+        "combinedUniqueChangedFilesCount": 3
+      }
+    },
+    "overfit": {
+      "source": "archive:s04/overfit/result.json",
+      "a11y": {
+        "status": "FULL_GREEN",
+        "timeToGreenMs": 801407.592,
+        "changedFiles": 2,
+        "locAdded": 73,
+        "locDeleted": 9,
+        "churn": 82,
+        "measurementMode": "testing-library + happy-dom DOM render + axe-core 4.12.1 (color-contrast disabled: happy-dom has no layout)",
+        "axeCriticalBaseline": 0,
+        "axeSeriousBaseline": 0,
+        "baseline": {
+          "filtersNamed": "6/6",
+          "keyboardSort": "0/3",
+          "ariaSort": false,
+          "liveAnnouncement": false,
+          "visibleFocus": false,
+          "positiveTabindex": 0
+        },
+        "after": {
+          "filtersNamed": "6/6",
+          "keyboardSort": "3/3",
+          "ariaSort": true,
+          "liveAnnouncement": true,
+          "visibleFocus": true,
+          "positiveTabindex": 0
+        }
+      },
+      "eco": {
+        "status": "FULL_GREEN",
+        "timeToGreenMs": 485732.227,
+        "changedFiles": 1,
+        "locAdded": 0,
+        "locDeleted": 4,
+        "churn": 4,
+        "measurementMode": "component-driven fetch recorder (happy-dom): real AppShell + SignalsPage + SignalDetailPage driven through the fixed journey via a recording globalThis.fetch returning contract-valid fixture payloads; API-level only (no HTML/JS/asset transfer, no browser paint metrics)",
+        "baseline": {
+          "requestCount": 16,
+          "apiRequestCount": 16,
+          "duplicateRequestCount": 3
+        },
+        "after": {
+          "requestCount": 12,
+          "apiRequestCount": 12,
+          "duplicateRequestCount": 0
+        },
+        "totalTransferReductionPercent": 0.08,
+        "apiTransferReductionPercent": 0.08
+      },
+      "combined": {
+        "qualityDeliveryCostMs": 1287139.819,
+        "combinedLocChurn": 86,
+        "combinedChangedFileTouches": 3,
+        "combinedUniqueChangedFilesCount": 2
+      }
+    }
+  },
+  "cumulative": {
+    "flow": {
+      "timeMs": 2091867.378,
+      "churn": 291,
+      "fileTouches": 28
+    },
+    "friction": {
+      "timeMs": 1549209.154,
+      "churn": 346,
+      "fileTouches": 27
+    },
+    "overfit": {
+      "timeMs": 2312893.056,
+      "churn": 470,
+      "fileTouches": 41
+    }
+  },
+  "autoMetrics": {
+    "flow": {
+      "source": "repo:tools/metrics/results/ci/flow.json",
+      "capturedAt": "2026-07-06T14:38:47.925Z",
+      "runner": {
+        "os": "win32",
+        "node": "v22.19.0"
+      },
+      "coldValidationMs": 46063,
+      "warmValidationMs": 6073,
+      "coldSteps": {
+        "build": 12048,
+        "typecheck": 11367,
+        "lint": 4421,
+        "test": 18227
+      },
+      "warmSteps": {
+        "build": 1820,
+        "typecheck": 1688,
+        "lint": 1191,
+        "test": 1374
+      },
+      "dockerBuild": {
+        "rawPrimaryImageMs": 151118,
+        "consolidatedAllReleaseImagesMs": 151118,
+        "releaseImages": [
+          {
+            "dockerfile": "apps/flow-app/Dockerfile",
+            "durationMs": 151118
+          }
+        ],
+        "consolidationReason": "The published variant.docker.build.duration counts only the primary image; friction and overfit ship two release images. The consolidated value sums the measured build time of every deployable release image (same --no-cache method)."
+      },
+      "dockerImageSizeKb": 241250,
+      "outsideFactor": {
+        "startupMs": 14582,
+        "healthcheckMs": 2194,
+        "note": "Startup/healthcheck compare different service topologies (Flow: one SSR server; Friction/Overfit: static web + API). Shown as raw measures, not in any factor."
+      }
+    },
+    "friction": {
+      "source": "repo:tools/metrics/results/ci/friction.json",
+      "capturedAt": "2026-07-06T14:21:59.063Z",
+      "runner": {
+        "os": "win32",
+        "node": "v22.19.0"
+      },
+      "coldValidationMs": 17273,
+      "warmValidationMs": 14538,
+      "coldSteps": {
+        "build": 5484,
+        "typecheck": 4014,
+        "lint": 4109,
+        "test": 3666
+      },
+      "warmSteps": {
+        "build": 4311,
+        "typecheck": 3537,
+        "lint": 3255,
+        "test": 3435
+      },
+      "dockerBuild": {
+        "rawPrimaryImageMs": 56322,
+        "consolidatedAllReleaseImagesMs": 124400,
+        "releaseImages": [
+          {
+            "dockerfile": "infra/docker/friction-web.Dockerfile",
+            "durationMs": 56322
+          },
+          {
+            "dockerfile": "infra/docker/friction-api.Dockerfile",
+            "durationMs": 68078
+          }
+        ],
+        "consolidationReason": "The published variant.docker.build.duration counts only the primary image; friction and overfit ship two release images. The consolidated value sums the measured build time of every deployable release image (same --no-cache method)."
+      },
+      "dockerImageSizeKb": 280239.6,
+      "outsideFactor": {
+        "startupMs": 67,
+        "healthcheckMs": 67,
+        "note": "Startup/healthcheck compare different service topologies (Flow: one SSR server; Friction/Overfit: static web + API). Shown as raw measures, not in any factor."
+      }
+    },
+    "overfit": {
+      "source": "repo:tools/metrics/results/ci/overfit.json",
+      "capturedAt": "2026-07-06T14:21:59.063Z",
+      "runner": {
+        "os": "win32",
+        "node": "v22.19.0"
+      },
+      "coldValidationMs": 78726,
+      "warmValidationMs": 24506,
+      "coldSteps": {
+        "build": 43227,
+        "typecheck": 9544,
+        "lint": 11924,
+        "test": 14031
+      },
+      "warmSteps": {
+        "build": 14063,
+        "typecheck": 1891,
+        "lint": 3163,
+        "test": 5389
+      },
+      "dockerBuild": {
+        "rawPrimaryImageMs": 77038,
+        "consolidatedAllReleaseImagesMs": 118805,
+        "releaseImages": [
+          {
+            "dockerfile": "apps/overfit-web/Dockerfile",
+            "durationMs": 77038
+          },
+          {
+            "dockerfile": "apps/overfit-api/Dockerfile",
+            "durationMs": 41767
+          }
+        ],
+        "consolidationReason": "The published variant.docker.build.duration counts only the primary image; friction and overfit ship two release images. The consolidated value sums the measured build time of every deployable release image (same --no-cache method)."
+      },
+      "dockerImageSizeKb": 374352.2,
+      "outsideFactor": {
+        "startupMs": 561,
+        "healthcheckMs": 32,
+        "note": "Startup/healthcheck compare different service topologies (Flow: one SSR server; Friction/Overfit: static web + API). Shown as raw measures, not in any factor."
+      }
+    }
+  },
+  "externalContextSnapshots": {
+    "metricName": "final_context_occupancy_tokens",
+    "capture": "external screenshot after run",
+    "note": "Occupation finale de la fenetre de contexte au moment de la capture. Ce ne sont ni des tokens consommes, ni un cout API, ni un usage attribuable. Jamais utilise dans le CTL.",
+    "values": {
+      "s01": {
+        "friction": 180500,
+        "flow": 222200,
+        "overfit": 210700
+      },
+      "s02": {
+        "flow": 219500,
+        "overfit": 230500,
+        "friction": 182400
+      },
+      "s03": {
+        "overfit": 127300,
+        "friction": 116300,
+        "flow": 150700
+      },
+      "s04": {
+        "friction": 221600,
+        "flow": 291400,
+        "overfit": 220700
+      }
+    },
+    "windowTokens": 1000000
+  }
+}
