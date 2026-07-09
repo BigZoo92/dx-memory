@@ -139,6 +139,14 @@ aussi en S02. Le message est : plusieurs métriques, plusieurs coûts.
    Badge « analyse post-hoc revue » + note : la bannière « generated » d'Overfit
    ne correspond pas à une génération réelle (ADR-0003, générateur = lock only).
 
+5. **La gravité** (micro-scène) : « MÊME PRODUIT. » → trois constellations
+   déterministes des dépendances **internes réelles** (graphe Nx statique +
+   manifests Cargo, snapshot committé `bench/structure-snapshot.json`) →
+   « PAS LA MÊME GRAVITÉ. » Flow 19 unités · 60 liens ; Friction 2 · 0 ;
+   Overfit 29 · 72 (12 TS + 17 crates Rust, deux îlots). Hors CTL, jamais un
+   score : survol/clavier révèle les dépendances directes d'une unité.
+   ● unité TS · ■ crate Rust · ◎ app livrable.
+
 ## Acte 5 — Un bug demande un modèle mental (~2 min)
 
 **Rupture : scène sombre.** S03, `nullable-tags-render-crash`.
@@ -226,6 +234,19 @@ côté du rail Build : à froid Friction est la moins chère (17,3 s vs 46,1 s),
 en boucle chaude Flow l'emporte (6,1 s vs 14,5 s) — le facteur combine les deux.
 Hors facteur Ship : démarrage conteneur (Flow SSR 14,6 s vs 67 ms) — exposé,
 non compté (topologies non comparables).
+
+Sous les rails, les preuves brutes :
+
+1. **Boucle locale** — froid → chaud par variante (46,1 s → 6,1 s · 17,3 s →
+   14,5 s · 78,7 s → 24,5 s), mesures directes.
+2. **« Plus vite ici. Plus lourd là. »** — slopegraph éditorial du reclassement
+   Ship : temps de build des images livrables (Overfit 118,8 s · Friction
+   124,4 s · Flow 151,1 s) ⟷ poids total livré (Flow 236 Mo · Friction 274 Mo ·
+   Overfit 366 Mo). Rangs 1·2·3 aux deux extrémités, le centre appartient aux
+   trajectoires ; en mobile, deux listes classées et « le classement se
+   retourne ». Message : une facture peut se déplacer.
+3. **Bundle JS gzip — hors CTL** (216,4 · 80,3 · 206,8 Ko) : gzip réel des
+   fichiers émis, exposé mais jamais compté (topologies non comparables).
 
 Lecture (marquée) : la facture de Friction est à l'adresse **Change** (1,50×
 contre 1,00× pour Flow) ; celle d'Overfit surtout à **Build** et **Change** ;

@@ -38,6 +38,10 @@ export const fmtKb = (kb: number): string => {
   return `${fmtInt(kb)}${NNBSP}Ko`
 }
 
+/** 216.4 → « 216,4 Ko » (bundles gzip : la décimale compte). */
+export const fmtKbFine = (kb: number): string =>
+  `${new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(kb)}${NNBSP}Ko`
+
 /** 180500 → « 180,5 k ». */
 export const fmtThousands = (n: number): string =>
   `${new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 1 }).format(n / 1000)}${NNBSP}k`

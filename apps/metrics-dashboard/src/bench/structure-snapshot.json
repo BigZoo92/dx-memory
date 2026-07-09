@@ -1,0 +1,946 @@
+{
+  "$schema": "signalops/structure-snapshot@1",
+  "generatedBy": "tools/metrics/structure-snapshot.mjs",
+  "method": {
+    "perimeter": "Unités internes au repo uniquement (apps, packages, crates), atteignables depuis les apps livrables de chaque variante. Dépendances externes (npm, crates.io) exclues.",
+    "tsSource": "nx graph --file (arêtes static, cibles npm:* exclues)",
+    "rustSource": "Cargo.toml du workspace + section [dependencies] de chaque membre (dépendances de production ; dev-dependencies exclues)",
+    "note": "Photographie structurelle, hors CTL. Les topologies mélangent des technologies différentes : les tailles de graphe ne se lisent pas comme un score de complexité cognitive ni comme une preuve causale.",
+    "levels": {
+      "nodesAndEdges": "direct",
+      "metrics": "derived"
+    }
+  },
+  "variants": {
+    "flow": {
+      "roots": [
+        "flow-app"
+      ],
+      "nodes": [
+        {
+          "id": "@signalops/contracts",
+          "tech": "ts",
+          "kind": "unit",
+          "depth": 1,
+          "path": "packages/contracts"
+        },
+        {
+          "id": "@signalops/fixtures",
+          "tech": "ts",
+          "kind": "unit",
+          "depth": 2,
+          "path": "packages/fixtures"
+        },
+        {
+          "id": "@signalops/flow-effect",
+          "tech": "ts",
+          "kind": "unit",
+          "depth": 2,
+          "path": "packages/flow/effect"
+        },
+        {
+          "id": "@signalops/flow-feature-ops",
+          "tech": "ts",
+          "kind": "unit",
+          "depth": 1,
+          "path": "packages/flow/feature-ops"
+        },
+        {
+          "id": "@signalops/flow-observability",
+          "tech": "ts",
+          "kind": "unit",
+          "depth": 1,
+          "path": "packages/flow/observability"
+        },
+        {
+          "id": "@signalops/test-scenarios",
+          "tech": "ts",
+          "kind": "unit",
+          "depth": 1,
+          "path": "packages/test-scenarios"
+        },
+        {
+          "id": "@signalops/ui-spec",
+          "tech": "ts",
+          "kind": "unit",
+          "depth": 1,
+          "path": "packages/ui-spec"
+        },
+        {
+          "id": "flow-api-client",
+          "tech": "ts",
+          "kind": "unit",
+          "depth": 1,
+          "path": "packages/flow/api-client"
+        },
+        {
+          "id": "flow-app",
+          "tech": "ts",
+          "kind": "app",
+          "depth": 0,
+          "path": "apps/flow-app"
+        },
+        {
+          "id": "flow-domain",
+          "tech": "ts",
+          "kind": "unit",
+          "depth": 2,
+          "path": "packages/flow/domain"
+        },
+        {
+          "id": "flow-feature-compare",
+          "tech": "ts",
+          "kind": "unit",
+          "depth": 1,
+          "path": "packages/flow/feature-compare"
+        },
+        {
+          "id": "flow-feature-dashboard",
+          "tech": "ts",
+          "kind": "unit",
+          "depth": 1,
+          "path": "packages/flow/feature-dashboard"
+        },
+        {
+          "id": "flow-feature-dx-metrics",
+          "tech": "ts",
+          "kind": "unit",
+          "depth": 1,
+          "path": "packages/flow/feature-dx-metrics"
+        },
+        {
+          "id": "flow-feature-incidents",
+          "tech": "ts",
+          "kind": "unit",
+          "depth": 1,
+          "path": "packages/flow/feature-incidents"
+        },
+        {
+          "id": "flow-feature-settings",
+          "tech": "ts",
+          "kind": "unit",
+          "depth": 1,
+          "path": "packages/flow/feature-settings"
+        },
+        {
+          "id": "flow-feature-signal-detail",
+          "tech": "ts",
+          "kind": "unit",
+          "depth": 1,
+          "path": "packages/flow/feature-signal-detail"
+        },
+        {
+          "id": "flow-feature-signals",
+          "tech": "ts",
+          "kind": "unit",
+          "depth": 1,
+          "path": "packages/flow/feature-signals"
+        },
+        {
+          "id": "flow-server-data-access",
+          "tech": "ts",
+          "kind": "unit",
+          "depth": 1,
+          "path": "packages/flow/server-data-access"
+        },
+        {
+          "id": "flow-ui",
+          "tech": "ts",
+          "kind": "unit",
+          "depth": 1,
+          "path": "packages/flow/ui"
+        }
+      ],
+      "edges": [
+        {
+          "from": "@signalops/fixtures",
+          "to": "@signalops/contracts"
+        },
+        {
+          "from": "@signalops/flow-effect",
+          "to": "@signalops/contracts"
+        },
+        {
+          "from": "@signalops/flow-feature-ops",
+          "to": "@signalops/flow-observability"
+        },
+        {
+          "from": "@signalops/flow-feature-ops",
+          "to": "flow-api-client"
+        },
+        {
+          "from": "@signalops/flow-feature-ops",
+          "to": "flow-ui"
+        },
+        {
+          "from": "@signalops/test-scenarios",
+          "to": "@signalops/contracts"
+        },
+        {
+          "from": "@signalops/ui-spec",
+          "to": "@signalops/contracts"
+        },
+        {
+          "from": "flow-api-client",
+          "to": "@signalops/contracts"
+        },
+        {
+          "from": "flow-api-client",
+          "to": "@signalops/flow-effect"
+        },
+        {
+          "from": "flow-api-client",
+          "to": "@signalops/flow-observability"
+        },
+        {
+          "from": "flow-app",
+          "to": "@signalops/contracts"
+        },
+        {
+          "from": "flow-app",
+          "to": "@signalops/flow-feature-ops"
+        },
+        {
+          "from": "flow-app",
+          "to": "@signalops/flow-observability"
+        },
+        {
+          "from": "flow-app",
+          "to": "@signalops/test-scenarios"
+        },
+        {
+          "from": "flow-app",
+          "to": "@signalops/ui-spec"
+        },
+        {
+          "from": "flow-app",
+          "to": "flow-api-client"
+        },
+        {
+          "from": "flow-app",
+          "to": "flow-feature-compare"
+        },
+        {
+          "from": "flow-app",
+          "to": "flow-feature-dashboard"
+        },
+        {
+          "from": "flow-app",
+          "to": "flow-feature-dx-metrics"
+        },
+        {
+          "from": "flow-app",
+          "to": "flow-feature-incidents"
+        },
+        {
+          "from": "flow-app",
+          "to": "flow-feature-settings"
+        },
+        {
+          "from": "flow-app",
+          "to": "flow-feature-signal-detail"
+        },
+        {
+          "from": "flow-app",
+          "to": "flow-feature-signals"
+        },
+        {
+          "from": "flow-app",
+          "to": "flow-server-data-access"
+        },
+        {
+          "from": "flow-app",
+          "to": "flow-ui"
+        },
+        {
+          "from": "flow-domain",
+          "to": "@signalops/contracts"
+        },
+        {
+          "from": "flow-feature-compare",
+          "to": "flow-api-client"
+        },
+        {
+          "from": "flow-feature-compare",
+          "to": "flow-domain"
+        },
+        {
+          "from": "flow-feature-compare",
+          "to": "flow-ui"
+        },
+        {
+          "from": "flow-feature-dashboard",
+          "to": "@signalops/contracts"
+        },
+        {
+          "from": "flow-feature-dashboard",
+          "to": "flow-api-client"
+        },
+        {
+          "from": "flow-feature-dashboard",
+          "to": "flow-domain"
+        },
+        {
+          "from": "flow-feature-dashboard",
+          "to": "flow-ui"
+        },
+        {
+          "from": "flow-feature-dx-metrics",
+          "to": "@signalops/contracts"
+        },
+        {
+          "from": "flow-feature-dx-metrics",
+          "to": "@signalops/flow-observability"
+        },
+        {
+          "from": "flow-feature-dx-metrics",
+          "to": "flow-api-client"
+        },
+        {
+          "from": "flow-feature-dx-metrics",
+          "to": "flow-domain"
+        },
+        {
+          "from": "flow-feature-dx-metrics",
+          "to": "flow-ui"
+        },
+        {
+          "from": "flow-feature-incidents",
+          "to": "@signalops/contracts"
+        },
+        {
+          "from": "flow-feature-incidents",
+          "to": "flow-api-client"
+        },
+        {
+          "from": "flow-feature-incidents",
+          "to": "flow-domain"
+        },
+        {
+          "from": "flow-feature-incidents",
+          "to": "flow-ui"
+        },
+        {
+          "from": "flow-feature-settings",
+          "to": "@signalops/contracts"
+        },
+        {
+          "from": "flow-feature-settings",
+          "to": "flow-api-client"
+        },
+        {
+          "from": "flow-feature-settings",
+          "to": "flow-ui"
+        },
+        {
+          "from": "flow-feature-signal-detail",
+          "to": "@signalops/contracts"
+        },
+        {
+          "from": "flow-feature-signal-detail",
+          "to": "flow-api-client"
+        },
+        {
+          "from": "flow-feature-signal-detail",
+          "to": "flow-domain"
+        },
+        {
+          "from": "flow-feature-signal-detail",
+          "to": "flow-ui"
+        },
+        {
+          "from": "flow-feature-signals",
+          "to": "@signalops/contracts"
+        },
+        {
+          "from": "flow-feature-signals",
+          "to": "flow-api-client"
+        },
+        {
+          "from": "flow-feature-signals",
+          "to": "flow-domain"
+        },
+        {
+          "from": "flow-feature-signals",
+          "to": "flow-ui"
+        },
+        {
+          "from": "flow-server-data-access",
+          "to": "@signalops/contracts"
+        },
+        {
+          "from": "flow-server-data-access",
+          "to": "@signalops/fixtures"
+        },
+        {
+          "from": "flow-server-data-access",
+          "to": "@signalops/flow-effect"
+        },
+        {
+          "from": "flow-server-data-access",
+          "to": "@signalops/flow-observability"
+        },
+        {
+          "from": "flow-server-data-access",
+          "to": "flow-domain"
+        },
+        {
+          "from": "flow-ui",
+          "to": "@signalops/contracts"
+        },
+        {
+          "from": "flow-ui",
+          "to": "@signalops/ui-spec"
+        }
+      ],
+      "metrics": {
+        "internalNodeCount": 19,
+        "internalEdgeCount": 60,
+        "maxInternalOutDegree": 15,
+        "maxInternalInDegree": 15,
+        "maxDepthFromApp": 2,
+        "connectedComponents": 1
+      }
+    },
+    "friction": {
+      "roots": [
+        "friction-api",
+        "friction-web"
+      ],
+      "nodes": [
+        {
+          "id": "friction-api",
+          "tech": "ts",
+          "kind": "app",
+          "depth": 0,
+          "path": "apps/friction-api"
+        },
+        {
+          "id": "friction-web",
+          "tech": "ts",
+          "kind": "app",
+          "depth": 0,
+          "path": "apps/friction-web"
+        }
+      ],
+      "edges": [],
+      "metrics": {
+        "internalNodeCount": 2,
+        "internalEdgeCount": 0,
+        "maxInternalOutDegree": 0,
+        "maxInternalInDegree": 0,
+        "maxDepthFromApp": 0,
+        "connectedComponents": 2
+      }
+    },
+    "overfit": {
+      "roots": [
+        "overfit-api",
+        "overfit-web"
+      ],
+      "nodes": [
+        {
+          "id": "overfit-adapters-fixtures",
+          "tech": "rust",
+          "kind": "unit",
+          "depth": 2,
+          "path": "crates/overfit-adapters-fixtures"
+        },
+        {
+          "id": "overfit-adapters-http",
+          "tech": "rust",
+          "kind": "unit",
+          "depth": 1,
+          "path": "crates/overfit-adapters-http"
+        },
+        {
+          "id": "overfit-api",
+          "tech": "rust",
+          "kind": "app",
+          "depth": 0,
+          "path": "apps/overfit-api"
+        },
+        {
+          "id": "overfit-api-client",
+          "tech": "ts",
+          "kind": "unit",
+          "depth": 1,
+          "path": "packages/overfit/api-client"
+        },
+        {
+          "id": "overfit-application",
+          "tech": "rust",
+          "kind": "unit",
+          "depth": 1,
+          "path": "crates/overfit-application"
+        },
+        {
+          "id": "overfit-audit",
+          "tech": "rust",
+          "kind": "unit",
+          "depth": 2,
+          "path": "crates/overfit-audit"
+        },
+        {
+          "id": "overfit-commands",
+          "tech": "rust",
+          "kind": "unit",
+          "depth": 2,
+          "path": "crates/overfit-commands"
+        },
+        {
+          "id": "overfit-contracts",
+          "tech": "rust",
+          "kind": "unit",
+          "depth": 2,
+          "path": "crates/overfit-contracts"
+        },
+        {
+          "id": "overfit-contracts-generated",
+          "tech": "ts",
+          "kind": "unit",
+          "depth": 1,
+          "path": "packages/overfit/contracts-generated"
+        },
+        {
+          "id": "overfit-domain",
+          "tech": "rust",
+          "kind": "unit",
+          "depth": 2,
+          "path": "crates/overfit-domain"
+        },
+        {
+          "id": "overfit-event-store",
+          "tech": "rust",
+          "kind": "unit",
+          "depth": 2,
+          "path": "crates/overfit-event-store"
+        },
+        {
+          "id": "overfit-events",
+          "tech": "rust",
+          "kind": "unit",
+          "depth": 2,
+          "path": "crates/overfit-events"
+        },
+        {
+          "id": "overfit-feature-compare",
+          "tech": "ts",
+          "kind": "unit",
+          "depth": 1,
+          "path": "packages/overfit/feature-compare"
+        },
+        {
+          "id": "overfit-feature-dashboard",
+          "tech": "ts",
+          "kind": "unit",
+          "depth": 1,
+          "path": "packages/overfit/feature-dashboard"
+        },
+        {
+          "id": "overfit-feature-dx-metrics",
+          "tech": "ts",
+          "kind": "unit",
+          "depth": 1,
+          "path": "packages/overfit/feature-dx-metrics"
+        },
+        {
+          "id": "overfit-feature-flags",
+          "tech": "rust",
+          "kind": "unit",
+          "depth": 2,
+          "path": "crates/overfit-feature-flags"
+        },
+        {
+          "id": "overfit-feature-incidents",
+          "tech": "ts",
+          "kind": "unit",
+          "depth": 1,
+          "path": "packages/overfit/feature-incidents"
+        },
+        {
+          "id": "overfit-feature-ops",
+          "tech": "ts",
+          "kind": "unit",
+          "depth": 1,
+          "path": "packages/overfit/feature-ops"
+        },
+        {
+          "id": "overfit-feature-settings",
+          "tech": "ts",
+          "kind": "unit",
+          "depth": 1,
+          "path": "packages/overfit/feature-settings"
+        },
+        {
+          "id": "overfit-feature-signal-detail",
+          "tech": "ts",
+          "kind": "unit",
+          "depth": 1,
+          "path": "packages/overfit/feature-signal-detail"
+        },
+        {
+          "id": "overfit-feature-signals",
+          "tech": "ts",
+          "kind": "unit",
+          "depth": 1,
+          "path": "packages/overfit/feature-signals"
+        },
+        {
+          "id": "overfit-observability",
+          "tech": "rust",
+          "kind": "unit",
+          "depth": 2,
+          "path": "crates/overfit-observability"
+        },
+        {
+          "id": "overfit-policies",
+          "tech": "rust",
+          "kind": "unit",
+          "depth": 2,
+          "path": "crates/overfit-policies"
+        },
+        {
+          "id": "overfit-queries",
+          "tech": "rust",
+          "kind": "unit",
+          "depth": 2,
+          "path": "crates/overfit-queries"
+        },
+        {
+          "id": "overfit-read-models",
+          "tech": "rust",
+          "kind": "unit",
+          "depth": 2,
+          "path": "crates/overfit-read-models"
+        },
+        {
+          "id": "overfit-repositories",
+          "tech": "rust",
+          "kind": "unit",
+          "depth": 2,
+          "path": "crates/overfit-repositories"
+        },
+        {
+          "id": "overfit-schema-registry",
+          "tech": "rust",
+          "kind": "unit",
+          "depth": 2,
+          "path": "crates/overfit-schema-registry"
+        },
+        {
+          "id": "overfit-ui",
+          "tech": "ts",
+          "kind": "unit",
+          "depth": 1,
+          "path": "packages/overfit/ui"
+        },
+        {
+          "id": "overfit-web",
+          "tech": "ts",
+          "kind": "app",
+          "depth": 0,
+          "path": "apps/overfit-web"
+        }
+      ],
+      "edges": [
+        {
+          "from": "overfit-adapters-fixtures",
+          "to": "overfit-domain"
+        },
+        {
+          "from": "overfit-adapters-fixtures",
+          "to": "overfit-repositories"
+        },
+        {
+          "from": "overfit-adapters-http",
+          "to": "overfit-application"
+        },
+        {
+          "from": "overfit-adapters-http",
+          "to": "overfit-contracts"
+        },
+        {
+          "from": "overfit-adapters-http",
+          "to": "overfit-read-models"
+        },
+        {
+          "from": "overfit-api-client",
+          "to": "overfit-contracts-generated"
+        },
+        {
+          "from": "overfit-api",
+          "to": "overfit-adapters-http"
+        },
+        {
+          "from": "overfit-api",
+          "to": "overfit-application"
+        },
+        {
+          "from": "overfit-application",
+          "to": "overfit-adapters-fixtures"
+        },
+        {
+          "from": "overfit-application",
+          "to": "overfit-audit"
+        },
+        {
+          "from": "overfit-application",
+          "to": "overfit-commands"
+        },
+        {
+          "from": "overfit-application",
+          "to": "overfit-contracts"
+        },
+        {
+          "from": "overfit-application",
+          "to": "overfit-domain"
+        },
+        {
+          "from": "overfit-application",
+          "to": "overfit-event-store"
+        },
+        {
+          "from": "overfit-application",
+          "to": "overfit-events"
+        },
+        {
+          "from": "overfit-application",
+          "to": "overfit-feature-flags"
+        },
+        {
+          "from": "overfit-application",
+          "to": "overfit-observability"
+        },
+        {
+          "from": "overfit-application",
+          "to": "overfit-policies"
+        },
+        {
+          "from": "overfit-application",
+          "to": "overfit-queries"
+        },
+        {
+          "from": "overfit-application",
+          "to": "overfit-read-models"
+        },
+        {
+          "from": "overfit-application",
+          "to": "overfit-repositories"
+        },
+        {
+          "from": "overfit-application",
+          "to": "overfit-schema-registry"
+        },
+        {
+          "from": "overfit-audit",
+          "to": "overfit-observability"
+        },
+        {
+          "from": "overfit-commands",
+          "to": "overfit-domain"
+        },
+        {
+          "from": "overfit-commands",
+          "to": "overfit-events"
+        },
+        {
+          "from": "overfit-contracts",
+          "to": "overfit-domain"
+        },
+        {
+          "from": "overfit-event-store",
+          "to": "overfit-domain"
+        },
+        {
+          "from": "overfit-event-store",
+          "to": "overfit-events"
+        },
+        {
+          "from": "overfit-events",
+          "to": "overfit-domain"
+        },
+        {
+          "from": "overfit-feature-compare",
+          "to": "overfit-api-client"
+        },
+        {
+          "from": "overfit-feature-compare",
+          "to": "overfit-contracts-generated"
+        },
+        {
+          "from": "overfit-feature-compare",
+          "to": "overfit-ui"
+        },
+        {
+          "from": "overfit-feature-dashboard",
+          "to": "overfit-api-client"
+        },
+        {
+          "from": "overfit-feature-dashboard",
+          "to": "overfit-contracts-generated"
+        },
+        {
+          "from": "overfit-feature-dashboard",
+          "to": "overfit-ui"
+        },
+        {
+          "from": "overfit-feature-dx-metrics",
+          "to": "overfit-api-client"
+        },
+        {
+          "from": "overfit-feature-dx-metrics",
+          "to": "overfit-contracts-generated"
+        },
+        {
+          "from": "overfit-feature-dx-metrics",
+          "to": "overfit-ui"
+        },
+        {
+          "from": "overfit-feature-incidents",
+          "to": "overfit-api-client"
+        },
+        {
+          "from": "overfit-feature-incidents",
+          "to": "overfit-contracts-generated"
+        },
+        {
+          "from": "overfit-feature-incidents",
+          "to": "overfit-ui"
+        },
+        {
+          "from": "overfit-feature-ops",
+          "to": "overfit-api-client"
+        },
+        {
+          "from": "overfit-feature-ops",
+          "to": "overfit-contracts-generated"
+        },
+        {
+          "from": "overfit-feature-ops",
+          "to": "overfit-ui"
+        },
+        {
+          "from": "overfit-feature-settings",
+          "to": "overfit-api-client"
+        },
+        {
+          "from": "overfit-feature-settings",
+          "to": "overfit-contracts-generated"
+        },
+        {
+          "from": "overfit-feature-settings",
+          "to": "overfit-ui"
+        },
+        {
+          "from": "overfit-feature-signal-detail",
+          "to": "overfit-api-client"
+        },
+        {
+          "from": "overfit-feature-signal-detail",
+          "to": "overfit-contracts-generated"
+        },
+        {
+          "from": "overfit-feature-signal-detail",
+          "to": "overfit-ui"
+        },
+        {
+          "from": "overfit-feature-signals",
+          "to": "overfit-api-client"
+        },
+        {
+          "from": "overfit-feature-signals",
+          "to": "overfit-contracts-generated"
+        },
+        {
+          "from": "overfit-feature-signals",
+          "to": "overfit-ui"
+        },
+        {
+          "from": "overfit-queries",
+          "to": "overfit-contracts"
+        },
+        {
+          "from": "overfit-queries",
+          "to": "overfit-domain"
+        },
+        {
+          "from": "overfit-queries",
+          "to": "overfit-read-models"
+        },
+        {
+          "from": "overfit-queries",
+          "to": "overfit-repositories"
+        },
+        {
+          "from": "overfit-read-models",
+          "to": "overfit-contracts"
+        },
+        {
+          "from": "overfit-read-models",
+          "to": "overfit-domain"
+        },
+        {
+          "from": "overfit-repositories",
+          "to": "overfit-domain"
+        },
+        {
+          "from": "overfit-ui",
+          "to": "overfit-contracts-generated"
+        },
+        {
+          "from": "overfit-web",
+          "to": "overfit-api-client"
+        },
+        {
+          "from": "overfit-web",
+          "to": "overfit-contracts-generated"
+        },
+        {
+          "from": "overfit-web",
+          "to": "overfit-feature-compare"
+        },
+        {
+          "from": "overfit-web",
+          "to": "overfit-feature-dashboard"
+        },
+        {
+          "from": "overfit-web",
+          "to": "overfit-feature-dx-metrics"
+        },
+        {
+          "from": "overfit-web",
+          "to": "overfit-feature-incidents"
+        },
+        {
+          "from": "overfit-web",
+          "to": "overfit-feature-ops"
+        },
+        {
+          "from": "overfit-web",
+          "to": "overfit-feature-settings"
+        },
+        {
+          "from": "overfit-web",
+          "to": "overfit-feature-signal-detail"
+        },
+        {
+          "from": "overfit-web",
+          "to": "overfit-feature-signals"
+        },
+        {
+          "from": "overfit-web",
+          "to": "overfit-ui"
+        }
+      ],
+      "metrics": {
+        "internalNodeCount": 29,
+        "internalEdgeCount": 72,
+        "maxInternalOutDegree": 14,
+        "maxInternalInDegree": 11,
+        "maxDepthFromApp": 2,
+        "connectedComponents": 2
+      }
+    }
+  }
+}

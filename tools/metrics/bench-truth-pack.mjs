@@ -283,6 +283,7 @@ const s04 = Object.fromEntries(
 const autoMetrics = Object.fromEntries(
   VARIANTS.map((v) => {
     const ci = readJson(resolve(repoRoot, 'tools/metrics/results/ci', `${v}.json`))
+    const latest = readJson(resolve(repoRoot, 'tools/metrics/results/latest', `${v}.json`))
     const coldSum = Object.values(ci.steps).reduce((n, s) => n + s.durationMs, 0)
     const warmSum = Object.values(ci.warmSteps).reduce((n, s) => n + s.durationMs, 0)
     const releaseBuilds = ci.docker.releaseImages.map((img) => ({
@@ -310,6 +311,19 @@ const autoMetrics = Object.fromEntries(
             'measured build time of every deployable release image (same --no-cache method).'
         },
         dockerImageSizeKb: ci.docker.releaseImageStats.sizeKb,
+        // Outside every CTL factor: gzip of the real emitted client JS (node:zlib on the
+        // built files). Topologies differ (Flow: SSR + hydration bundle; Friction/Overfit:
+        // static SPA + separate API): shown as a raw measure, never in a factor.
+        bundleJsGzip: {
+          source: `repo:tools/metrics/results/latest/${v}.json · metrics.bundleJsGzipKb`,
+          capturedAt: latest.meta.timestamp,
+          commit: latest.meta.commitShort,
+          kb: latest.metrics.bundleJsGzipKb.value,
+          note:
+            'Hors CTL. Gzip reel des fichiers JS emis par le build (node:zlib). Les topologies ' +
+            'de livraison different (Flow: serveur SSR + bundle d hydratation ; Friction/Overfit: ' +
+            'web statique + API separee) : mesure exposee, jamais comptee dans un facteur.'
+        },
         outsideFactor: {
           startupMs: ci.docker.runtime.startupMs,
           healthcheckMs: ci.docker.runtime.healthcheck.durationMs,
@@ -419,6 +433,7 @@ expect('knowledge flow', [knowledgeMap.variants.flow.ruleLocationEdges, knowledg
 expect('knowledge friction', [knowledgeMap.variants.friction.ruleLocationEdges, knowledgeMap.variants.friction.maxRulesPerFile], [7, 3])
 expect('knowledge overfit', [knowledgeMap.variants.overfit.ruleLocationEdges, knowledgeMap.variants.overfit.duplicatedRiskRules], [11, 3])
 expect('docker consolidated', [autoMetrics.flow.dockerBuild.consolidatedAllReleaseImagesMs, autoMetrics.friction.dockerBuild.consolidatedAllReleaseImagesMs, autoMetrics.overfit.dockerBuild.consolidatedAllReleaseImagesMs], [151118, 124400, 118805])
+expect('bundle gzip', [autoMetrics.flow.bundleJsGzip.kb, autoMetrics.friction.bundleJsGzip.kb, autoMetrics.overfit.bundleJsGzip.kb], [216.4, 80.3, 206.8])
 
 // ---------------------------------------------------------------------------
 // Assemble + write

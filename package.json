@@ -32,6 +32,8 @@
     "metrics:dashboard:build": "pnpm --filter @signalops/metrics-dashboard build",
     "metrics:truth-pack": "node tools/metrics/bench-truth-pack.mjs",
     "metrics:truth-pack:check": "node tools/metrics/bench-truth-pack.mjs --check",
+    "metrics:structure": "node tools/metrics/structure-snapshot.mjs",
+    "metrics:structure:check": "node tools/metrics/structure-snapshot.mjs --check",
     "build:flow": "nx run flow-app:build",
     "test:flow": "nx affected -t test --base=origin/main --head=HEAD",
     "typecheck:flow": "nx affected -t typecheck --base=origin/main --head=HEAD",

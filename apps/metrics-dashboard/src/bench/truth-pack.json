@@ -746,6 +746,13 @@
         "consolidationReason": "The published variant.docker.build.duration counts only the primary image; friction and overfit ship two release images. The consolidated value sums the measured build time of every deployable release image (same --no-cache method)."
       },
       "dockerImageSizeKb": 241250,
+      "bundleJsGzip": {
+        "source": "repo:tools/metrics/results/latest/flow.json · metrics.bundleJsGzipKb",
+        "capturedAt": "2026-07-06T14:42:53.278Z",
+        "commit": "cafc870",
+        "kb": 216.4,
+        "note": "Hors CTL. Gzip reel des fichiers JS emis par le build (node:zlib). Les topologies de livraison different (Flow: serveur SSR + bundle d hydratation ; Friction/Overfit: web statique + API separee) : mesure exposee, jamais comptee dans un facteur."
+      },
       "outsideFactor": {
         "startupMs": 14582,
         "healthcheckMs": 2194,
@@ -789,6 +796,13 @@
         "consolidationReason": "The published variant.docker.build.duration counts only the primary image; friction and overfit ship two release images. The consolidated value sums the measured build time of every deployable release image (same --no-cache method)."
       },
       "dockerImageSizeKb": 280239.6,
+      "bundleJsGzip": {
+        "source": "repo:tools/metrics/results/latest/friction.json · metrics.bundleJsGzipKb",
+        "capturedAt": "2026-07-06T14:42:53.278Z",
+        "commit": "cafc870",
+        "kb": 80.3,
+        "note": "Hors CTL. Gzip reel des fichiers JS emis par le build (node:zlib). Les topologies de livraison different (Flow: serveur SSR + bundle d hydratation ; Friction/Overfit: web statique + API separee) : mesure exposee, jamais comptee dans un facteur."
+      },
       "outsideFactor": {
         "startupMs": 67,
         "healthcheckMs": 67,
@@ -832,6 +846,13 @@
         "consolidationReason": "The published variant.docker.build.duration counts only the primary image; friction and overfit ship two release images. The consolidated value sums the measured build time of every deployable release image (same --no-cache method)."
       },
       "dockerImageSizeKb": 374352.2,
+      "bundleJsGzip": {
+        "source": "repo:tools/metrics/results/latest/overfit.json · metrics.bundleJsGzipKb",
+        "capturedAt": "2026-07-06T14:42:53.278Z",
+        "commit": "cafc870",
+        "kb": 206.8,
+        "note": "Hors CTL. Gzip reel des fichiers JS emis par le build (node:zlib). Les topologies de livraison different (Flow: serveur SSR + bundle d hydratation ; Friction/Overfit: web statique + API separee) : mesure exposee, jamais comptee dans un facteur."
+      },
       "outsideFactor": {
         "startupMs": 561,
         "healthcheckMs": 32,

@@ -4,6 +4,7 @@ import { fmtChrono, fmtInt } from '../bench/format'
 import { useInView } from '../lib/hooks'
 import { N } from '../lib/Prov'
 import { Act, Affirm, Kicker, Lecture, Reveal } from '../ui/voice'
+import { Gravity } from './Gravity'
 import { Loom } from './Loom'
 
 const BY_TIME: VariantId[] = ['friction', 'flow', 'overfit']
@@ -160,6 +161,7 @@ export function Act4Changement() {
       </Lecture>
       <Affirm size="md">Où vit la connaissance métier ?</Affirm>
       <Loom />
+      <Gravity />
     </Act>
   )
 }

@@ -1000,6 +1000,176 @@ button {
 }
 
 /* --------------------------------------------------------------------------
+   Acte 4 — la gravité (photographie structurelle des dépendances internes)
+   -------------------------------------------------------------------------- */
+
+.grav {
+  margin-top: clamp(60px, 10vh, 110px);
+}
+
+.grav-panels {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: clamp(14px, 2vw, 26px);
+  margin: 34px auto 10px;
+}
+
+.grav-panel {
+  position: relative;
+  background: var(--paper-raise);
+  border: 1px solid var(--hairline-soft);
+  border-radius: 14px;
+  padding: 10px 12px 4px;
+  transition: opacity 0.4s var(--ease), border-color 0.4s var(--ease);
+}
+
+/* Un panneau actif (focus/hover) précise son graphe, les autres s'estompent */
+.grav.active-flow .grav-panel:not(.v-flow),
+.grav.active-friction .grav-panel:not(.v-friction),
+.grav.active-overfit .grav-panel:not(.v-overfit) {
+  opacity: 0.42;
+}
+
+.grav-panel.is-active {
+  border-color: var(--v);
+}
+
+.grav-hit {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  appearance: none;
+  background: none;
+  border: none;
+  border-radius: 14px;
+  cursor: default;
+}
+
+.grav-hit:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+}
+
+.grav-svg {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  height: auto;
+  display: block;
+  pointer-events: none;
+}
+
+.grav-edge {
+  fill: none;
+  stroke: var(--v);
+  stroke-width: 1;
+  opacity: 0;
+  transition: opacity 0.6s var(--ease), stroke-width 0.25s var(--ease);
+}
+
+.grav.is-in .grav-edge {
+  opacity: 0.28;
+}
+
+.grav.is-in .grav-panel.has-hl .grav-edge {
+  opacity: 0.1;
+}
+
+.grav.is-in .grav-panel .grav-edge.is-lit {
+  opacity: 0.95;
+  stroke-width: 1.8;
+}
+
+.grav-node {
+  transition: transform 0.9s var(--ease);
+  transform-box: view-box;
+  pointer-events: all;
+  cursor: pointer;
+}
+
+.grav-halo {
+  fill: transparent;
+}
+
+.grav-mark {
+  fill: var(--v);
+  transition: opacity 0.25s var(--ease);
+}
+
+.grav-panel.has-hl .grav-node:not(.is-lit) .grav-mark {
+  opacity: 0.3;
+}
+
+.grav-node.is-lit .grav-mark {
+  opacity: 1;
+}
+
+.grav-ring {
+  fill: none;
+  stroke: var(--v);
+  stroke-width: 1.5;
+  stroke-dasharray: 3 3;
+}
+
+.grav-caption {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 2px 4px 0;
+}
+
+.grav-vname {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--v);
+}
+
+.grav-count {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 13px;
+  color: var(--ink-soft);
+}
+
+.grav-hlinfo {
+  position: relative;
+  z-index: 2;
+  min-height: 1.4em;
+  margin: 2px 4px 6px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--ink-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.grav-legend {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--ink-muted);
+  max-width: 74ch;
+  margin-top: 14px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* --------------------------------------------------------------------------
    Acte 5 — diagnostic (scène sombre)
    -------------------------------------------------------------------------- */
 
@@ -1633,6 +1803,289 @@ button {
   max-width: 84ch;
 }
 
+/* Bandes de preuve — les mesures brutes derrière les facteurs */
+.proof-strip {
+  margin: clamp(48px, 8vh, 84px) auto;
+  border-top: 1px solid var(--hairline);
+  padding-top: 22px;
+}
+
+.proof-title {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin: 0 0 18px;
+}
+
+.proof-unit {
+  color: var(--ink-muted);
+  text-transform: none;
+  letter-spacing: 0.02em;
+  margin-left: 12px;
+}
+
+.proof-rows {
+  display: grid;
+  gap: 10px;
+}
+
+.proof-row {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  margin: 0;
+}
+
+.proof-name {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--v);
+  min-width: 92px;
+}
+
+.proof-value {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: clamp(21px, 2.4vw, 30px);
+  font-weight: 680;
+  letter-spacing: -0.02em;
+}
+
+.proof-value.is-warm {
+  color: var(--v);
+}
+
+.proof-arrow {
+  color: var(--ink-muted);
+  font-size: 19px;
+}
+
+.proof-note {
+  max-width: 74ch;
+  font-size: 13.5px;
+  color: var(--ink-muted);
+  margin: 16px 0 0;
+}
+
+/* La scène Ship — « Plus vite ici. Plus lourd là. » */
+.shipslope {
+  margin: clamp(56px, 9vh, 100px) auto;
+}
+
+.shipslope-grid {
+  display: grid;
+  grid-template-columns: auto minmax(180px, 1fr) auto;
+  grid-template-areas:
+    'headl . headr'
+    'coll field colr';
+  column-gap: 18px;
+  margin-top: 40px;
+}
+
+.shipslope-colhead {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin: 0 0 20px;
+}
+
+.shipslope-colhead span {
+  display: block;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: none;
+  color: var(--ink-muted);
+  margin-top: 2px;
+}
+
+.shipslope-grid .shipslope-colhead.col-left { grid-area: headl; }
+.shipslope-grid .shipslope-colhead.col-right { grid-area: headr; text-align: right; }
+.shipslope-grid .shipslope-col.col-left { grid-area: coll; }
+.shipslope-grid .shipslope-col.col-right { grid-area: colr; }
+.shipslope-field { grid-area: field; }
+
+.shipslope-anchor {
+  height: 88px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  transition: opacity 0.3s var(--ease);
+}
+
+.shipslope-anchor.side-left {
+  justify-content: flex-end;
+}
+
+.shipslope-anchor.side-right {
+  flex-direction: row-reverse;
+  justify-content: flex-end;
+}
+
+.shipslope-rank {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--ink-muted);
+  border: 1px solid var(--hairline);
+  border-radius: 999px;
+  width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  flex: none;
+}
+
+.shipslope-label {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.shipslope-anchor.side-left .shipslope-label {
+  align-items: flex-end;
+}
+
+.shipslope-name {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--v);
+}
+
+.shipslope-value {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: clamp(22px, 2.6vw, 32px);
+  font-weight: 680;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+.shipslope-field svg {
+  display: block;
+}
+
+.shipslope-line {
+  stroke: var(--v);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  transition: stroke-dashoffset 1s var(--ease), opacity 0.3s var(--ease), stroke-width 0.3s var(--ease);
+}
+
+.shipslope.is-in .shipslope-line {
+  stroke-dashoffset: 0;
+}
+
+.shipslope-traj:nth-of-type(1) .shipslope-line { transition-delay: 0.1s; }
+.shipslope-traj:nth-of-type(2) .shipslope-line { transition-delay: 0.25s; }
+.shipslope-traj:nth-of-type(3) .shipslope-line { transition-delay: 0.4s; }
+
+.shipslope-dot {
+  fill: var(--v);
+  transform: scale(0);
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: transform 0.45s var(--ease), opacity 0.3s var(--ease);
+}
+
+.shipslope.is-in .dot-start {
+  transform: scale(1);
+}
+
+.shipslope.is-in .dot-end {
+  transform: scale(1);
+  transition-delay: 1s;
+}
+
+/* Suivi d'une trajectoire : la variante survolée/focus reste seule nette */
+.shipslope.hover-flow .shipslope-anchor:not(.v-flow),
+.shipslope.hover-friction .shipslope-anchor:not(.v-friction),
+.shipslope.hover-overfit .shipslope-anchor:not(.v-overfit),
+.shipslope.hover-flow .shipslope-traj:not(.v-flow),
+.shipslope.hover-friction .shipslope-traj:not(.v-friction),
+.shipslope.hover-overfit .shipslope-traj:not(.v-overfit) {
+  opacity: 0.25;
+}
+
+.shipslope.hover-flow .shipslope-traj.v-flow .shipslope-line,
+.shipslope.hover-friction .shipslope-traj.v-friction .shipslope-line,
+.shipslope.hover-overfit .shipslope-traj.v-overfit .shipslope-line {
+  stroke-width: 3.5;
+}
+
+/* Mobile : deux classements, un retournement */
+.shipslope-mobile {
+  display: none;
+  margin-top: 36px;
+}
+
+.shipslope-list {
+  list-style: none;
+  margin: 0 0 6px;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+  counter-reset: shiprank;
+}
+
+.shipslope-list li {
+  counter-increment: shiprank;
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+}
+
+.shipslope-list li::before {
+  content: counter(shiprank);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--ink-muted);
+  border: 1px solid var(--hairline);
+  border-radius: 999px;
+  width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  flex: none;
+  align-self: center;
+}
+
+.shipslope-list .shipslope-name {
+  min-width: 92px;
+}
+
+.shipslope-flip {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  text-align: center;
+  margin: 22px 0;
+}
+
+.shipslope-flip::before {
+  content: '↺ ';
+}
+
+@media (max-width: 760px) {
+  .shipslope-grid {
+    display: none;
+  }
+
+  .shipslope-mobile {
+    display: block;
+  }
+}
+
 .outside-title {
   font-family: var(--font-mono);
   font-size: 12.5px;
@@ -2030,6 +2483,25 @@ button {
     transition: none !important;
     opacity: 1 !important;
     transform: none !important;
+  }
+
+  .shipslope-line {
+    transition: none !important;
+    stroke-dashoffset: 0 !important;
+  }
+
+  .shipslope-dot {
+    transition: none !important;
+    transform: scale(1) !important;
+  }
+
+  .grav-node,
+  .grav-edge {
+    transition: none !important;
+  }
+
+  .grav .grav-edge {
+    opacity: 0.28;
   }
 
   .cumtime-seg {
