@@ -1,7 +1,29 @@
-import { render, screen } from '@testing-library/react'
-import { describe, expect, it } from 'vitest'
+import { fireEvent, render, screen } from '@testing-library/react'
+import { describe, expect, it, vi, beforeEach } from 'vitest'
 import type { Signal } from '@signalops/contracts'
 import { SignalsTable } from './SignalsTable'
+
+const navigate = vi.fn()
+
+vi.mock('@tanstack/react-router', async () => {
+  const actual = await vi.importActual<typeof import('@tanstack/react-router')>('@tanstack/react-router')
+  return {
+    ...actual,
+    Link: ({ children, className }: { children: unknown; className?: string }) => (
+      <a href="/signals/mock" className={className}>
+        {children}
+      </a>
+    ),
+    useNavigate: () => navigate
+  }
+})
+
+vi.mock('@tanstack/react-virtual', () => ({
+  useVirtualizer: ({ count }: { count: number }) => ({
+    getTotalSize: () => count * 64,
+    getVirtualItems: () => Array.from({ length: count }, (_, index) => ({ index, start: index * 64 }))
+  })
+}))
 
 function signal(id: string, overrides: Partial<Signal> = {}): Signal {
   return {
@@ -28,6 +50,10 @@ const signals = [signal('sig_1'), signal('sig_2', { severity: 'low' })]
 const noop = () => {}
 
 describe('SignalsTable accessibility', () => {
+  beforeEach(() => {
+    navigate.mockReset()
+  })
+
   it('exposes an accessible grid with column headers', () => {
     render(
       <SignalsTable
@@ -61,8 +87,6 @@ describe('SignalsTable accessibility', () => {
   })
 
   it('declares the Risk trend column', () => {
-    // Row cells are virtualized away in jsdom (zero-height viewport); the badge itself is
-    // covered in flow-ui's badges.test.tsx.
     render(
       <SignalsTable
         signals={[signal('sig_up', { riskTrend: 'up' })]}
@@ -73,5 +97,22 @@ describe('SignalsTable accessibility', () => {
       />
     )
     expect(screen.getByRole('columnheader', { name: 'Risk trend' })).toBeInTheDocument()
+  })
+
+  it('opens the signal detail view from the keyboard on a focused row', () => {
+    render(
+      <SignalsTable
+        signals={signals}
+        rowSelection={{}}
+        onRowSelectionChange={noop}
+        sorting={[]}
+        onSortingChange={noop}
+      />
+    )
+
+    const firstDataRow = screen.getAllByRole('row')[1]
+    fireEvent.keyDown(firstDataRow, { key: 'Enter' })
+
+    expect(navigate).toHaveBeenCalledWith({ to: '/signals/$id', params: { id: 'sig_1' } })
   })
 })

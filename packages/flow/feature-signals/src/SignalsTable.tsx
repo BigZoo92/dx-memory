@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { useRef, type KeyboardEvent } from 'react'
 import { Link, useNavigate } from '@tanstack/react-router'
 import {
   flexRender,
@@ -33,6 +33,10 @@ const NO_ASSIGNEE_OVERRIDES: Record<string, string> = {}
  * value and the real CSS height makes rows overlap. One source of truth = no overlap, no drift.
  */
 const SIGNALS_ROW_HEIGHT = 64
+
+function isInteractiveTarget(target: EventTarget | null) {
+  return target instanceof HTMLElement && Boolean(target.closest('a, button, input'))
+}
 
 export type SignalsTableProps = {
   signals: Signal[]
@@ -206,6 +210,10 @@ export function SignalsTable({
     overscan: 12
   })
 
+  const openSignalDetail = (signalId: string) => {
+    navigate({ to: '/signals/$id', params: { id: signalId } })
+  }
+
   return (
     // Single scroll container for BOTH axes: the sticky header + virtualized rows live inside it,
     // so there is exactly one horizontal and one vertical scrollbar (no nested double scrollbar).
@@ -264,12 +272,19 @@ export function SignalsTable({
                 role="row"
                 aria-rowindex={virtualRow.index + 2}
                 aria-selected={row.getIsSelected()}
+                tabIndex={0}
                 className={`${styles.row} ${row.getIsSelected() ? styles.rowSelected : ''}`}
                 // Whole row opens the detail view. Clicks that land on an interactive cell
                 // (checkbox, the linked-incident link, the View button) keep their own behavior.
                 onClick={(event) => {
-                  if ((event.target as HTMLElement).closest('a, button, input')) return
-                  navigate({ to: '/signals/$id', params: { id: row.original.id } })
+                  if (isInteractiveTarget(event.target)) return
+                  openSignalDetail(row.original.id)
+                }}
+                onKeyDown={(event: KeyboardEvent<HTMLDivElement>) => {
+                  if (event.target !== event.currentTarget) return
+                  if (event.key !== 'Enter' && event.key !== ' ') return
+                  event.preventDefault()
+                  openSignalDetail(row.original.id)
                 }}
                 style={{
                   position: 'absolute',
