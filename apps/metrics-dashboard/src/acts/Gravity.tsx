@@ -15,7 +15,7 @@ import type { StructureVariant, VariantId } from '../bench/types'
 import { fmtInt } from '../bench/format'
 import { useInView, usePrefersReducedMotion } from '../lib/hooks'
 import { N } from '../lib/Prov'
-import { Affirm, Reveal } from '../ui/voice'
+import { Affirm } from '../ui/voice'
 
 const VB_W = 340
 const VB_H = 310
