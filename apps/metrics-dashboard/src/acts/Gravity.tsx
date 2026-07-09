@@ -56,9 +56,7 @@ function layout(v: StructureVariant): { nodes: PlacedNode[]; deps: Map<string, s
   const single = v.roots.length === 1
   const centers: Record<string, { x: number; y: number }> = {}
   v.roots.forEach((root, i) => {
-    centers[root] = single
-      ? { x: VB_W / 2, y: VB_H / 2 }
-      : { x: i === 0 ? 92 : 243, y: VB_H / 2 }
+    centers[root] = single ? { x: VB_W / 2, y: VB_H / 2 } : { x: i === 0 ? 92 : 243, y: VB_H / 2 }
   })
   const ringGap = single ? 55 : 44
 
@@ -167,7 +165,9 @@ function GravityPanel({
               key={`${e.from}→${e.to}`}
               d={`M ${a.x} ${a.y} Q ${mx} ${my} ${b.x} ${b.y}`}
               className={`grav-edge${lit ? ' is-lit' : ''}`}
-              style={deployed ? { transitionDelay: `${420 + (a.depth + b.depth) * 90}ms` } : undefined}
+              style={
+                deployed ? { transitionDelay: `${420 + (a.depth + b.depth) * 90}ms` } : undefined
+              }
             />
           )
         })}
@@ -178,7 +178,9 @@ function GravityPanel({
               key={n.id}
               className={`grav-node${lit ? ' is-lit' : ''}${n.kind === 'app' ? ' is-app' : ''}`}
               style={{
-                transform: deployed ? `translate(${n.x}px, ${n.y}px)` : `translate(${n.cx}px, ${n.cy}px)`,
+                transform: deployed
+                  ? `translate(${n.x}px, ${n.y}px)`
+                  : `translate(${n.cx}px, ${n.cy}px)`,
                 transitionDelay: deployed ? `${n.depth * 160 + (i % 7) * 24}ms` : '0ms'
               }}
               onPointerEnter={() => setHl(n.id)}
@@ -230,20 +232,22 @@ export function Gravity() {
   const [active, setActive] = useState<VariantId | null>(null)
 
   return (
-    <div ref={ref} className={`grav${deployed ? ' is-in' : ''}${active ? ` active-${active}` : ''}`}>
+    <div
+      ref={ref}
+      className={`grav${deployed ? ' is-in' : ''}${active ? ` active-${active}` : ''}`}
+    >
       <Affirm size="md">Même produit.</Affirm>
       <div className="grav-panels">
         {VARIANTS.map((v) => (
-          <GravityPanel key={v} variant={v} deployed={deployed} active={active === v} onActivate={setActive} />
+          <GravityPanel
+            key={v}
+            variant={v}
+            deployed={deployed}
+            active={active === v}
+            onActivate={setActive}
+          />
         ))}
       </div>
-      <Reveal delay={reduced ? 0 : 900}>
-        <Affirm size="md">Pas la même gravité.</Affirm>
-        <p className="grav-legend">
-          ● unité TypeScript · ■ crate Rust · ◎ app livrable — dépendances internes réelles, hors
-          CTL. Survolez une unité : ses dépendances directes s'allument.
-        </p>
-      </Reveal>
     </div>
   )
 }

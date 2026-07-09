@@ -20,7 +20,12 @@ function AxisRail({ axis }: { axis: AxisResult }) {
       <div className="rail-head">
         <h3 className="rail-name">{axis.label}</h3>
         <p className="rail-gloss">{axis.gloss}</p>
-        <button type="button" className="rail-toggle" onClick={() => setOpen((o) => !o)} aria-expanded={open}>
+        <button
+          type="button"
+          className="rail-toggle"
+          onClick={() => setOpen((o) => !o)}
+          aria-expanded={open}
+        >
           {open ? 'refermer' : 'd’où vient ce facteur ?'}
         </button>
       </div>
@@ -64,7 +69,9 @@ function AxisRail({ axis }: { axis: AxisResult }) {
               <tr>
                 <th scope="col">métrique retenue</th>
                 {VARIANTS.map((v) => (
-                  <th key={v} scope="col" className={`v-${v}`}>{VARIANT_NAME[v]}</th>
+                  <th key={v} scope="col" className={`v-${v}`}>
+                    {VARIANT_NAME[v]}
+                  </th>
                 ))}
               </tr>
             </thead>
@@ -73,7 +80,9 @@ function AxisRail({ axis }: { axis: AxisResult }) {
                 <tr key={m.id}>
                   <th scope="row">
                     {m.label}
-                    <span className={`level-tag level-${m.level}`}>{m.level === 'direct' ? 'mesure' : 'dérivé'}</span>
+                    <span className={`level-tag level-${m.level}`}>
+                      {m.level === 'direct' ? 'mesure' : 'dérivé'}
+                    </span>
                   </th>
                   {VARIANTS.map((v) => (
                     <td key={v}>
@@ -86,9 +95,11 @@ function AxisRail({ axis }: { axis: AxisResult }) {
           </table>
           {axis.metrics.some((m) => m.note) && (
             <ul className="rail-notes">
-              {axis.metrics.filter((m) => m.note).map((m) => (
-                <li key={m.id}>{m.note}</li>
-              ))}
+              {axis.metrics
+                .filter((m) => m.note)
+                .map((m) => (
+                  <li key={m.id}>{m.note}</li>
+                ))}
             </ul>
           )}
         </div>
@@ -108,8 +119,8 @@ export function Act7Profil() {
       </Affirm>
       <Reveal>
         <p className="prose">
-          Sur chacun des quatres axes, <strong>1,00×</strong> marque le plus faible
-          coût relatif observé comme référence, pas une perfection.
+          Sur chacun des quatres axes, <strong>1,00×</strong> marque le plus faible coût relatif
+          observé comme référence, pas une perfection.
         </p>
       </Reveal>
       <div className="rails">
@@ -134,7 +145,9 @@ export function Act7Profil() {
                     source: `repo:tools/metrics/results/ci/${v}.json · steps`
                   }}
                 >
-                  <span className="proof-value">{fmtSeconds(pack.autoMetrics[v].coldValidationMs)}</span>
+                  <span className="proof-value">
+                    {fmtSeconds(pack.autoMetrics[v].coldValidationMs)}
+                  </span>
                 </N>
                 <span className="proof-arrow" aria-hidden="true">
                   →
@@ -146,7 +159,9 @@ export function Act7Profil() {
                     source: `repo:tools/metrics/results/ci/${v}.json · warmSteps`
                   }}
                 >
-                  <span className="proof-value is-warm">{fmtSeconds(pack.autoMetrics[v].warmValidationMs)}</span>
+                  <span className="proof-value is-warm">
+                    {fmtSeconds(pack.autoMetrics[v].warmValidationMs)}
+                  </span>
                 </N>
               </p>
             ))}
@@ -173,21 +188,19 @@ export function Act7Profil() {
                     note: pack.autoMetrics[v].bundleJsGzip.note
                   }}
                 >
-                  <span className="proof-value">{fmtKbFine(pack.autoMetrics[v].bundleJsGzip.kb)}</span>
+                  <span className="proof-value">
+                    {fmtKbFine(pack.autoMetrics[v].bundleJsGzip.kb)}
+                  </span>
                 </N>
               </p>
             ))}
           </div>
-          <p className="proof-note">
-            Mesuré (gzip réel des fichiers émis), jamais compté dans un facteur : les topologies de
-            livraison diffèrent — Flow sert un bundle d'hydratation SSR, Friction et Overfit un web
-            statique plus une API.
-          </p>
         </div>
       </Reveal>
 
       <Lecture>
-        Friction paie le changement. Overfit paie sa sophistication. Flow reste contenu partout et creuse l’écart sur Change.
+        Friction paie le changement. Overfit paie sa sophistication. Flow reste contenu partout et
+        creuse l’écart sur Change.
       </Lecture>
     </Act>
   )

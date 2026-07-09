@@ -34,7 +34,8 @@
   --friction-dark: #e5603d;
   --overfit-dark: #906fe8;
 
-  --font-sans: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', system-ui, sans-serif;
+  --font-sans:
+    -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', system-ui, sans-serif;
   --font-serif: 'Iowan Old Style', 'Palatino Nova', Palatino, Georgia, 'Times New Roman', serif;
   --font-mono: ui-monospace, 'SF Mono', 'JetBrains Mono', Menlo, Consolas, monospace;
 
@@ -99,13 +100,31 @@ button {
    Couleur par variante — la couleur suit l'entité
    -------------------------------------------------------------------------- */
 
-.v-flow { --v: var(--flow); --v-soft: var(--flow-soft); }
-.v-friction { --v: var(--friction); --v-soft: var(--friction-soft); }
-.v-overfit { --v: var(--overfit); --v-soft: var(--overfit-soft); }
+.v-flow {
+  --v: var(--flow);
+  --v-soft: var(--flow-soft);
+}
+.v-friction {
+  --v: var(--friction);
+  --v-soft: var(--friction-soft);
+}
+.v-overfit {
+  --v: var(--overfit);
+  --v-soft: var(--overfit-soft);
+}
 
-.tone-dark .v-flow { --v: var(--flow-dark); --v-soft: rgba(14, 161, 130, 0.16); }
-.tone-dark .v-friction { --v: var(--friction-dark); --v-soft: rgba(229, 96, 61, 0.16); }
-.tone-dark .v-overfit { --v: var(--overfit-dark); --v-soft: rgba(144, 111, 232, 0.16); }
+.tone-dark .v-flow {
+  --v: var(--flow-dark);
+  --v-soft: rgba(14, 161, 130, 0.16);
+}
+.tone-dark .v-friction {
+  --v: var(--friction-dark);
+  --v-soft: rgba(229, 96, 61, 0.16);
+}
+.tone-dark .v-overfit {
+  --v: var(--overfit-dark);
+  --v-soft: rgba(144, 111, 232, 0.16);
+}
 
 /* --------------------------------------------------------------------------
    Navigation
@@ -120,7 +139,9 @@ button {
   justify-content: space-between;
   gap: 16px;
   padding: 12px var(--gutter);
-  transition: background 0.35s var(--ease), box-shadow 0.35s var(--ease);
+  transition:
+    background 0.35s var(--ease),
+    box-shadow 0.35s var(--ease);
 }
 
 .nav.is-scrolled {
@@ -192,6 +213,7 @@ button {
 
 .act {
   padding: clamp(84px, 14vh, 160px) var(--gutter);
+  padding-bottom: 21px !important;
   max-width: none;
 }
 
@@ -232,9 +254,15 @@ button {
   text-wrap: balance;
 }
 
-.affirm-xl { font-size: clamp(46px, 8.6vw, 124px); }
-.affirm-lg { font-size: clamp(32px, 5.4vw, 74px); }
-.affirm-md { font-size: clamp(25px, 3.4vw, 44px); }
+.affirm-xl {
+  font-size: clamp(46px, 8.6vw, 124px);
+}
+.affirm-lg {
+  font-size: clamp(32px, 5.4vw, 74px);
+}
+.affirm-md {
+  font-size: clamp(25px, 3.4vw, 44px);
+}
 
 .align-center {
   text-align: center;
@@ -310,7 +338,9 @@ button {
 .reveal {
   opacity: 0;
   transform: translateY(22px);
-  transition: opacity 0.75s var(--ease), transform 0.75s var(--ease);
+  transition:
+    opacity 0.75s var(--ease),
+    transform 0.75s var(--ease);
 }
 
 .reveal.is-in {
@@ -337,9 +367,16 @@ button {
   background: transparent;
 }
 
-.level-direct { border: 1px solid var(--ink-soft); }
-.level-derived { border: 1px solid var(--ink-muted); background: var(--paper-dip); }
-.level-reviewable { border: 1px dashed var(--ink-muted); }
+.level-direct {
+  border: 1px solid var(--ink-soft);
+}
+.level-derived {
+  border: 1px solid var(--ink-muted);
+  background: var(--paper-dip);
+}
+.level-reviewable {
+  border: 1px dashed var(--ink-muted);
+}
 .level-interpretation {
   border: none;
   font-family: var(--font-serif);
@@ -351,10 +388,19 @@ button {
   padding-left: 0;
 }
 
-.tone-dark .level-tag { color: var(--dark-ink-soft); }
-.tone-dark .level-direct { border-color: var(--dark-ink-soft); }
-.tone-dark .level-derived { border-color: var(--dark-hairline); background: var(--dark-raise); }
-.tone-dark .level-reviewable { border-color: var(--dark-ink-soft); }
+.tone-dark .level-tag {
+  color: var(--dark-ink-soft);
+}
+.tone-dark .level-direct {
+  border-color: var(--dark-ink-soft);
+}
+.tone-dark .level-derived {
+  border-color: var(--dark-hairline);
+  background: var(--dark-raise);
+}
+.tone-dark .level-reviewable {
+  border-color: var(--dark-ink-soft);
+}
 
 .prov-n {
   appearance: none;
@@ -406,7 +452,9 @@ button {
   border-color: color-mix(in srgb, var(--paper) 60%, transparent);
 }
 
-.prov-card .level-derived { background: rgba(255, 255, 255, 0.09); }
+.prov-card .level-derived {
+  background: rgba(255, 255, 255, 0.09);
+}
 
 .prov-line {
   display: flex;
@@ -557,8 +605,12 @@ button {
   margin-bottom: 14px;
 }
 
-.glyph-fill { fill: var(--v); }
-.glyph-soft { fill: color-mix(in srgb, var(--v) 32%, var(--paper)); }
+.glyph-fill {
+  fill: var(--v);
+}
+.glyph-soft {
+  fill: color-mix(in srgb, var(--v) 32%, var(--paper));
+}
 
 .variant-name {
   font-size: 26px;
@@ -751,7 +803,9 @@ button {
   transform: scaleX(1);
 }
 
-.cumtime-seg.seg-a { background: var(--v); }
+.cumtime-seg.seg-a {
+  background: var(--v);
+}
 .cumtime-seg.seg-b {
   background: color-mix(in srgb, var(--v) 42%, var(--paper));
   transition-delay: 0.55s;
@@ -880,7 +934,9 @@ button {
   border: 1.5px solid var(--v);
   opacity: 0;
   transform: translateY(6px);
-  transition: opacity 0.4s var(--ease), transform 0.4s var(--ease);
+  transition:
+    opacity 0.4s var(--ease),
+    transform 0.4s var(--ease);
 }
 
 .touchgrid.is-in .touch-cell {
@@ -1020,7 +1076,9 @@ button {
   border: 1px solid var(--hairline-soft);
   border-radius: 14px;
   padding: 10px 12px 4px;
-  transition: opacity 0.4s var(--ease), border-color 0.4s var(--ease);
+  transition:
+    opacity 0.4s var(--ease),
+    border-color 0.4s var(--ease);
 }
 
 /* Un panneau actif (focus/hover) précise son graphe, les autres s'estompent */
@@ -1064,7 +1122,9 @@ button {
   stroke: var(--v);
   stroke-width: 1;
   opacity: 0;
-  transition: opacity 0.6s var(--ease), stroke-width 0.25s var(--ease);
+  transition:
+    opacity 0.6s var(--ease),
+    stroke-width 0.25s var(--ease);
 }
 
 .grav.is-in .grav-edge {
@@ -1400,7 +1460,9 @@ button {
   font-size: 14px;
   opacity: 0;
   transform: translateY(10px);
-  transition: opacity 0.5s var(--ease), transform 0.5s var(--ease);
+  transition:
+    opacity 0.5s var(--ease),
+    transform 0.5s var(--ease);
 }
 
 .caps.is-in .caps-layer {
@@ -1517,7 +1579,9 @@ button {
   color: var(--flow);
   opacity: 0;
   transform: scale(0.92);
-  transition: opacity 0.9s var(--ease), transform 0.9s var(--ease);
+  transition:
+    opacity 0.9s var(--ease),
+    transform 0.9s var(--ease);
 }
 
 .zero-scene.is-in .zero-figure {
@@ -1782,9 +1846,15 @@ button {
   color: var(--ink-muted);
 }
 
-.rail-table thead th.v-flow { color: var(--flow); }
-.rail-table thead th.v-friction { color: var(--friction); }
-.rail-table thead th.v-overfit { color: var(--overfit); }
+.rail-table thead th.v-flow {
+  color: var(--flow);
+}
+.rail-table thead th.v-friction {
+  color: var(--friction);
+}
+.rail-table thead th.v-overfit {
+  color: var(--overfit);
+}
 
 .rail-ratio {
   font-family: var(--font-mono);
@@ -1904,11 +1974,22 @@ button {
   margin-top: 2px;
 }
 
-.shipslope-grid .shipslope-colhead.col-left { grid-area: headl; }
-.shipslope-grid .shipslope-colhead.col-right { grid-area: headr; text-align: right; }
-.shipslope-grid .shipslope-col.col-left { grid-area: coll; }
-.shipslope-grid .shipslope-col.col-right { grid-area: colr; }
-.shipslope-field { grid-area: field; }
+.shipslope-grid .shipslope-colhead.col-left {
+  grid-area: headl;
+}
+.shipslope-grid .shipslope-colhead.col-right {
+  grid-area: headr;
+  text-align: right;
+}
+.shipslope-grid .shipslope-col.col-left {
+  grid-area: coll;
+}
+.shipslope-grid .shipslope-col.col-right {
+  grid-area: colr;
+}
+.shipslope-field {
+  grid-area: field;
+}
 
 .shipslope-anchor {
   height: 88px;
@@ -1977,23 +2058,34 @@ button {
   stroke-linecap: round;
   stroke-dasharray: 1;
   stroke-dashoffset: 1;
-  transition: stroke-dashoffset 1s var(--ease), opacity 0.3s var(--ease), stroke-width 0.3s var(--ease);
+  transition:
+    stroke-dashoffset 1s var(--ease),
+    opacity 0.3s var(--ease),
+    stroke-width 0.3s var(--ease);
 }
 
 .shipslope.is-in .shipslope-line {
   stroke-dashoffset: 0;
 }
 
-.shipslope-traj:nth-of-type(1) .shipslope-line { transition-delay: 0.1s; }
-.shipslope-traj:nth-of-type(2) .shipslope-line { transition-delay: 0.25s; }
-.shipslope-traj:nth-of-type(3) .shipslope-line { transition-delay: 0.4s; }
+.shipslope-traj:nth-of-type(1) .shipslope-line {
+  transition-delay: 0.1s;
+}
+.shipslope-traj:nth-of-type(2) .shipslope-line {
+  transition-delay: 0.25s;
+}
+.shipslope-traj:nth-of-type(3) .shipslope-line {
+  transition-delay: 0.4s;
+}
 
 .shipslope-dot {
   fill: var(--v);
   transform: scale(0);
   transform-box: fill-box;
   transform-origin: center;
-  transition: transform 0.45s var(--ease), opacity 0.3s var(--ease);
+  transition:
+    transform 0.45s var(--ease),
+    opacity 0.3s var(--ease);
 }
 
 .shipslope.is-in .dot-start {
@@ -2241,9 +2333,15 @@ button {
   background: var(--paper-dip);
 }
 
-.def-table thead th.v-flow { color: var(--flow); }
-.def-table thead th.v-friction { color: var(--friction); }
-.def-table thead th.v-overfit { color: var(--overfit); }
+.def-table thead th.v-flow {
+  color: var(--flow);
+}
+.def-table thead th.v-friction {
+  color: var(--friction);
+}
+.def-table thead th.v-overfit {
+  color: var(--overfit);
+}
 
 .def-table td.num {
   font-family: var(--font-mono);
