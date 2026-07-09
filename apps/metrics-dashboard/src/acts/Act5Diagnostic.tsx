@@ -2,11 +2,9 @@ import { pack, VARIANT_NAME } from '../bench/data'
 import type { VariantId } from '../bench/types'
 import { fmtChrono } from '../bench/format'
 import { seg, useStickyProgress, useWidth } from '../lib/hooks'
-import { N } from '../lib/Prov'
-import { Act, Affirm, Kicker, Lecture, Reveal } from '../ui/voice'
+import { Act, Affirm, Kicker, Lecture } from '../ui/voice'
 
 const CHAIN = [
-  { label: 'SIGNAL', detail: 'sig_00500 — un enregistrement parmi mille' },
   { label: 'CONTRAT', detail: 'tags : string[] — le type le promet' },
   { label: 'FRONTIÈRE', detail: 'la donnée traverse sans être vérifiée' },
   { label: 'tags = null', detail: 'la promesse est rompue au runtime' },
@@ -80,12 +78,6 @@ function HypothesisRace() {
           )
         })}
       </svg>
-      <p className="race-legend">
-        <span className="race-legend-hypo" /> première hypothèse <em>ultérieurement confirmée exacte</em>{' '}
-        <span className="level-tag level-reviewable">post-hoc</span>
-        <span className="race-legend-confirm" /> cause racine confirmée{' '}
-        <span className="level-tag level-direct">horodatée</span>
-      </p>
     </div>
   )
 }
@@ -95,54 +87,11 @@ export function Act5Diagnostic() {
     <Act id="diagnostic" tone="dark">
       <Kicker>Scénario S03 · un ticket vague, un défaut injecté, trois enquêtes</Kicker>
       <CausalChain />
-      <Reveal>
-        <p className="prose">
-          Un injecteur de défaut neutre a rompu le contrat avant chaque run : <code>tags = null</code>{' '}
-          au runtime, gates standards toujours vertes. Les trois agents ne reçoivent qu'un ticket
-          vague. La vérité terrain reste cachée jusqu'à l'événement <code>ROOT_CAUSE_FOUND</code>.
-        </p>
-      </Reveal>
       <Affirm size="md">Qui comprend le premier ?</Affirm>
       <HypothesisRace />
-      <div className="race-verdicts">
-        <Reveal>
-          <p className="race-fact">
-            Friction confirme la première —{' '}
-            <N info={{ what: 'Temps jusqu\'à la cause racine confirmée, S03 Friction', level: 'direct', source: pack.s03.friction.source }}>
-              <strong>{fmtChrono(pack.s03.friction.timeToRootCauseMs)}</strong>
-            </N>
-            , 18 secondes devant Flow. Les trois enquêtes aboutissent : cause exacte, zéro fausse
-            piste, 3 à 4 fichiers inspectés.
-          </p>
-        </Reveal>
-        <Reveal delay={200}>
-          <p className="race-fact">
-            Mais Flow formule une hypothèse causalement correcte après{' '}
-            <N
-              info={{
-                what: 'Temps jusqu\'à la première hypothèse, S03 Flow — correction vérifiée ensuite contre la vérité terrain',
-                level: 'reviewable',
-                source: pack.s03.flow.source,
-                note: 'L\'horodatage est une mesure directe ; « correcte » est un classement post-hoc contre le ground truth.'
-              }}
-            >
-              <strong>53 secondes</strong>
-            </N>{' '}
-            : « le rendu suppose que <code>tags</code> est toujours un tableau, et aucune frontière de
-            données ne le garantit ».
-          </p>
-        </Reveal>
-      </div>
       <Lecture>
-        Flow ne confirme pas la cause en premier. Il construit le bon modèle en premier — la structure
-        dit tôt où la promesse pouvait se rompre.
+        Flow ne confirme pas la cause en premier. Il construit le bon modèle en premier
       </Lecture>
-      <Reveal>
-        <p className="method-link">
-          Les temps de correction et tailles de patch de S03 ne sont pas classés — seams d'injection
-          asymétriques et consigne perdue au re-scope. <a href="#limites">Pourquoi le temps de correction n'est pas classé →</a>
-        </p>
-      </Reveal>
     </Act>
   )
 }

@@ -127,22 +127,17 @@ export function Act4Changement() {
       </Affirm>
       <Reveal>
         <p className="prose">
-          S02 part du résultat validé de S01 de chaque variante. Même prompt, conversation neuve.
-          D'abord, l'honnêteté du chrono :
+          S02 part du résultat validé de S01 de chaque variante.
         </p>
       </Reveal>
       <CumulativeTime />
       <Reveal>
         <p className="prose">
-          Friction reste la plus rapide sur ces deux petits changements proches — elle accélère aussi
-          en S02. Le temps ne raconte qu'un coût. Regardons la <strong>matière</strong> déplacée pour
+          Friction reste la plus rapide sur ces deux petits changements proches. Regardons la <strong>matière</strong> déplacée pour
           livrer la même évolution :
         </p>
       </Reveal>
       <div className="tally-block">
-        <p className="block-title">
-          Churn cumulé S01 + S02 <span className="block-unit">1 marque = 1 ligne ajoutée ou supprimée</span>
-        </p>
         {BY_CHURN.map((v) => (
           <TallyStrip
             key={v}
@@ -155,23 +150,15 @@ export function Act4Changement() {
       </div>
       <Reveal>
         <p className="prose">
-          Et la <strong>surface</strong> traversée — chaque cellule est un fichier ouvert, compris,
-          modifié, revu :
+          Et le nombre de fichiers lus par l'agent
         </p>
       </Reveal>
       <TouchGrid />
       <Lecture>
-        Rapide aujourd'hui ne veut pas dire économique demain. Le coût structurel d'Overfit n'est pas
-        d'abord le chrono : c'est la surface — 41 fichiers traversés là où le même besoin en touche 27
+        Rapide aujourd'hui ne veut pas dire économique demain. 41 fichiers traversés pour Overfit là où le même besoin en touche 27
         ou 28.
       </Lecture>
       <Affirm size="md">Où vit la connaissance métier ?</Affirm>
-      <Reveal>
-        <p className="prose">
-          Cinq règles portent le métier de <code>riskLevel</code>. Cinq fils. Les fichiers sont les
-          nœuds où ils s'attachent :
-        </p>
-      </Reveal>
       <Loom />
     </Act>
   )

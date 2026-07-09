@@ -1,7 +1,3 @@
-// Le métier à tisser : les cinq règles métier `riskLevel` (fils) et les fichiers
-// qui les encodent (nœuds). Convergence (Friction), séparation (Flow),
-// réplication (Overfit). Analyse dérivée post-hoc, revue — jamais dans le CTL.
-
 import { pack, RULE_LABEL, VARIANT_NAME } from '../bench/data'
 import type { VariantId } from '../bench/types'
 import { N } from '../lib/Prov'
@@ -106,7 +102,7 @@ const LOOM_READING: Record<VariantId, string> = {
     'Trois règles convergent dans helpers.ts : peu de fichiers, mais un fichier qui accumule les responsabilités.',
   flow: 'Un fil, un fichier : chaque règle suivie possède un emplacement principal distinct. Aucune dupliquée.',
   overfit:
-    'Les valeurs autorisées vivent dans cinq représentations maintenues à la main — la bannière « generated » ne protège pas de la maintenance.'
+    'Les valeurs autorisées vivent dans cinq représentations maintenues à la main. Bien que générées dynamiquement, ça en justement pas une telle surface.'
 }
 
 export function Loom() {
@@ -118,13 +114,6 @@ export function Loom() {
           <p className="loom-reading">{LOOM_READING[v]}</p>
         </Reveal>
       ))}
-      <p className="loom-footnote">
-        Analyse post-hoc revue, dérivée des cartes brutes d'agent. La revue de provenance a tout
-        conservé : le générateur Overfit n'émet que <code>contracts.lock.json</code> (ADR-0003) —{' '}
-        <code>openapi.json</code>, <code>index.ts</code> et <code>runtime.ts</code> ont été édités à la
-        main pendant S02. Le nombre brut de fichiers (4 / 5 / 8) est insuffisant seul : un fichier
-        fourre-tout paraît « peu dispersé ».
-      </p>
     </div>
   )
 }

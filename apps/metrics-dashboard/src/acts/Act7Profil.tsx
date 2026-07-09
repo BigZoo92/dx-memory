@@ -1,9 +1,8 @@
 import { useState } from 'react'
-import { AXES, CHANGE_SENSITIVITY, OUTSIDE_FACTOR } from '../bench/ctl'
+import { AXES } from '../bench/ctl'
 import type { AxisResult } from '../bench/ctl'
 import { VARIANTS, VARIANT_NAME } from '../bench/data'
-import type { VariantId } from '../bench/types'
-import { fmtFactor, fmtSeconds } from '../bench/format'
+import { fmtFactor } from '../bench/format'
 import { useInView } from '../lib/hooks'
 import { N } from '../lib/Prov'
 import { Act, Affirm, Kicker, Lecture, Reveal } from '../ui/voice'
@@ -97,12 +96,6 @@ function AxisRail({ axis }: { axis: AxisResult }) {
   )
 }
 
-const READING: Record<VariantId, string> = {
-  friction: 'La facture de Friction est à l’adresse Change : un coût relatif observé de 1,50×, contre 1,00× pour Flow.',
-  overfit: 'Celle d’Overfit est répartie — mais s’alourdit à Build (2,77×) et Change (1,88×) : le prix de la sophistication sur un petit produit.',
-  flow: 'Flow paie quelques pourcents partout (1,02× à 1,09×) — et c’est sur Change qu’il creuse l’écart, avec le plus faible coût relatif observé de l’axe.'
-}
-
 export function Act7Profil() {
   return (
     <Act id="profil">
@@ -114,10 +107,8 @@ export function Act7Profil() {
       </Affirm>
       <Reveal>
         <p className="prose">
-          Quatre axes indépendants. Sur chaque axe, <strong>1,00×</strong> marque le plus faible
-          coût relatif observé — une référence, pas une perfection. Les facteurs se lisent{' '}
-          <em>sur un même axe</em>, jamais d'un axe à l'autre, jamais additionnés, jamais moyennés —
-          et jamais convertis en euros.
+          Sur chacun des quatres axes, <strong>1,00×</strong> marque le plus faible
+          coût relatif observé comme référence, pas une perfection.
         </p>
       </Reveal>
       <div className="rails">
@@ -125,53 +116,9 @@ export function Act7Profil() {
           <AxisRail key={axis.id} axis={axis} />
         ))}
       </div>
-      <div className="rail-outside">
-        <Reveal>
-          <p className="outside-title">Exposé hors facteur — mesuré, mais pas compté :</p>
-          <ul className="outside-list">
-            <li>
-              <strong>Build, la tension froid/chaud.</strong> À froid, Friction valide en{' '}
-              <N info={{ what: 'Validation locale à froid, Friction', level: 'direct', source: 'repo:tools/metrics/results/ci/friction.json' }}>
-                {fmtSeconds(17273)}
-              </N>{' '}
-              contre{' '}
-              <N info={{ what: 'Validation locale à froid, Flow', level: 'direct', source: 'repo:tools/metrics/results/ci/flow.json' }}>
-                {fmtSeconds(46063)}
-              </N>{' '}
-              pour Flow ; à chaud, Flow repasse devant ({fmtSeconds(6073)} contre {fmtSeconds(14538)}).
-              Le facteur combine les deux — aucune des deux lectures n'est cachée.
-            </li>
-            <li>
-              <strong>Ship, le démarrage.</strong> Conteneur → première réponse saine :{' '}
-              {VARIANTS.map((v, i) => (
-                <span key={v}>
-                  {i > 0 && ' · '}
-                  {VARIANT_NAME[v]}{' '}
-                  <N info={{ what: `Démarrage conteneur, ${VARIANT_NAME[v]}`, level: 'direct', source: `repo:tools/metrics/results/ci/${v}.json`, note: OUTSIDE_FACTOR.startup.note }}>
-                    {OUTSIDE_FACTOR.startup.values[v] >= 1000
-                      ? fmtSeconds(OUTSIDE_FACTOR.startup.values[v])
-                      : `${OUTSIDE_FACTOR.startup.values[v]} ms`}
-                  </N>
-                </span>
-              ))}
-              . Topologies différentes (SSR vs statique + API) : exposé, non compté.
-            </li>
-          </ul>
-        </Reveal>
-      </div>
       <Lecture>
-        {READING.friction} {READING.overfit} {READING.flow} Aucune n'a le « meilleur CTL » : chacune
-        choisit où sa facture arrive.
+        Friction paie le changement. Overfit paie sa sophistication. Flow reste contenu partout et creuse l’écart sur Change.
       </Lecture>
-      <Reveal>
-        <p className="sensitivity-note">
-          Sensibilité : sans le churn qualité S04, la tête de l'axe Change bascule — Friction{' '}
-          {fmtFactor(CHANGE_SENSITIVITY.relativeCost.friction)}, Flow{' '}
-          {fmtFactor(CHANGE_SENSITIVITY.relativeCost.flow)}, Overfit{' '}
-          {fmtFactor(CHANGE_SENSITIVITY.relativeCost.overfit)}. Le détail est assumé dans{' '}
-          <a href="#limites">Limites</a>.
-        </p>
-      </Reveal>
     </Act>
   )
 }

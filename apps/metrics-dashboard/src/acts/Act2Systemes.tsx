@@ -1,6 +1,7 @@
-import { pack, VARIANTS, VARIANT_NAME, VARIANT_TAGLINE } from '../bench/data'
+import { VARIANTS, VARIANT_NAME, VARIANT_TAGLINE } from '../bench/data'
 import type { VariantId } from '../bench/types'
-import { Act, Affirm, Lecture, Reveal } from '../ui/voice'
+import { useInView } from '../lib/hooks'
+import { Act, Affirm, Reveal } from '../ui/voice'
 
 /** Glyphe structurel abstrait : la forme du système, pas un logo. */
 function SystemGlyph({ variant }: { variant: VariantId }) {
@@ -41,8 +42,9 @@ const VARIANT_DESC: Record<VariantId, string> = {
 }
 
 export function Act2Systemes() {
+  const { ref, inView } = useInView<HTMLElement>(0.5)
   return (
-    <Act id="systemes">
+    <Act id="systemes" style={{paddingBottom: '20px'}}>
       <Affirm size="lg">
         Même produit.
         <br />
@@ -52,8 +54,7 @@ export function Act2Systemes() {
       </Affirm>
       <Reveal>
         <p className="prose">
-          J'ai implémenté trois fois le même produit visible — mêmes écrans, mêmes données, même
-          contrat d'API. Seul le système d'ingénierie change.
+          J'ai implémenté trois fois le <b>même produit</b> visible: mêmes écrans, mêmes données. <b>Seul la DX change.</b>
         </p>
       </Reveal>
       <div className="variant-cards">
@@ -77,28 +78,17 @@ export function Act2Systemes() {
             <span><strong>1</strong> modèle</span>
           </p>
         </Reveal>
-        <Reveal delay={150}>
-          <ul className="protocol-guarantees">
-            <li>une conversation neuve par run</li>
-            <li>le même prompt exact pour les trois variantes</li>
-            <li>ordres de passage tournés entre scénarios</li>
-            <li>zéro prompt de correction pendant les runs</li>
-            <li>
-              <code>{pack.protocol.model}</code> · raisonnement {pack.protocol.reasoningMode}
-            </li>
-          </ul>
-        </Reveal>
       </div>
       <Affirm size="lg" align="center">
         Même IA. Même besoin.
         <br />
         Pas le même coût.
       </Affirm>
-      <Lecture>
-        Je n'ai pas benchmarké l'IA : j'ai changé le système autour d'elle. L'agent amplifie le
-        système dans lequel il travaille — c'est le cadre, pas la preuve.
-        <span className="source-ref"> DORA, State of AI-assisted Software Development, 2025</span>
-      </Lecture>
+          <aside ref={ref} className={`lecture reveal${inView ? ' is-in' : ''}`}>
+            <p> Je n'ai pas benchmarké l'IA. J'ai changé le système autour d'elle.
+            <span className="source-ref"> Interprétation à partir de DORA, State of AI-assisted Software Development, 2025</span></p>
+            <span className="level-tag level-interpretation">L'agent amplifie le système dans lequel il travaille.</span>
+          </aside>
     </Act>
   )
 }

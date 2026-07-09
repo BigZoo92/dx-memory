@@ -16,7 +16,6 @@ import { Act5Diagnostic } from './acts/Act5Diagnostic'
 import { Act6Qualites } from './acts/Act6Qualites'
 import { Act7Profil } from './acts/Act7Profil'
 import { Act8Conclusion } from './acts/Act8Conclusion'
-import { Donnees, Limites, Methode, Sources } from './views/Defense'
 
 export default function App() {
   return (
@@ -31,12 +30,6 @@ export default function App() {
         <Act6Qualites />
         <Act7Profil />
         <Act8Conclusion />
-        <div className="defense-wrap">
-          <Methode />
-          <Limites />
-          <Donnees />
-          <Sources />
-        </div>
       </main>
       <footer className="page-foot">
         <p>

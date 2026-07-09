@@ -1,4 +1,4 @@
-import { Act, Affirm, Kicker, Lecture, Reveal } from '../ui/voice'
+import { Act, Affirm, Kicker, Reveal } from '../ui/voice'
 
 const PRECOS: { n: string; title: string; body: React.ReactNode }[] = [
   {
@@ -7,7 +7,7 @@ const PRECOS: { n: string; title: string; body: React.ReactNode }[] = [
     body: (
       <>
         <strong>Avant d'optimiser, localiser la facture.</strong> Identifier où le coût se situe
-        réellement · vérifier qu'il est fréquent et structurant · mesurer avant / après · regarder
+        réellement, vérifier qu'il est fréquent et structurant, mesurer avant / après, regarder
         où l'optimisation risque de déplacer le coût.
       </>
     )
@@ -17,9 +17,9 @@ const PRECOS: { n: string; title: string; body: React.ReactNode }[] = [
     title: 'Paver',
     body: (
       <>
-        <strong>Des golden paths légers — pas des autoroutes obligatoires.</strong> Réduire la
-        friction des parcours fréquents · préparer des chemins simples et documentés · fournir les
-        bonnes primitives · garder une porte de sortie quand un cas sort du standard.
+        <strong>Des golden paths légers.</strong> Réduire la
+        friction des parcours fréquents, préparer des chemins simples et documentés, fournir les
+        bonnes primitives, garder une porte de sortie quand un cas sort du standard.
       </>
     )
   },
@@ -28,10 +28,9 @@ const PRECOS: { n: string; title: string; body: React.ReactNode }[] = [
     title: 'Gouverner',
     body: (
       <>
-        <strong>IA, accessibilité et sobriété : des décisions normales, pas des correctifs de fin
-        de projet.</strong> Donner un contexte fiable aux agents IA · intégrer l'accessibilité aux
-        primitives et composants · intégrer la sobriété aux choix de chargement, de cache et
-        d'architecture · arbitrer ces sujets dans le flux normal de livraison.
+        <strong>IA, accessibilité et sobriété</strong> Donner un contexte fiable aux agents IA, intégrer l'accessibilité aux
+        primitives et composants, intégrer la sobriété aux choix de chargement, de cache et
+        d'architecture, arbitrer ces sujets dans le flux normal de livraison.
       </>
     )
   }
@@ -64,11 +63,6 @@ export function Act8Conclusion() {
           là où l'équipe peut la payer.
         </Affirm>
       </div>
-      <Lecture>
-        Douze runs contrôlés ne prouvent pas une loi générale — et ne le prétendent pas. Ce que je
-        livre, c'est une méthode honnête pour trouver l'adresse de la facture, et un système, Flow, qui
-        choisit la sienne en connaissance de cause.
-      </Lecture>
     </Act>
   )
 }

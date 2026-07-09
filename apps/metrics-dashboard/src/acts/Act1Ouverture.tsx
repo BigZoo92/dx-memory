@@ -38,8 +38,8 @@ export function Act1Ouverture() {
         </ol>
         <Reveal delay={500}>
           <p className="hero-thesis">
-            Le coût total de livraison — l'effort et l'attention nécessaires pour construire, valider,
-            livrer, diagnostiquer, corriger et faire évoluer un changement — ne se calcule pas.
+            Le coût total de livraison, c'est l'effort et l'attention nécessaires pour construire, valider,
+            livrer, diagnostiquer, corriger et faire évoluer un changement. Il ne se calcule pas.
             Il se <em>localise</em>.
           </p>
         </Reveal>
